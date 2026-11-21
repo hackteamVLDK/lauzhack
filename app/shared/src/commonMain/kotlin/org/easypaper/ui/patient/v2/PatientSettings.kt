@@ -71,6 +71,7 @@ fun categoryTitle(category: Category): String = stringResource(when (category) {
     Category.Questionnaire -> Res.string.p2_symptoms
     Category.Diary -> Res.string.p2_diary
     Category.DoctorQuestion -> Res.string.p2_questions
+    Category.Measurements -> Res.string.p2_measurements
 })
 
 @Composable

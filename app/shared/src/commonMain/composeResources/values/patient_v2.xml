@@ -122,4 +122,5 @@
     <string name="p2_history_line">%1$s, %2$s, %3$d entries</string>
     <string name="p2_replace_backup">Replace the existing backup file?</string>
     <string name="p2_water_amount">Amount of water (ml)</string>
+    <string name="p2_measurements">Body measurements</string>
 </resources>

@@ -122,4 +122,5 @@
     <string name="p2_history_line">%1$s, %2$s, записів: %3$d</string>
     <string name="p2_replace_backup">Замінити наявний файл резервної копії?</string>
     <string name="p2_water_amount">Кількість води (мл)</string>
+    <string name="p2_measurements">Вимірювання тіла</string>
 </resources>

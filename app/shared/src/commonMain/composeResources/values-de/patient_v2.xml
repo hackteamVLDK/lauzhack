@@ -122,4 +122,5 @@
     <string name="p2_history_line">%1$s, %2$s, %3$d Einträge</string>
     <string name="p2_replace_backup">Die vorhandene Sicherungsdatei ersetzen?</string>
     <string name="p2_water_amount">Wassermenge (ml)</string>
+    <string name="p2_measurements">Körpermaße</string>
 </resources>
