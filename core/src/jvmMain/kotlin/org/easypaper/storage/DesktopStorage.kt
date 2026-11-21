@@ -52,7 +52,9 @@ private fun ownerOnly(file: File) {
         AclEntry.newBuilder().setType(AclEntryType.ALLOW).setPrincipal(owner)
             .setPermissions(AclEntryPermission.READ_DATA, AclEntryPermission.WRITE_DATA, AclEntryPermission.APPEND_DATA,
                 AclEntryPermission.READ_ATTRIBUTES, AclEntryPermission.WRITE_ATTRIBUTES, AclEntryPermission.READ_ACL,
-                AclEntryPermission.WRITE_ACL, AclEntryPermission.DELETE, AclEntryPermission.SYNCHRONIZE)
+                AclEntryPermission.WRITE_ACL, AclEntryPermission.DELETE, AclEntryPermission.SYNCHRONIZE,
+                // Java opens files with GENERIC_READ/WRITE, which include the extended-attribute rights (pavlo, #27)
+                AclEntryPermission.READ_NAMED_ATTRS, AclEntryPermission.WRITE_NAMED_ATTRS)
             .build(),
     )
 }

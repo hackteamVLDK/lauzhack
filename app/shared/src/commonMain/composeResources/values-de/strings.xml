@@ -244,4 +244,7 @@
     <string name="chart_upper">oberer Wert</string>
     <string name="chart_lower">unterer Wert</string>
     <string name="chart_description">Blutdruck-Diagramm: oberer Wert %1$s, unterer Wert %2$s mmHg, %3$d Messungen.</string>
+    <!-- device storage could not be opened (task 27) -->
+    <string name="storage_error_title">Ihr Tagebuch konnte nicht geöffnet werden</string>
+    <string name="storage_error_message">Auf diesem Gerät wurde nichts geändert oder gelöscht. Schließen Sie die App und öffnen Sie sie erneut; wenn das wieder passiert, sagen Sie es Ihrer Praxis.</string>
 </resources>

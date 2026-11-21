@@ -37,14 +37,15 @@ class PhotoStore(private val blobs: BlobStore, private val key: ByteArray) {
         return ref
     }
 
+    // A ref from elsewhere (the demo's "demo-photo-1", a doctor's report) is no photo on this device: null / no-op.
+    // The prefix check also keeps a crafted ref like "record/<id>" from reading or deleting a record.
     suspend fun get(ref: String): ByteArray? {
-        require(ref.startsWith(PHOTO_PREFIX)) { "Not a photo ref: $ref" }
+        if (!ref.startsWith(PHOTO_PREFIX)) return null
         return blobs.get(ref)?.let { aesGcm(key).decrypt(it, ref.encodeToByteArray()) }
     }
 
     suspend fun delete(ref: String) {
-        require(ref.startsWith(PHOTO_PREFIX)) { "Not a photo ref: $ref" }
-        blobs.delete(ref)
+        if (ref.startsWith(PHOTO_PREFIX)) blobs.delete(ref)
     }
 }
 

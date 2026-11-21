@@ -1,11 +1,15 @@
 package org.easypaper.ui.shell
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import easypaper.app.shared.generated.resources.Res
@@ -15,6 +19,9 @@ import easypaper.app.shared.generated.resources.role_doctor_detail
 import easypaper.app.shared.generated.resources.role_patient
 import easypaper.app.shared.generated.resources.role_patient_detail
 import easypaper.app.shared.generated.resources.role_question
+import easypaper.app.shared.generated.resources.storage_error_message
+import easypaper.app.shared.generated.resources.storage_error_title
+import org.easypaper.ui.components.EmptyState
 import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.LargeTitleScaffold
 import org.easypaper.ui.components.ListRow
@@ -35,10 +42,18 @@ fun EasyPaperApp(
     settings: ShellSettings = remember { ShellSettings() },
     demo: Boolean = false,
 ) {
+    // The demo stays in memory so it never mixes with the patient's real records on the device.
+    val device = if (demo) remember { Result.success(inMemoryPatientRepository()) } else rememberDeviceRepository()
+    val repository = device?.getOrNull()
+    if (repository == null) {
+        ShellTheme(settings) { StorageState(device?.exceptionOrNull()) }
+        return
+    }
     // The patient app never calls the server here (Android has no server URL; transfer is task 30).
-    val state = remember {
+    val state = remember(repository) {
         ShellState(
             role,
+            repository,
             serverUrl = if (role == Role.Patient) null else settings.serverUrl ?: defaultServerUrl(),
             aiToken = { settings.aiToken },
         )
@@ -54,6 +69,14 @@ fun EasyPaperApp(
             Role.Patient -> PatientApp(state, settings, onSwitchRole = if (canSwitch) ({ state.role = Role.Doctor }) else null)
             Role.Doctor -> DoctorApp(state, settings, onSwitchRole = if (canSwitch) ({ state.role = Role.Patient }) else null)
         }
+    }
+}
+
+/** Opening the device storage (blank for the moment it takes), or why it could not be opened. */
+@Composable
+private fun StorageState(error: Throwable?) {
+    Box(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background)) {
+        if (error != null) EmptyState(stringResource(Res.string.storage_error_title), stringResource(Res.string.storage_error_message))
     }
 }
 
