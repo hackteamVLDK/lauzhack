@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "last_event_id": 62,
+  "last_event_id": 63,
   "files": {
     "CHANGES.md": {
       "sha256": "7fee776d955926f65425c36d191521f59373627d5c579628e14dec4419887ded",
@@ -15,20 +15,20 @@
       "size": 12
     },
     "PROJECT.md": {
-      "sha256": "aaf3a39197939cee84fa2c9ecad93fa537456ae7e97d33b850fdee327b0106b7",
+      "sha256": "acdf0a21fc3e44173f701c629dbf9d576567ede74ce9902894ce3fea1dfaeb55",
       "size": 7753
     },
     "database.sql": {
-      "sha256": "e44fc9047fde21b489eddb6707cb5ec3c2326738c48948df9bd49d4cd8f16ce4",
-      "size": 180014
+      "sha256": "94c008003d59d6bf4b9ab9008b7a577eff9c0a2a32c570fd42965a64d3ee014d",
+      "size": 182760
     },
     "events.jsonl": {
-      "sha256": "2152c0b8d15487c58e48b762909803e831d29c8bc789a7ffa17e512b94cc59b8",
-      "size": 27073
+      "sha256": "7557d17860cf7e2bdd2329fcb776b596e337f5ad551f975a96ca88992399f85e",
+      "size": 27241
     },
     "people/mykhailo.md": {
-      "sha256": "cc8c8c2817a0c51c1fc1e4d7d1f3ec57e814297b3808d296134081512770d5e4",
-      "size": 9352
+      "sha256": "d4073cd6d7eebcccc962dc40e5320a3512fa9896d357e9bbc2d0ed4b0ea706e6",
+      "size": 9442
     },
     "people/pavlo.md": {
       "sha256": "68d85038770371c82a43ca77a20ebe92fb39eaa508019f6d154a4e05260e3f70",
@@ -39,8 +39,8 @@
       "size": 4577
     },
     "tasks/1.md": {
-      "sha256": "208d55b524968c88e076def9d7e321642826b20795b450f2a917b5f02e475354",
-      "size": 4753
+      "sha256": "89b2b7c83c742e8f050ce6fa8bfd581b10bd683a997e9e80054f1964f9c8a3c4",
+      "size": 4843
     },
     "tasks/10.md": {
       "sha256": "74dc233c175ce409cc90b3b94b5a357f2299d35c620b118338e4e6f27ed79962",
