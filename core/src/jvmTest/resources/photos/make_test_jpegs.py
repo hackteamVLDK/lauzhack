@@ -1,6 +1,6 @@
 """Regenerates core/src/jvmTest/resources/photos/*.jpg for RealJpegTest (needs Pillow).
 
-    python tools/make_test_jpegs.py core/src/jvmTest/resources/photos
+    python core/src/jvmTest/resources/photos/make_test_jpegs.py core/src/jvmTest/resources/photos
 
 Synthetic stripes with made-up phone metadata (PhoneMakerX / PhoneModelX, GPS of central Lausanne) — no personal data.
 """

@@ -10,7 +10,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-/** stripJpegMetadata on files from a real encoder (tools/make_test_jpegs.py), decoded by javax.imageio. */
+/** stripJpegMetadata on files from a real encoder (resources/photos/make_test_jpegs.py), decoded by javax.imageio. */
 class RealJpegTest {
     private fun fixture(name: String) = assertNotNull(javaClass.getResourceAsStream("/photos/$name.jpg"), name).readBytes()
     private fun decode(bytes: ByteArray): BufferedImage = assertNotNull(ImageIO.read(ByteArrayInputStream(bytes)))
@@ -28,12 +28,35 @@ class RealJpegTest {
         return null
     }
 
+    /** IFD0 tags of every EXIF APP1 before the image data (GPS coordinates are binary rationals, not text). */
+    private fun exifIfd0Tags(jpeg: ByteArray): List<Set<Int>> {
+        fun u8(i: Int) = jpeg[i].toInt() and 0xFF
+        val result = mutableListOf<Set<Int>>()
+        var i = 2
+        while (i + 4 <= jpeg.size && u8(i) == 0xFF && u8(i + 1) != 0xDA) {
+            val length = (u8(i + 2) shl 8) or u8(i + 3)
+            if (u8(i + 1) == 0xE1 && String(jpeg, i + 4, 6, Charsets.ISO_8859_1) == "Exif\u0000\u0000") {
+                val tiff = i + 10
+                val big = u8(tiff) == 0x4D
+                fun u16(at: Int) = if (big) (u8(at) shl 8) or u8(at + 1) else (u8(at + 1) shl 8) or u8(at)
+                fun u32(at: Int) = if (big) (u16(at) shl 16) or u16(at + 2) else (u16(at + 2) shl 16) or u16(at)
+                val ifd = tiff + u32(tiff + 4)
+                result += (0 until u16(ifd)).map { u16(ifd + 2 + it * 12) }.toSet()
+            }
+            i += 2 + length
+        }
+        return result
+    }
+
     @Test
     fun realFilesLoseMetadataButNotPixels() {
         for (name in listOf("baseline", "progressive", "trailer")) {
             val original = fixture(name)
             assertTrue("PhoneModelX" in original.decodeToString(), "fixture $name has no metadata")
+            val originalTags = exifIfd0Tags(original).first()
+            assertTrue(0x8825 in originalTags && 0x0110 in originalTags, "fixture $name: no GPS IFD / Model to remove")
             val clean = stripJpegMetadata(original)
+            assertEquals(listOf(setOf(0x0112)), exifIfd0Tags(clean), "$name: EXIF must hold only Orientation, no GPS IFD")
             val text = clean.decodeToString()
             for (secret in listOf("PhoneModelX", "PhoneMakerX", "2026:11:21", "between-secret", "ftypmp4")) {
                 assertFalse(secret in text, "$name: '$secret' left")
