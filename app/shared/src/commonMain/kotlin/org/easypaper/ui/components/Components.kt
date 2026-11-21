@@ -225,7 +225,7 @@ fun DraftBadge(text: String, modifier: Modifier = Modifier) {
     Text(
         text,
         style = EasyPaperTheme.typography.caption1.copy(fontWeight = FontWeight.Medium),
-        color = EasyPaperTheme.colors.secondaryLabel,
+        color = EasyPaperTheme.colors.draftLabel,
         modifier = modifier.clip(EasyPaperTheme.shapes.capsule).background(EasyPaperTheme.colors.fill)
             .padding(horizontal = spacing.xs, vertical = 2.dp),
     )

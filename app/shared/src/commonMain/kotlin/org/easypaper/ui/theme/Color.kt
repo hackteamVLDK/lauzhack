@@ -17,6 +17,10 @@ data class EasyPaperColors(
     val secondaryLabel: Color, // dates, units, footers (Increase Contrast value)
     val separator: Color,      // hairlines between rows, decoration only
     val fill: Color,           // gray buttons, badges, steppers (systemGray5)
+    val draftLabel: Color,     // small draft badge text on fill, at least 4.5:1
+    val selectedRowBackground: Color, // sidebar selection, including small date text
+    val selectedRowLabel: Color, // all text on selectedRowBackground, at least 4.5:1
+    val scrim: Color,          // modal sheet background dimming
     val tint: Color,           // the one accent as a fill: prominent buttons, selection
     val link: Color,           // the accent as text: plain and tinted buttons, source links
     val onTint: Color,         // text and icons on a filled tint button
@@ -35,6 +39,10 @@ val LightColors = EasyPaperColors(
     secondaryLabel = Color(0xFF6C6C70),
     separator = Color(0xFFC6C6C8),
     fill = Color(0xFFE5E5EA),
+    draftLabel = Color(0xFF5C5C60),
+    selectedRowBackground = Color(0xFF0066CC),
+    selectedRowLabel = Color(0xFFFFFFFF),
+    scrim = Color(0x66000000),
     tint = Color(0xFF0066CC),
     link = Color(0xFF0066CC),
     onTint = Color(0xFFFFFFFF),
@@ -53,6 +61,10 @@ val DarkColors = EasyPaperColors(
     secondaryLabel = Color(0xFF98989F),
     separator = Color(0xFF38383A),
     fill = Color(0xFF2C2C2E),
+    draftLabel = Color(0xFF98989F),
+    selectedRowBackground = Color(0xFF0066CC),
+    selectedRowLabel = Color(0xFFFFFFFF),
+    scrim = Color(0x66000000),
     tint = Color(0xFF0A84FF),
     link = Color(0xFF409CFF),
     onTint = Color(0xFFFFFFFF),

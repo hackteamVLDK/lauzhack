@@ -153,6 +153,7 @@
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">AI cost</string>
     <string name="cost_report">This report</string>
+    <string name="cost_no_report_selected">No report selected</string>
     <string name="cost_session">Entire session</string>
     <string name="cost_estimated">estimated</string>
     <string name="cost_demo_capture">Captured demo run of the local model. These usage figures are not live.</string>

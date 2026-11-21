@@ -155,6 +155,7 @@
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">Вартість ШІ</string>
     <string name="cost_report">Цей звіт</string>
+    <string name="cost_no_report_selected">Звіт не вибрано</string>
     <string name="cost_session">Уся сесія</string>
     <string name="cost_estimated">оцінка</string>
     <string name="cost_demo_capture">Зафіксований демозапуск локальної моделі. Ці дані використання не оновлюються наживо.</string>

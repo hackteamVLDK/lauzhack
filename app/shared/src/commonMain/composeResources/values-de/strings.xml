@@ -153,6 +153,7 @@
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">KI-Kosten</string>
     <string name="cost_report">Dieser Bericht</string>
+    <string name="cost_no_report_selected">Kein Bericht ausgewählt</string>
     <string name="cost_session">Gesamte Sitzung</string>
     <string name="cost_estimated">geschätzt</string>
     <string name="cost_demo_capture">Aufgezeichneter Demolauf des lokalen Modells. Diese Nutzungsdaten sind keine Live-Daten.</string>

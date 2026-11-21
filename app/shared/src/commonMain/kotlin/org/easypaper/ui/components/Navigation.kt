@@ -348,12 +348,12 @@ fun Sidebar(
 fun SidebarRow(title: String, subtitle: String?, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = EasyPaperTheme.colors
     val spacing = EasyPaperTheme.spacing
-    val text = if (selected) colors.onTint else colors.label
-    val secondary = if (selected) colors.onTint else colors.secondaryLabel
+    val text = if (selected) colors.selectedRowLabel else colors.label
+    val secondary = if (selected) colors.selectedRowLabel else colors.secondaryLabel
     Column(
         modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight)
             .clip(EasyPaperTheme.shapes.small)
-            .background(if (selected) colors.tint else colors.cell)
+            .background(if (selected) colors.selectedRowBackground else colors.cell)
             .selectable(
                 selected = selected,
                 interactionSource = remember { MutableInteractionSource() },

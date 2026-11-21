@@ -38,6 +38,14 @@ class ThemeTest {
     }
 
     @Test
+    fun badgeAndSelectedRowTextMeetWcagAaInBothThemes() {
+        for ((name, c) in themes) {
+            assertContrast(4.5f, c.draftLabel, c.fill, "$name draft badge")
+            assertContrast(4.5f, c.selectedRowLabel, c.selectedRowBackground, "$name selected sidebar row and dates")
+        }
+    }
+
+    @Test
     fun buttonLabelsOnTint() {
         // Prominent button labels are 17 sp semibold (large text): 3:1 is the AA minimum, light reaches 4.5.
         assertContrast(4.5f, LightColors.onTint, LightColors.tint, "light onTint")

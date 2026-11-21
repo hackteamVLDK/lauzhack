@@ -242,18 +242,27 @@ private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: Shel
             state.receive(received)
             select(DoctorScreen.Visit(received.report.id))
         })
-        // Live data from the opened report when there is any, otherwise the recorded demo run and server status.
-        DoctorScreen.Cost -> if (state.aiUsage.isNotEmpty() || state.aiStatus != null) {
-            AiCostScreen(status = state.aiStatus, usage = state.aiUsage.toList(), back = back)
-        } else {
-            DoctorCostScreen(settings.serverUrl, settings.aiToken, back)
+        DoctorScreen.Cost -> {
+            val report = state.selectedReport
+            if (state.aiUsage.isNotEmpty() || state.aiStatus != null) {
+                AiCostScreen(
+                    status = state.aiStatus,
+                    usage = state.aiUsage.toList(),
+                    selectedRequestId = report?.record?.request?.id,
+                    reportComplaint = report?.record?.request?.complaint,
+                    reportPeriod = report?.let { reportPeriod(it) },
+                    back = back,
+                )
+            } else {
+                DoctorCostScreen(settings.serverUrl, settings.aiToken, back, report)
+            }
         }
         else -> NothingOpen(emptyActions)
     }
 }
 
 @Composable
-private fun DoctorCostScreen(serverUrl: String?, aiToken: String?, back: BackAction?) {
+private fun DoctorCostScreen(serverUrl: String?, aiToken: String?, back: BackAction?, report: Report?) {
     val url = serverUrl?.trim()?.takeIf { it.isNotEmpty() }
     var status by remember(url, aiToken) { mutableStateOf<AiStatus?>(null) }
     LaunchedEffect(url, aiToken) {
@@ -273,7 +282,15 @@ private fun DoctorCostScreen(serverUrl: String?, aiToken: String?, back: BackAct
         }
     }
     // Reports do not carry an AI usage ledger yet; show the captured local run until they do.
-    AiCostScreen(status = status, usage = DemoAi.usage, back = back, demoCapture = true)
+    AiCostScreen(
+        status = status,
+        usage = DemoAi.usage,
+        selectedRequestId = report?.record?.request?.id,
+        reportComplaint = report?.record?.request?.complaint,
+        reportPeriod = report?.let { reportPeriod(it) },
+        back = back,
+        demoCapture = true,
+    )
 }
 
 /** Nothing selected: a quiet centered message, as in macOS split views. */

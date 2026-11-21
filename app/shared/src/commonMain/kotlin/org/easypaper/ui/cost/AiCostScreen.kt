@@ -28,6 +28,7 @@ import easypaper.app.shared.generated.resources.cost_mode_clinic
 import easypaper.app.shared.generated.resources.cost_mode_cloud
 import easypaper.app.shared.generated.resources.cost_mode_off
 import easypaper.app.shared.generated.resources.cost_no
+import easypaper.app.shared.generated.resources.cost_no_report_selected
 import easypaper.app.shared.generated.resources.cost_provider
 import easypaper.app.shared.generated.resources.cost_report
 import easypaper.app.shared.generated.resources.cost_server
@@ -46,7 +47,6 @@ import org.easypaper.ai.AiStatus
 import org.easypaper.ai.AiStep
 import org.easypaper.ai.AiUsage
 import org.easypaper.ai.costComparison
-import org.easypaper.ai.latestReportUsage
 import org.easypaper.ui.components.BackAction
 import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.LargeTitleScaffold
@@ -62,18 +62,42 @@ import kotlin.math.roundToLong
 fun AiCostScreen(
     status: AiStatus?,
     usage: List<AiUsage>,
+    selectedRequestId: String?,
+    reportComplaint: String?,
+    reportPeriod: String?,
     modifier: Modifier = Modifier,
     back: BackAction? = null,
     demoCapture: Boolean = false,
 ) {
     val spacing = EasyPaperTheme.spacing
-    val reportUsage = latestReportUsage(usage)
-    LargeTitleScaffold(title = stringResource(Res.string.cost_title), modifier = modifier, back = back) {
+    // AiUsage.reportId is the request id supplied by SummaryPipeline, not Report.id.
+    // An unselected report must never pick up unassigned calls or another report's usage.
+    val reportUsage = usage.filter { selectedRequestId != null && it.reportId == selectedRequestId }
+    LargeTitleScaffold(
+        title = stringResource(Res.string.cost_title),
+        modifier = modifier,
+        back = back,
+        header = {
+            if (demoCapture) {
+                Text(
+                    stringResource(Res.string.cost_demo_capture),
+                    style = EasyPaperTheme.typography.callout,
+                    color = EasyPaperTheme.colors.label,
+                    modifier = Modifier.padding(top = spacing.xs),
+                )
+            }
+        },
+    ) {
         item {
             GroupedSection(
                 header = stringResource(Res.string.cost_report),
                 footer = stringResource(Res.string.cost_comparison_footer),
             ) {
+                ListRow(
+                    title = reportComplaint ?: stringResource(Res.string.cost_no_report_selected),
+                    subtitle = reportPeriod,
+                )
+                RowSeparator(spacing.m)
                 UsageRows(reportUsage)
             }
         }
@@ -81,10 +105,7 @@ fun AiCostScreen(
             GroupedSection(
                 modifier = Modifier.padding(top = spacing.sectionGap),
                 header = stringResource(Res.string.cost_session),
-                footer = listOfNotNull(
-                    stringResource(Res.string.cost_comparison_footer),
-                    if (demoCapture) stringResource(Res.string.cost_demo_capture) else null,
-                ).joinToString("\n"),
+                footer = stringResource(Res.string.cost_comparison_footer),
             ) {
                 UsageRows(usage)
             }
