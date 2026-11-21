@@ -14,7 +14,7 @@ Phases: build 2, plan 9
 Latest intent: mykhailo/MyPc-chat · 2026-11-21T14:45:25+00:00: Каркас KMP: Android/Desktop/Web/Server + test.py + teamhub.json + skills
 Phase: build; build 0; submitter: -; branch: -.
 Status: running; assignee: mykhailo; owner: mykhailo; client: MyPc-chat.
-Lease expires: 2026-11-21T14:56:07+00:00.
+Lease expires: 2026-11-21T14:56:37+00:00.
 Acceptance: python test.py зелёный на Windows и Linux, Desktop и Android запускаются
 Checkpoint SHA: -
 Review notes: -
