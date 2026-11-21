@@ -18,11 +18,13 @@ enum class Role { Patient, Doctor }
 
 /** Developer settings from the hidden menu; also set by Desktop system properties for screenshots. */
 @Stable
-class ShellSettings(dark: Boolean? = null, largeText: Boolean = false) {
+class ShellSettings(dark: Boolean? = null, largeText: Boolean = false, serverUrl: String? = null) {
     /** null = follow the system. */
     var dark: Boolean? by mutableStateOf(dark)
     /** Text at 200 % to check layouts at the largest system font size. */
     var largeText: Boolean by mutableStateOf(largeText)
+    /** Optional Easy Paper server for live AI status; null keeps the captured demo only. */
+    var serverUrl: String? by mutableStateOf(serverUrl)
 }
 
 /**

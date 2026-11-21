@@ -12,12 +12,14 @@ import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.cost_big_model
 import easypaper.app.shared.generated.resources.cost_budget
 import easypaper.app.shared.generated.resources.cost_budget_amount
+import easypaper.app.shared.generated.resources.cost_budget_unlimited
 import easypaper.app.shared.generated.resources.cost_cache_hit
 import easypaper.app.shared.generated.resources.cost_clinic
 import easypaper.app.shared.generated.resources.cost_cloud
 import easypaper.app.shared.generated.resources.cost_comparison
 import easypaper.app.shared.generated.resources.cost_comparison_footer
 import easypaper.app.shared.generated.resources.cost_decimal_separator
+import easypaper.app.shared.generated.resources.cost_demo_capture
 import easypaper.app.shared.generated.resources.cost_empty_message
 import easypaper.app.shared.generated.resources.cost_empty_title
 import easypaper.app.shared.generated.resources.cost_key_configured
@@ -60,12 +62,16 @@ fun AiCostScreen(
     usage: List<AiUsage>,
     modifier: Modifier = Modifier,
     back: BackAction? = null,
+    demoCapture: Boolean = false,
 ) {
     val spacing = EasyPaperTheme.spacing
     val comparison = costComparison(usage)
     LargeTitleScaffold(title = stringResource(Res.string.cost_title), modifier = modifier, back = back) {
         item {
-            GroupedSection(header = stringResource(Res.string.cost_report)) {
+            GroupedSection(
+                header = stringResource(Res.string.cost_report),
+                footer = if (demoCapture) stringResource(Res.string.cost_demo_capture) else null,
+            ) {
                 if (usage.isEmpty()) {
                     ListRow(
                         title = stringResource(Res.string.cost_empty_title),
@@ -164,6 +170,7 @@ private fun CostValueRow(label: String, value: String, detail: String? = null) {
 private fun ServerRows(status: AiStatus) {
     val spacing = EasyPaperTheme.spacing
     val unavailable = stringResource(Res.string.cost_unavailable)
+    val budget = status.budgetUsd
     CostValueRow(
         stringResource(Res.string.cost_mode),
         stringResource(when (status.mode) {
@@ -182,7 +189,8 @@ private fun ServerRows(status: AiStatus) {
     RowSeparator(spacing.m)
     CostValueRow(
         stringResource(Res.string.cost_budget),
-        stringResource(Res.string.cost_budget_amount, usd(status.spentUsd), usd(status.budgetUsd)),
+        if (budget == null) stringResource(Res.string.cost_budget_unlimited)
+        else stringResource(Res.string.cost_budget_amount, usd(status.spentUsd), usd(budget)),
     )
     RowSeparator(spacing.m)
     CostValueRow(

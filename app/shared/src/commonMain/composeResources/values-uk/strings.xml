@@ -153,6 +153,7 @@
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">Вартість ШІ</string>
     <string name="cost_report">Цей звіт</string>
+    <string name="cost_demo_capture">Зафіксований демозапуск локальної моделі. Ці дані використання не оновлюються наживо.</string>
     <string name="cost_step_photo">Опис фото</string>
     <string name="cost_step_summary">Підсумок</string>
     <string name="cost_step_document">Видобування даних із документа</string>
@@ -172,6 +173,7 @@
     <string name="cost_small_model">Модель для фото</string>
     <string name="cost_big_model">Модель для підсумків і документів</string>
     <string name="cost_budget">Витрачено з бюджету сервера</string>
+    <string name="cost_budget_unlimited">Без ліміту</string>
     <string name="cost_budget_amount">%1$s із %2$s</string>
     <string name="cost_key_configured">API-ключ налаштовано</string>
     <string name="cost_yes">Так</string>

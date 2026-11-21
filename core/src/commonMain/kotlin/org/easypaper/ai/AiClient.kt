@@ -26,7 +26,8 @@ data class AiStatus(
     val prices: Map<String, ModelPrice> = emptyMap(),
     val keyConfigured: Boolean = false,
     val spentUsd: Double = 0.0,
-    val budgetUsd: Double = 0.0,
+    /** null = no spending limit. */
+    val budgetUsd: Double? = null,
     val calls: Int = 0,
     val cacheHits: Int = 0,
     val inputTokens: Int = 0,

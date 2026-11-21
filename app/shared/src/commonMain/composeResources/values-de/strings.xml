@@ -151,6 +151,7 @@
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">KI-Kosten</string>
     <string name="cost_report">Dieser Bericht</string>
+    <string name="cost_demo_capture">Aufgezeichneter Demolauf des lokalen Modells. Diese Nutzungsdaten sind keine Live-Daten.</string>
     <string name="cost_step_photo">Fotobeschreibung</string>
     <string name="cost_step_summary">Zusammenfassung</string>
     <string name="cost_step_document">Dokumentenauswertung</string>
@@ -170,6 +171,7 @@
     <string name="cost_small_model">Fotomodell</string>
     <string name="cost_big_model">Modell für Zusammenfassungen und Dokumente</string>
     <string name="cost_budget">Verbrauchtes Serverbudget</string>
+    <string name="cost_budget_unlimited">Ohne Limit</string>
     <string name="cost_budget_amount">%1$s von %2$s</string>
     <string name="cost_key_configured">API-Schlüssel eingerichtet</string>
     <string name="cost_yes">Ja</string>

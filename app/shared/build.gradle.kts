@@ -40,6 +40,7 @@ kotlin {
     }
     sourceSets {
         androidMain.dependencies {
+            implementation(libs.ktor.clientCio)
             implementation(libs.androidx.activity.compose) // camera and photo picker launchers (task 28)
             implementation(libs.androidx.core.ktx) // FileProvider for the camera's photo
             implementation(libs.compose.uiToolingPreview)
@@ -47,6 +48,7 @@ kotlin {
         }
         commonMain.dependencies {
             api(project(":core"))
+            implementation(libs.ktor.clientCore)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -62,11 +64,18 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutinesTest)
         }
+        jvmMain.dependencies {
+            implementation(libs.ktor.clientCio)
+        }
         jvmTest.dependencies {
             implementation(compose.desktop.currentOs) // Skia natives for shape and text tests
         }
         jsMain.dependencies {
+            implementation(libs.ktor.clientJs)
             implementation(libs.wrappers.browser)
+        }
+        wasmJsMain.dependencies {
+            implementation(libs.ktor.clientJs)
         }
         getByName("androidDeviceTest").dependencies {
             implementation(libs.androidx.testRunner)

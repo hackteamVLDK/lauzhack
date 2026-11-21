@@ -13,8 +13,12 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -26,12 +30,16 @@ import easypaper.app.shared.generated.resources.doctor_empty_title
 import easypaper.app.shared.generated.resources.done
 import easypaper.app.shared.generated.resources.entries
 import easypaper.app.shared.generated.resources.ic_add
-import easypaper.app.shared.generated.resources.ic_history
+import easypaper.app.shared.generated.resources.ic_checklist
 import easypaper.app.shared.generated.resources.new_request
 import easypaper.app.shared.generated.resources.new_request_message
 import easypaper.app.shared.generated.resources.requests
 import easypaper.app.shared.generated.resources.section_entries
+import io.ktor.client.HttpClient
 import kotlinx.datetime.LocalDate
+import org.easypaper.ai.AiClient
+import org.easypaper.ai.AiStatus
+import org.easypaper.demo.DemoAi
 import org.easypaper.report.Report
 import org.easypaper.ui.components.BackAction
 import org.easypaper.ui.doctor.VisitScreen
@@ -52,6 +60,7 @@ import org.easypaper.ui.format.lastDay
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.coroutines.cancellation.CancellationException
 
 /** Screens of the doctor app. */
 sealed interface DoctorScreen {
@@ -91,13 +100,13 @@ fun DoctorApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> U
             Row(Modifier.fillMaxSize()) {
                 RequestSidebar(state, detail, select, openDeveloper)
                 Box(Modifier.weight(1f)) {
-                    DoctorDetail(state, detail, back = null)
+                    DoctorDetail(state, detail, settings, back = null)
                 }
             }
         } else if (current == DoctorScreen.Home) {
             RequestList(state, select, openDeveloper)
         } else {
-            DoctorDetail(state, current, back = BackAction(stringResource(Res.string.requests), navigator::back))
+            DoctorDetail(state, current, settings, back = BackAction(stringResource(Res.string.requests), navigator::back))
         }
         Sheet(
             visible = navigator.sheet == DoctorScreen.Developer,
@@ -125,7 +134,7 @@ private fun RequestSidebar(state: ShellState, current: DoctorScreen, select: (Do
             TintedButton(
                 stringResource(Res.string.cost_title),
                 onClick = { select(DoctorScreen.Cost) },
-                icon = Res.drawable.ic_history,
+                icon = Res.drawable.ic_checklist,
             )
             TintedButton(stringResource(Res.string.new_request), onClick = { select(DoctorScreen.NewRequest) }, icon = Res.drawable.ic_add)
         },
@@ -166,7 +175,7 @@ private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDev
                 TintedButton(
                     stringResource(Res.string.cost_title),
                     onClick = { select(DoctorScreen.Cost) },
-                    icon = Res.drawable.ic_history,
+                    icon = Res.drawable.ic_checklist,
                 )
             }
         }
@@ -179,15 +188,38 @@ private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDev
 }
 
 @Composable
-private fun DoctorDetail(state: ShellState, screen: DoctorScreen, back: BackAction?) {
+private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: ShellSettings, back: BackAction?) {
     when (screen) {
         is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { key(it.id) { VisitScreen(it, back) } }
             ?: NothingOpen()
         DoctorScreen.NewRequest -> NewRequestScreen(back)
-        // Demo reports have no AI ledger or server status yet.
-        DoctorScreen.Cost -> AiCostScreen(status = null, usage = emptyList(), back = back)
+        DoctorScreen.Cost -> DoctorCostScreen(settings.serverUrl, back)
         else -> NothingOpen()
     }
+}
+
+@Composable
+private fun DoctorCostScreen(serverUrl: String?, back: BackAction?) {
+    val url = serverUrl?.trim()?.takeIf { it.isNotEmpty() }
+    var status by remember(url) { mutableStateOf<AiStatus?>(null) }
+    LaunchedEffect(url) {
+        if (url != null) {
+            status = try {
+                val http = HttpClient()
+                try {
+                    AiClient(url, http).status()
+                } finally {
+                    http.close()
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                null
+            }
+        }
+    }
+    // Reports do not carry an AI usage ledger yet; show the captured local run until they do.
+    AiCostScreen(status = status, usage = DemoAi.usage, back = back, demoCapture = true)
 }
 
 /** Nothing selected: a quiet centered message, as in macOS split views. */

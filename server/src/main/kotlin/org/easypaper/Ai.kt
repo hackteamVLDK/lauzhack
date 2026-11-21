@@ -65,7 +65,7 @@ class AiService(
         prices = config?.prices.orEmpty(),
         keyConfigured = keyConfigured,
         spentUsd = ledger.totalCostUsd,
-        budgetUsd = budgetUsd,
+        budgetUsd = budgetUsd.takeIf { it.isFinite() && it < Double.MAX_VALUE },
         calls = ledger.items.count { !it.cached },
         cacheHits = ledger.cacheHits,
         inputTokens = ledger.totalInputTokens,

@@ -151,6 +151,7 @@
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">AI cost</string>
     <string name="cost_report">This report</string>
+    <string name="cost_demo_capture">Captured demo run of the local model. These usage figures are not live.</string>
     <string name="cost_step_photo">Photo description</string>
     <string name="cost_step_summary">Summary</string>
     <string name="cost_step_document">Document extraction</string>
@@ -170,6 +171,7 @@
     <string name="cost_small_model">Photo model</string>
     <string name="cost_big_model">Summary and document model</string>
     <string name="cost_budget">Spent from server budget</string>
+    <string name="cost_budget_unlimited">No limit</string>
     <string name="cost_budget_amount">%1$s of %2$s</string>
     <string name="cost_key_configured">API key configured</string>
     <string name="cost_yes">Yes</string>

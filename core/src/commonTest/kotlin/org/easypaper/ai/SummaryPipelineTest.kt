@@ -141,6 +141,45 @@ class SummaryPipelineTest {
     }
 
     @Test
+    fun emptyPhotoAnswersStillUseTheRemainingBudget() = runTest {
+        val price = ModelPrice(0.0, 1.0)
+        val limited = config.copy(
+            prices = mapOf(config.small.id to price, config.big.id to price),
+            budgetUsdPerReport = 0.00015,
+            maxPhotoOutputTokens = 100,
+            maxSummaryOutputTokens = 100,
+        )
+        val extraPhoto = Entry("e5", "food", 1_794_940_000_000L, Food(photoRef = "photo/e5"))
+        for (input in listOf(record, record.copy(entries = record.entries + extraPhoto))) {
+            val ex = FakeExecutor(outputTokens = 100) { model ->
+                if (model == config.small) "   " else "Morning BP 128/84 mmHg [e1]"
+            }
+            val result = SummaryPipeline(ex, limited).summarize(input, photos + ("photo/e5" to jpeg))
+
+            assertEquals(listOf(config.small), ex.calls.map { it.second }, "no budget for another photo or the summary")
+            assertFalse(result.usedAi)
+            assertTrue(result.photoDescriptions.isEmpty())
+            assertEquals(AiStep.PhotoDescription, result.usage.single().step)
+            assertNear(0.0001, result.usage.single().costUsd)
+            assertTrue("budget: summary without AI" in result.note.orEmpty())
+            if (input != record) assertTrue("budget reached before photo e5" in result.note.orEmpty())
+        }
+    }
+
+    @Test
+    fun earlierLedgerCostsDoNotReduceThisReportsBudget() = runTest {
+        val ledger = UsageLedger().apply {
+            add(AiUsage(AiStep.Summary, config.providerName, config.big.id, 0, 0, 10.0, cached = false, millis = 0))
+        }
+        val ex = executor()
+        val result = SummaryPipeline(ex, config, ledger = ledger).summarize(record, photos)
+
+        assertTrue(result.usedAi)
+        assertEquals(listOf(config.small, config.big), ex.calls.map { it.second })
+        assertEquals(ledger.items.drop(1), result.usage)
+    }
+
+    @Test
     fun providerFailureGivesFactsWithoutAi() = runTest {
         val ex = executor().apply { failing = true }
         val result = SummaryPipeline(ex, config).summarize(record, photos)
@@ -172,6 +211,32 @@ class SummaryPipelineTest {
             result.lines,
         )
         assertTrue("2 line(s) with advice or diagnosis removed" in result.note.orEmpty())
+    }
+
+    @Test
+    fun quotedPatientQuestionsAreKeptButAdviceOutsideQuotesIsRemoved() {
+        for ((open, close) in listOf('"' to '"', '“' to '”', '«' to '»', '\'' to '\'')) {
+            val question = "Patient asks: ${open}Should I keep taking aspirin?${close} [e5]"
+            val advice = "Patient asks: ${open}Should I keep taking aspirin?${close}; you should stop [e5]"
+            val (lines, dropped) = SummaryPipeline.checkLines("$question\n$advice", setOf("e5"))
+
+            assertEquals(listOf(SummaryLine(question, listOf("e5"), true)), lines)
+            assertEquals(1, dropped)
+        }
+        val apostrophes = "Patient's symptoms should improve before today's visit [e5]"
+        val (lines, dropped) = SummaryPipeline.checkLines(apostrophes, setOf("e5"))
+        assertTrue(lines.isEmpty(), "apostrophes in words must not hide advice")
+        assertEquals(1, dropped)
+    }
+
+    @Test
+    fun punctuationAfterReferencesIsAcceptedAndRemoved() {
+        for (tail in listOf(".", ";", ",", ":", " . ; , : ")) {
+            val (lines, dropped) = SummaryPipeline.checkLines("Morning BP 128/84 mmHg [e1]$tail", setOf("e1"))
+
+            assertEquals(listOf(SummaryLine("Morning BP 128/84 mmHg [e1]", listOf("e1"), true)), lines)
+            assertEquals(0, dropped)
+        }
     }
 
     @Test

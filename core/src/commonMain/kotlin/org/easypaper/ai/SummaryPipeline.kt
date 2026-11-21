@@ -51,7 +51,7 @@ class SummaryPipeline(
         val knownIds = record.entries.map { it.id }.toSet()
         val facts = record.factDigest(utcOffsetMinutes).toText()
         val notes = mutableListOf<String>()
-        var spent = 0.0
+        fun spent() = ledger.items.drop(start).sumOf { it.costUsd }
 
         // 2. Photos the patient did not describe; the patient's own words always win over a model's guess.
         val descriptions = linkedMapOf<String, String>()
@@ -61,10 +61,9 @@ class SummaryPipeline(
             val bytes = photos[(entry.payload as Food).photoRef] ?: continue
             if (bytes.size > config.maxPhotoBytes) { notes += "photo ${entry.id} too large, skipped"; continue }
             val estimate = caller.estimateCost(config.small, estimateTokens(PHOTO_SYSTEM) + PHOTO_IMAGE_TOKENS, config.maxPhotoOutputTokens)
-            if (spent + estimate > config.budgetUsdPerReport) { notes += "budget reached before photo ${entry.id}"; break }
+            if (spent() + estimate > config.budgetUsdPerReport) { notes += "budget reached before photo ${entry.id}"; break }
             val answer = caller.call(AiStep.PhotoDescription, config.small, PHOTO_SYSTEM, PHOTO_USER, bytes, config.maxPhotoOutputTokens)
                 ?: continue
-            spent += ledger.items.last().costUsd
             cleanDescription(answer)?.let { descriptions[entry.id] = it }
         }
 
@@ -77,7 +76,7 @@ class SummaryPipeline(
             }
         }
         val estimate = caller.estimateCost(config.big, estimateTokens(SUMMARY_SYSTEM + input), config.maxSummaryOutputTokens)
-        val answer = if (spent + estimate > config.budgetUsdPerReport) {
+        val answer = if (spent() + estimate > config.budgetUsdPerReport) {
             notes += "budget: summary without AI"
             null
         } else {
@@ -121,7 +120,8 @@ class SummaryPipeline(
             - Plain English, no headings, no bullet symbols, no markdown.
         """.trimIndent()
 
-        private val REFS = Regex("""\[([A-Za-z0-9_-]+(?:\s*,\s*[A-Za-z0-9_-]+)*)\]\s*$""")
+        private val REFS = Regex("""\[([A-Za-z0-9_-]+(?:\s*,\s*[A-Za-z0-9_-]+)*)\][.;,:\s]*$""")
+        private val QUOTES = Regex(""""[^"]*"|“[^”]*”|«[^»]*»|(?<![\p{L}])'.*?'(?![\p{L}])""")
         private val BULLET = Regex("""^\s*(?:[-*•]|\d+[.)])\s*""")
         // Advice or diagnosis in the languages of the app and of the models' slips (EN, DE, RU, UK).
         private val ADVICE = Regex(
@@ -135,7 +135,7 @@ class SummaryPipeline(
         fun checkLines(answer: String, knownIds: Set<String>): Pair<List<SummaryLine>, Int> {
             var dropped = 0
             val lines = answer.lines().map { it.replace(BULLET, "").trim() }.filter { it.isNotEmpty() }.mapNotNull { line ->
-                if (ADVICE.containsMatchIn(line)) { dropped++; return@mapNotNull null }
+                if (ADVICE.containsMatchIn(line.replace(QUOTES, ""))) { dropped++; return@mapNotNull null }
                 val match = REFS.find(line)
                 val refs = match?.groupValues?.get(1)?.split(',')?.map { it.trim() }.orEmpty()
                 val real = refs.filter { it in knownIds }

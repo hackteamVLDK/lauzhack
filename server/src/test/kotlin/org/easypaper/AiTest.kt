@@ -30,6 +30,7 @@ import org.easypaper.model.EasyPaperJson
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
@@ -67,7 +68,20 @@ class AiTest {
         assertEquals("cloud", status.mode)
         assertTrue(status.keyConfigured)
         assertEquals("anthropic/claude-haiku-4.5", status.bigModel)
+        assertEquals(9.0, status.budgetUsd)
         assertFalse("sk-" in text || "apiKey" in text || "OPENROUTER" in text)
+    }
+
+    @Test
+    fun clinicStatusHasNoBudgetLimit() = app(clinic(FakeExecutor { _, _ -> summaryReply })) {
+        val response = client.get("/ai/status")
+        assertEquals(HttpStatusCode.OK, response.status)
+        val text = response.bodyAsText()
+        val status = AiClient("", client).status()
+        assertEquals("clinic", status.mode)
+        assertNull(status.budgetUsd)
+        assertTrue("\"budgetUsd\":null" in text)
+        assertFalse(Double.MAX_VALUE.toString() in text)
     }
 
     @Test
