@@ -2,6 +2,16 @@
 
 Every push to the hub: who, which branch, which files. Newest first.
 
+## Push 114 · 2026-11-21T15:09:10+00:00 · vlad · attempt/vlad/task-2-1
+
+vlad pushed attempt/vlad/task-2-1: 1 commit(s), 2 file(s)
+`4871df134c` → `f09b561385`
+
+- f09b561 UladzislauHrynevich: core: encrypted record store (AES-256-GCM via cryptography-kotlin)
+
+    A core/src/commonMain/kotlin/org/easypaper/storage/RecordStore.kt
+    A core/src/commonTest/kotlin/org/easypaper/storage/RecordStoreTest.kt
+
 ## Push 110 · 2026-11-21T15:08:27+00:00 · mykhailo · attempt/mykhailo/task-1-1
 
 mykhailo pushed attempt/mykhailo/task-1-1: 1 commit(s), 62 file(s)
