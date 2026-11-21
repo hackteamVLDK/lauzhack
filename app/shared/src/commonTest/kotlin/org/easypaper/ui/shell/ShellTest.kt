@@ -1,5 +1,6 @@
 package org.easypaper.ui.shell
 
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import org.easypaper.demo.Demo
 import org.easypaper.ui.components.category
@@ -113,12 +114,14 @@ class ShellTest {
     }
 
     @Test
-    fun demoDataFillsBothAppsAndClearEmptiesThem() {
+    fun demoDataFillsBothAppsAndClearEmptiesThem() = runTest {
         val state = ShellState(Role.Patient)
         assertFalse(state.hasData)
         state.fillWithDemoData()
-        assertEquals(Demo.record, state.patientRecord)
+        assertEquals(Demo.record.entries.map { it.id }, state.repository.records.value.current()?.entries?.map { it.id })
         assertEquals(Demo.report, state.selectedReport)
+        state.fillWithDemoData() // twice: no duplicate entries
+        assertEquals(Demo.record.entries.size, state.repository.records.value.single().entries.size)
         state.clear()
         assertFalse(state.hasData)
         assertNull(state.selectedReport)

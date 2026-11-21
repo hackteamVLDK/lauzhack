@@ -111,4 +111,41 @@
         <item quantity="one">%1$d Eintrag</item>
         <item quantity="other">%1$d Einträge</item>
     </plurals>
+
+    <!-- Patient Today and History (task 4) -->
+    <string name="add_bp">Blutdruck eintragen</string>
+    <string name="bp_progress">%1$d von %2$d heute</string>
+    <string name="unit_per_min">/min</string>
+    <string name="water_today">%1$s l heute</string>
+    <string name="add_water">250 ml</string>
+    <string name="undo">Rückgängig</string>
+    <string name="answer_questions">Heutige Fragen beantworten</string>
+    <string name="answered_at">Beantwortet %1$s</string>
+    <string name="add_meal">Mahlzeit eintragen</string>
+    <string name="not_confirmed">nicht bestätigt</string>
+    <string name="photo">Foto</string>
+    <string name="nothing_today">Heute noch nichts</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="save">Speichern</string>
+    <string name="systolic">Oberer Wert</string>
+    <string name="diastolic">Unterer Wert</string>
+    <string name="pulse_optional">Puls (optional)</string>
+    <string name="bp_missing">Geben Sie den oberen und den unteren Wert ein.</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="questions_required">Fragen mit Ja oder Nein und mit einer Zahl brauchen eine Antwort.</string>
+    <string name="meal_placeholder">Was haben Sie gegessen oder getrunken?</string>
+    <string name="feeling_placeholder">Wie geht es Ihnen heute?</string>
+    <string name="question_placeholder">Was möchten Sie in der Praxis fragen?</string>
+    <string name="problem_systolic">Der obere Wert muss zwischen 50 und 300 liegen. Prüfen Sie auf Tippfehler.</string>
+    <string name="problem_diastolic">Der untere Wert muss zwischen 20 und 200 liegen. Prüfen Sie auf Tippfehler.</string>
+    <string name="problem_pulse">Der Puls muss zwischen 20 und 250 liegen. Prüfen Sie auf Tippfehler.</string>
+    <string name="problem_order">Der untere Wert muss kleiner sein als der obere.</string>
+    <string name="problem_water">Die Menge muss zwischen 1 ml und 5 l liegen.</string>
+    <string name="problem_empty">Schreiben Sie vor dem Speichern ein paar Worte.</string>
+    <string name="problem_other">Dieser Eintrag wurde nicht gespeichert. Schließen Sie das Formular und versuchen Sie es erneut.</string>
+    <string name="delete">Löschen</string>
+    <string name="delete_entry_question">Diesen Eintrag löschen? Er wird von diesem Telefon und aus dem Bericht entfernt.</string>
+    <string name="unit_ml">%1$d ml</string>
+    <string name="decimal_separator">,</string>
 </resources>

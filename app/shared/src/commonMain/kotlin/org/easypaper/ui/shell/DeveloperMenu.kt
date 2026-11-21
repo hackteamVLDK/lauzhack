@@ -3,6 +3,7 @@ package org.easypaper.ui.shell
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.appearance_dark
 import easypaper.app.shared.generated.resources.clear_data
@@ -13,6 +14,7 @@ import easypaper.app.shared.generated.resources.fill_demo
 import easypaper.app.shared.generated.resources.large_text
 import easypaper.app.shared.generated.resources.switch_to_doctor
 import easypaper.app.shared.generated.resources.switch_to_patient
+import kotlinx.coroutines.launch
 import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.IosSwitch
 import org.easypaper.ui.components.ListRow
@@ -33,16 +35,17 @@ fun ColumnScope.DeveloperMenuContent(
     onDone: () -> Unit,
 ) {
     val systemDark = isSystemInDarkTheme()
+    val scope = rememberCoroutineScope()
     val inset = EasyPaperTheme.spacing.m
     GroupedSection(footer = stringResource(Res.string.dev_footer)) {
         ListRow(stringResource(Res.string.design_catalog), onClick = { onOpenCatalog(); onDone() })
         RowSeparator(inset)
         if (state.hasData) {
             ListRow(stringResource(Res.string.clear_data), titleColor = EasyPaperTheme.colors.destructive, chevron = false,
-                onClick = { state.clear(); onDone() })
+                onClick = { scope.launch { state.clear() }; onDone() })
         } else {
             ListRow(stringResource(Res.string.fill_demo), titleColor = EasyPaperTheme.colors.link, chevron = false,
-                onClick = { state.fillWithDemoData(); onDone() })
+                onClick = { scope.launch { state.fillWithDemoData() }; onDone() })
         }
         RowSeparator(inset)
         ListRow(stringResource(Res.string.appearance_dark), trailing = {

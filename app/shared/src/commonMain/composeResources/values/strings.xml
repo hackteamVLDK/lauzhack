@@ -111,4 +111,41 @@
         <item quantity="one">%1$d entry</item>
         <item quantity="other">%1$d entries</item>
     </plurals>
+
+    <!-- Patient Today and History (task 4) -->
+    <string name="add_bp">Add blood pressure</string>
+    <string name="bp_progress">%1$d of %2$d today</string>
+    <string name="unit_per_min">/min</string>
+    <string name="water_today">%1$s l today</string>
+    <string name="add_water">250 ml</string>
+    <string name="undo">Undo</string>
+    <string name="answer_questions">Answer today’s questions</string>
+    <string name="answered_at">Answered %1$s</string>
+    <string name="add_meal">Add a meal</string>
+    <string name="not_confirmed">not confirmed</string>
+    <string name="photo">Photo</string>
+    <string name="nothing_today">Nothing yet today</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="systolic">Upper value</string>
+    <string name="diastolic">Lower value</string>
+    <string name="pulse_optional">Pulse (optional)</string>
+    <string name="bp_missing">Enter the upper and lower values.</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="questions_required">Questions with yes or no and with a number need an answer.</string>
+    <string name="meal_placeholder">What did you eat or drink?</string>
+    <string name="feeling_placeholder">How do you feel today?</string>
+    <string name="question_placeholder">What would you like to ask your doctor?</string>
+    <string name="problem_systolic">The upper value must be between 50 and 300. Check for a typo.</string>
+    <string name="problem_diastolic">The lower value must be between 20 and 200. Check for a typo.</string>
+    <string name="problem_pulse">The pulse must be between 20 and 250. Check for a typo.</string>
+    <string name="problem_order">The lower value must be smaller than the upper one.</string>
+    <string name="problem_water">The amount must be between 1 ml and 5 l.</string>
+    <string name="problem_empty">Write a few words before saving.</string>
+    <string name="problem_other">This entry was not saved. Close the form and try again.</string>
+    <string name="delete">Delete</string>
+    <string name="delete_entry_question">Delete this entry? It is removed from this phone and from the report.</string>
+    <string name="unit_ml">%1$d ml</string>
+    <string name="decimal_separator">.</string>
 </resources>

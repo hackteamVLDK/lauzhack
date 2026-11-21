@@ -9,21 +9,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.back
+import easypaper.app.shared.generated.resources.cancel
 import easypaper.app.shared.generated.resources.day_of
 import easypaper.app.shared.generated.resources.done
 import easypaper.app.shared.generated.resources.ended_on
-import easypaper.app.shared.generated.resources.entries
-import easypaper.app.shared.generated.resources.footer_privacy
-import easypaper.app.shared.generated.resources.history_empty_message
-import easypaper.app.shared.generated.resources.history_empty_title
 import easypaper.app.shared.generated.resources.ic_calendar_today
 import easypaper.app.shared.generated.resources.ic_history
 import easypaper.app.shared.generated.resources.ic_qr_code_2
@@ -32,35 +33,39 @@ import easypaper.app.shared.generated.resources.starts_on
 import easypaper.app.shared.generated.resources.tab_history
 import easypaper.app.shared.generated.resources.tab_share
 import easypaper.app.shared.generated.resources.today
-import easypaper.app.shared.generated.resources.today_empty_message
-import easypaper.app.shared.generated.resources.today_empty_title
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import org.easypaper.diary.EntryProblem
 import org.easypaper.model.CareRequest
+import org.easypaper.model.Entry
 import org.easypaper.model.PatientRecord
+import org.easypaper.model.Water
+import org.easypaper.model.WidgetSpec
 import org.easypaper.ui.catalog.DesignCatalog
 import org.easypaper.ui.components.BackAction
-import org.easypaper.ui.components.CategoryRow
-import org.easypaper.ui.components.EmptyState
 import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.LargeTitleScaffold
-import org.easypaper.ui.components.ListRow
 import org.easypaper.ui.components.NavigationBar
-import org.easypaper.ui.components.RowSeparator
 import org.easypaper.ui.components.Sheet
 import org.easypaper.ui.components.TabBar
 import org.easypaper.ui.components.TabItem
-import org.easypaper.ui.components.category
 import org.easypaper.ui.format.RequestDay
 import org.easypaper.ui.format.longDate
 import org.easypaper.ui.format.requestDay
-import org.easypaper.ui.format.today
+import org.easypaper.ui.patient.DayScreen
+import org.easypaper.ui.patient.EntryForm
+import org.easypaper.ui.patient.HistoryScreen
+import org.easypaper.ui.patient.TodayActions
+import org.easypaper.ui.patient.TodayScreen
+import org.easypaper.ui.patient.WATER_STEP_ML
+import org.easypaper.ui.patient.newEntryId
+import org.easypaper.ui.patient.rememberToday
 import org.easypaper.ui.theme.EasyPaperTheme
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 /** Screens of the patient app. Each tab keeps its own stack, as on iOS. */
 sealed interface PatientScreen {
@@ -69,13 +74,18 @@ sealed interface PatientScreen {
     data object Share : PatientScreen
     data object DesignCatalog : PatientScreen
     data object Developer : PatientScreen
+    data class AddEntry(val widgetId: String) : PatientScreen
+    data class Day(val date: LocalDate) : PatientScreen
 }
 
 private val TAB_ROOTS = listOf(PatientScreen.Today, PatientScreen.History, PatientScreen.Share)
 
+@OptIn(ExperimentalTime::class)
+private fun now(): Long = Clock.System.now().toEpochMilliseconds()
+
 /**
- * The patient app (Android, Desktop): tab bar Today / History / Share. Today and History are filled
- * by task 4, Share by task 30; this shell gives them their place, titles and navigation.
+ * The patient app (Android, Desktop): tab bar Today / History / Share. Entries go through the
+ * patient repository of [state] (checked before saving); Share is filled by task 30.
  */
 @Composable
 fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> Unit)? = null) {
@@ -84,16 +94,42 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
     val navigator = navigators[tab]
     NavigatorBackHandler(navigator)
     val openDeveloper = { navigator.presentSheet(PatientScreen.Developer) }
+    val records by state.repository.records.collectAsState()
+    val record = records.current()
+    val scope = rememberCoroutineScope()
+    val timeZone = remember { TimeZone.currentSystemDefault() }
+    val today = rememberToday()
+
+    val actions = TodayActions(
+        add = { widgetId -> navigator.presentSheet(PatientScreen.AddEntry(widgetId)) },
+        addWater = { widgetId ->
+            record?.let { r -> scope.launch { state.repository.add(r.request.id, Entry(newEntryId(), widgetId, now(), Water(WATER_STEP_ML))) } }
+        },
+        removeEntry = { entryId -> record?.let { r -> scope.launch { state.repository.removeEntry(r.request.id, entryId) } } },
+    )
 
     Box(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background)) {
         Column(Modifier.fillMaxSize()) {
             Box(Modifier.weight(1f).fillMaxWidth()) {
-                when (navigator.current) {
-                    PatientScreen.Today -> TodayScreen(state.patientRecord, openDeveloper)
-                    PatientScreen.History -> HistoryScreen(state.patientRecord, openDeveloper)
+                when (val screen = navigator.current) {
+                    PatientScreen.Today -> TodayScreen(
+                        record, today, timeZone,
+                        title = stringResource(Res.string.today),
+                        header = { TodayHeader(record, today) },
+                        onDeveloper = openDeveloper,
+                        actions = actions,
+                    )
+                    PatientScreen.History -> HistoryScreen(
+                        record, timeZone, stringResource(Res.string.tab_history), openDeveloper,
+                        onOpenDay = { navigator.push(PatientScreen.Day(it)) },
+                    )
+                    is PatientScreen.Day -> record?.let { r ->
+                        DayScreen(r, screen.date, timeZone, BackAction(tabTitle(tab), navigator::back),
+                            onDelete = { entryId -> scope.launch { state.repository.removeEntry(r.request.id, entryId) } })
+                    }
                     PatientScreen.Share -> ShareScreen(openDeveloper)
                     PatientScreen.DesignCatalog -> CatalogScreen(settings, BackAction(tabTitle(tab), navigator::back))
-                    PatientScreen.Developer -> Unit // shown as a sheet
+                    PatientScreen.Developer, is PatientScreen.AddEntry -> Unit // shown as sheets
                 }
             }
             TabBar(
@@ -106,6 +142,7 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
                 onSelect = { index -> if (index == tab) navigators[index].popToRoot() else tab = index },
             )
         }
+        EntrySheet(state, record, navigator, scope)
         Sheet(
             visible = navigator.sheet == PatientScreen.Developer,
             title = developerTitle(),
@@ -123,6 +160,41 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
     }
 }
 
+/** The form of one widget in a sheet; closes after a successful save, shows input problems otherwise. */
+@Composable
+private fun EntrySheet(state: ShellState, record: PatientRecord?, navigator: Navigator<PatientScreen>, scope: CoroutineScope) {
+    val open = navigator.sheet as? PatientScreen.AddEntry
+    val widget = open?.let { s -> record?.request?.widgets?.firstOrNull { it.id == s.widgetId } }
+    // Keep the last widget while the sheet slides out.
+    var shown by remember { mutableStateOf<WidgetSpec?>(null) }
+    if (widget != null) shown = widget
+    var problems by remember(open) { mutableStateOf(emptyList<EntryProblem>()) }
+    var saving by remember(open) { mutableStateOf(false) }
+    Sheet(
+        visible = widget != null,
+        title = shown?.title.orEmpty(),
+        doneLabel = stringResource(Res.string.cancel),
+        onDismiss = navigator::dismissSheet,
+    ) {
+        val form = shown ?: return@Sheet
+        key(open) {
+            EntryForm(form, problems, saving) { payload ->
+                val requestId = record?.request?.id ?: return@EntryForm
+                saving = true
+                scope.launch {
+                    val result = try {
+                        state.repository.add(requestId, Entry(newEntryId(), form.id, now(), payload))
+                    } catch (e: IllegalArgumentException) {
+                        listOf(EntryProblem.UNKNOWN_WIDGET) // shown as "not saved, try again"
+                    }
+                    saving = false
+                    if (result.isEmpty()) navigator.dismissSheet() else problems = result
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun tabTitle(tab: Int): String = stringResource(
     when (tab) {
@@ -133,33 +205,11 @@ private fun tabTitle(tab: Int): String = stringResource(
 )
 
 @Composable
-private fun TodayScreen(record: PatientRecord?, onDeveloper: () -> Unit) {
+private fun TodayHeader(record: PatientRecord?, today: LocalDate) {
     val colors = EasyPaperTheme.colors
     val type = EasyPaperTheme.typography
-    val today = remember { today() }
-    LargeTitleScaffold(
-        title = stringResource(Res.string.today),
-        onTitleLongPress = onDeveloper,
-        bottomInset = false,
-        header = {
-            Text(longDate(today), style = type.subheadline, color = colors.secondaryLabel)
-            record?.request?.let { requestLine(it, today) }?.let { Text(it, style = type.subheadline, color = colors.secondaryLabel) }
-        },
-    ) {
-        if (record == null) {
-            item { EmptyState(stringResource(Res.string.today_empty_title), stringResource(Res.string.today_empty_message)) }
-        } else {
-            item {
-                // Task 4 turns each row into the widget the patient fills in.
-                GroupedSection(footer = stringResource(Res.string.footer_privacy)) {
-                    record.request.widgets.forEachIndexed { index, widget ->
-                        if (index > 0) RowSeparator()
-                        CategoryRow(widget.category, widget.title)
-                    }
-                }
-            }
-        }
-    }
+    Text(longDate(today), style = type.subheadline, color = colors.secondaryLabel)
+    record?.request?.let { requestLine(it, today) }?.let { Text(it, style = type.subheadline, color = colors.secondaryLabel) }
 }
 
 /** "Day 3 of 7 for Dr. Weber", or when the request starts / ended. Null for a malformed start date. */
@@ -170,29 +220,6 @@ private fun requestLine(request: CareRequest, today: LocalDate): String? {
         is RequestDay.Running -> stringResource(Res.string.day_of, day.day, day.of, request.doctorName)
         is RequestDay.NotStarted -> stringResource(Res.string.starts_on, longDate(day.startsOn))
         is RequestDay.Finished -> stringResource(Res.string.ended_on, longDate(day.endedOn))
-    }
-}
-
-@OptIn(ExperimentalTime::class)
-@Composable
-private fun HistoryScreen(record: PatientRecord?, onDeveloper: () -> Unit) {
-    val timeZone = remember { TimeZone.currentSystemDefault() }
-    LargeTitleScaffold(title = stringResource(Res.string.tab_history), onTitleLongPress = onDeveloper, bottomInset = false) {
-        if (record == null || record.entries.isEmpty()) {
-            item { EmptyState(stringResource(Res.string.history_empty_title), stringResource(Res.string.history_empty_message)) }
-        } else {
-            // Task 4 opens each day with its entries; the shell lists the days, newest first.
-            val days = record.entries.groupBy { Instant.fromEpochMilliseconds(it.at).toLocalDateTime(timeZone).date }
-                .toList().sortedByDescending { it.first }
-            item {
-                GroupedSection {
-                    days.forEachIndexed { index, (date, entries) ->
-                        if (index > 0) RowSeparator(EasyPaperTheme.spacing.m)
-                        ListRow(longDate(date), subtitle = pluralStringResource(Res.plurals.entries, entries.size, entries.size))
-                    }
-                }
-            }
-        }
     }
 }
 

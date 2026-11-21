@@ -113,4 +113,41 @@
         <item quantity="many">%1$d записів</item>
         <item quantity="other">%1$d запису</item>
     </plurals>
+
+    <!-- Patient Today and History (task 4) -->
+    <string name="add_bp">Додати тиск</string>
+    <string name="bp_progress">%1$d з %2$d сьогодні</string>
+    <string name="unit_per_min">/хв</string>
+    <string name="water_today">%1$s л сьогодні</string>
+    <string name="add_water">250 мл</string>
+    <string name="undo">Скасувати</string>
+    <string name="answer_questions">Відповісти на сьогоднішні запитання</string>
+    <string name="answered_at">Відповідь о %1$s</string>
+    <string name="add_meal">Додати їжу</string>
+    <string name="not_confirmed">не підтверджено</string>
+    <string name="photo">Фото</string>
+    <string name="nothing_today">Сьогодні ще нічого</string>
+    <string name="cancel">Скасувати</string>
+    <string name="save">Зберегти</string>
+    <string name="systolic">Верхній тиск</string>
+    <string name="diastolic">Нижній тиск</string>
+    <string name="pulse_optional">Пульс (необов’язково)</string>
+    <string name="bp_missing">Введіть верхній і нижній тиск.</string>
+    <string name="yes">Так</string>
+    <string name="no">Ні</string>
+    <string name="questions_required">Запитання з відповіддю «так/ні» та числом потребують відповіді.</string>
+    <string name="meal_placeholder">Що ви їли або пили?</string>
+    <string name="feeling_placeholder">Як ви почуваєтеся сьогодні?</string>
+    <string name="question_placeholder">Що ви хочете запитати в лікаря?</string>
+    <string name="problem_systolic">Верхній тиск має бути від 50 до 300. Перевірте, чи немає помилки.</string>
+    <string name="problem_diastolic">Нижній тиск має бути від 20 до 200. Перевірте, чи немає помилки.</string>
+    <string name="problem_pulse">Пульс має бути від 20 до 250. Перевірте, чи немає помилки.</string>
+    <string name="problem_order">Нижній тиск має бути меншим за верхній.</string>
+    <string name="problem_water">Кількість має бути від 1 мл до 5 л.</string>
+    <string name="problem_empty">Напишіть кілька слів перед збереженням.</string>
+    <string name="problem_other">Запис не збережено. Закрийте форму й спробуйте ще раз.</string>
+    <string name="delete">Видалити</string>
+    <string name="delete_entry_question">Видалити цей запис? Його буде видалено з телефона і зі звіту.</string>
+    <string name="unit_ml">%1$d мл</string>
+    <string name="decimal_separator">,</string>
 </resources>

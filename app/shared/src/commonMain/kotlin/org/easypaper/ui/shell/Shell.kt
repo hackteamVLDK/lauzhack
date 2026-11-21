@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -34,7 +35,11 @@ fun EasyPaperApp(
     settings: ShellSettings = remember { ShellSettings() },
     demo: Boolean = false,
 ) {
-    val state = remember { ShellState(role).also { if (demo) it.fillWithDemoData() } }
+    val state = remember { ShellState(role) }
+    LaunchedEffect(state) {
+        state.repository.refresh()
+        if (demo) state.fillWithDemoData()
+    }
     val canSwitch = role == null
     ShellTheme(settings) {
         when (state.role) {
