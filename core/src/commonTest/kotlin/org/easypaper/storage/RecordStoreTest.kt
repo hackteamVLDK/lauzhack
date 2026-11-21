@@ -18,6 +18,7 @@ class RecordStoreTest {
         override suspend fun put(key: String, bytes: ByteArray) { map[key] = bytes }
         override suspend fun get(key: String) = map[key]
         override suspend fun keys() = map.keys.sorted()
+        override suspend fun delete(key: String) { map.remove(key) }
     }
 
     private fun record(id: String) = PatientRecord(
@@ -74,5 +75,20 @@ class RecordStoreTest {
     @Test
     fun wrongKeySizeRejected() {
         assertFails { RecordStore(MemoryBlobs(), ByteArray(16)) }
+    }
+
+    @Test
+    fun deleteErasesOnlyThatRecord() = runTest {
+        val blobs = MemoryBlobs()
+        val store = RecordStore(blobs, generateRecordKey())
+        store.save(record("a"))
+        store.save(record("b"))
+        store.delete("a")
+        assertNull(store.load("a"))
+        assertEquals(listOf("b"), store.list())
+        assertFalse("a" in blobs.map)
+        store.delete("a") // again
+        store.delete("never-existed")
+        assertEquals(record("b"), store.load("b"))
     }
 }
