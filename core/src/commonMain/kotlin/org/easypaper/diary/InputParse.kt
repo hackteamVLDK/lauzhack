@@ -13,7 +13,7 @@ private val PULSE_LABEL = Regex(PULSE_WORDS)
 private val LABELS = listOf(SYS_LABEL, DIA_LABEL, PULSE_LABEL)
 
 /** A run of digits with what is glued to it: "128", "21:15", "21.11.", "-72", "1,5". */
-private val NUMBER_TOKEN = Regex("""[-+]?\d+(?:[:.,/]\d+)*[.:]?""")
+private val NUMBER_TOKEN = Regex("""[-+]?\d+(?:[.,:/]\d+)*[.:]?""") // no class may start with "[:" — Android ICU reads it as a POSIX property and fails to compile
 
 /**
  * Blood pressure from typed text ("120/80 72", "120 на 80", "120 zu 80") or from OCR of a monitor display
@@ -58,7 +58,7 @@ private fun labeled(t: String): BloodPressure? {
 
 /** "120/80 [pulse 72]" or "120 на|zu|over 80 [72]": exactly one reading and no other numbers in the text. */
 private fun typed(t: String): BloodPressure? {
-    val pattern = Regex("""(?<![\d.,:/+-])(\d{2,3})(?:\s*/\s*|\s+(?:НА|ZU|OVER|ÜBER|UEBER)\s+)(\d{2,3})(?![\d.,:/])(?:\s*[,;]?\s*(?:$PULSE_WORDS)?\s*[:=]?\s*(?<![\d.,:/+-])(\d{2,3})(?![\d.,:/]))?""")
+    val pattern = Regex("""(?<![\d.,:/+-])(\d{2,3})(?:\s*/\s*|\s+(?:НА|ZU|OVER|ÜBER|UEBER)\s+)(\d{2,3})(?![\d.,:/])(?:\s*[,;]?\s*(?:$PULSE_WORDS)?\s*[=:]?\s*(?<![\d.,:/+-])(\d{2,3})(?![\d.,:/]))?""")
     val matches = pattern.findAll(t).toList()
     if (matches.size != 1) return null
     val m = matches.single()
