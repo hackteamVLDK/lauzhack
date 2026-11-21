@@ -29,3 +29,4 @@
 Проверка: test.py на Windows и в WSL Ubuntu; Desktop :app:desktopApp:run; Android installDebug на эмуляторе + скриншот; Wasm-сборка.
 Риски: первая загрузка Gradle и зависимостей долгая; в PATH JDK 25 (daemon берёт 21 по toolchain); ревьюеру на Linux нужен Android SDK.
 - Event 31 · 2026-11-21T14:49:34+00:00 · mykhailo/MyPc-chat · heartbeat: Lease renewed
+- Event 33 · 2026-11-21T14:50:05+00:00 · mykhailo/MyPc-chat · heartbeat: Lease renewed
