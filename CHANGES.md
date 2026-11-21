@@ -2,6 +2,18 @@
 
 Every push to the hub: who, which branch, which files. Newest first.
 
+## Push 167 · 2026-11-21T15:23:59+00:00 · vlad · attempt/vlad/task-9-1
+
+vlad pushed attempt/vlad/task-9-1: 1 commit(s), 4 file(s)
+`0000000000` → `ad5879b230`
+
+- ad5879b UladzislauHrynevich: core: report format v1, FHIR-like bundle, sealed transfer with key in QR
+
+    A core/src/commonMain/kotlin/org/easypaper/report/Report.kt
+    A core/src/commonMain/kotlin/org/easypaper/report/Transfer.kt
+    M core/src/commonMain/kotlin/org/easypaper/storage/RecordStore.kt
+    A core/src/commonTest/kotlin/org/easypaper/report/ReportTest.kt
+
 ## Push 160 · 2026-11-21T15:21:45+00:00 · vlad · attempt/vlad/task-2-2
 
 vlad pushed attempt/vlad/task-2-2: 3 commit(s), 7 file(s)

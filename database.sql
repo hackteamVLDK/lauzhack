@@ -185,6 +185,7 @@ INSERT INTO "events" VALUES(163,9,'vlad','BelarusLord-chat','plan','ЧТО (core
 INSERT INTO "events" VALUES(164,9,'vlad','BelarusLord-chat','heartbeat','Lease renewed','{"task_id":9}','2026-11-21T15:22:43+00:00');
 INSERT INTO "events" VALUES(165,9,'vlad','BelarusLord-chat','heartbeat','Lease renewed','{"task_id":9}','2026-11-21T15:23:13+00:00');
 INSERT INTO "events" VALUES(166,9,'vlad','BelarusLord-chat','heartbeat','Lease renewed','{"task_id":9}','2026-11-21T15:23:44+00:00');
+INSERT INTO "events" VALUES(167,NULL,'vlad','git','push','vlad pushed attempt/vlad/task-9-1: 1 commit(s), 4 file(s)','{"commits":1,"file_count":4,"files":["A core/src/commonMain/kotlin/org/easypaper/report/Report.kt","A core/src/commonMain/kotlin/org/easypaper/report/Transfer.kt","M core/src/commonMain/kotlin/org/easypaper/storage/RecordStore.kt","A core/src/commonTest/kotlin/org/easypaper/report/ReportTest.kt"],"log":["ad5879b UladzislauHrynevich: core: report format v1, FHIR-like bundle, sealed transfer with key in QR"],"new":"ad5879b230ebcc719aa0b632c2b15ca507195bab","old":"0000000000000000000000000000000000000000","ref":"refs/heads/attempt/vlad/task-9-1"}','2026-11-21T15:23:59+00:00');
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 INSERT INTO "meta" VALUES('goal','Easy Paper — KMP-приложение (Android, Desktop, Web/Wasm, Ktor-сервер): врач собирает из виджетов запрос под жалобу, пациент несколько дней заполняет его текстом, числами и фото (еда, упаковки лекарств), а на приёме передаёт через QR зашифрованный отчёт, который ИИ сжимает в сводку со ссылками на оригиналы и предзаполненную форму клиники. Экономный ИИ-конвейер (штрих-код/OCR без LLM, маленькая модель для простого, большая один раз на сводку, кэш, учёт токенов и цены) и режим локального ИИ-модуля в клинике (Ollama). Приложение не ставит диагнозов и не советует — только собирает и структурирует факты; ИИ пишет черновик, каждое поле подтверждает врач.
 Порядок: задача 1 первая; UI-задачи 4, 5, 10 — только после утверждённого mykhailo docs/design.md (задача 3). Секреты только в env/локально; коммиты без подписи Claude; в origin не пушить.');
@@ -357,7 +358,8 @@ INSERT INTO "outbox" VALUES(162,1);
 INSERT INTO "outbox" VALUES(163,1);
 INSERT INTO "outbox" VALUES(164,1);
 INSERT INTO "outbox" VALUES(165,1);
-INSERT INTO "outbox" VALUES(166,0);
+INSERT INTO "outbox" VALUES(166,1);
+INSERT INTO "outbox" VALUES(167,0);
 CREATE TABLE problems (
  id INTEGER PRIMARY KEY, task_id INTEGER NOT NULL REFERENCES tasks(id),
  member TEXT NOT NULL, description TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open',
@@ -556,6 +558,6 @@ CREATE TABLE workers (
  PRIMARY KEY (member, client)
 );
 INSERT INTO "workers" VALUES('mykhailo','MyPc-worker','{"executor":"claude","five_hour":{"resets_at":1795119000.0,"status":"allowed","utilization":0.0},"job_cost":0.08,"measured_at":1795117014.4137092,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","seven_day":{"resets_at":1795658400.0,"status":"allowed","utilization":0.08},"task":null,"wake_at":null}',1.795274620007766e+09);
-INSERT INTO "workers" VALUES('pavlo','Paul-worker','{"executor":"claude","job_cost":0.08,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","task":null,"wake_at":null}',1.79527460877359342e+09);
-INSERT INTO "workers" VALUES('vlad','BelarusLord-worker','{"executor":"claude","five_hour":{"resets_at":1795290000.0,"status":"allowed","utilization":0.07},"job_cost":0.08,"measured_at":1795274606.5767593,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","seven_day":{"resets_at":1795824000.0,"status":"allowed","utilization":0.04},"task":null,"wake_at":null}',1.7952746113395369e+09);
+INSERT INTO "workers" VALUES('pavlo','Paul-worker','{"executor":"claude","job_cost":0.08,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","task":null,"wake_at":null}',1.79527462949437713e+09);
+INSERT INTO "workers" VALUES('vlad','BelarusLord-worker','{"executor":"claude","five_hour":{"resets_at":1795290000.0,"status":"allowed","utilization":0.08},"job_cost":0.08,"measured_at":1795274631.8367639,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","seven_day":{"resets_at":1795824000.0,"status":"allowed","utilization":0.04},"task":null,"wake_at":null}',1795274632.43019);
 COMMIT;
