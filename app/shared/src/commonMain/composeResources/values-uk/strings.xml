@@ -273,7 +273,6 @@
     <string name="choose_photo">Вибрати фото</string>
     <string name="remove_photo">Прибрати фото</string>
     <string name="photo_optional">Фото — за бажанням.</string>
-<<<<<<< Updated upstream
 
     <!-- Request builder and invite (task 5) -->
     <string name="rb_complaint_placeholder">Наприклад: головний біль зранку два тижні</string>
@@ -329,8 +328,6 @@
     <string name="invite_summary">%1$s, %2$s з %3$s</string>
     <string name="invite_preview_footer">Те, що ви записуєте, залишається на цьому телефоні, доки ви не покажете QR на прийомі.</string>
     <string name="edited_by_you">Відредаговано вами</string>
-=======
     <string name="open_scan">Зчитати QR-код</string>
     <string name="open_scan_failed">Код не зчитано. Дозвольте камеру або вставте код.</string>
->>>>>>> Stashed changes
 </resources>

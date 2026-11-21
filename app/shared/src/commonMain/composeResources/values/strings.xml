@@ -271,7 +271,6 @@
     <string name="choose_photo">Choose photo</string>
     <string name="remove_photo">Remove photo</string>
     <string name="photo_optional">A photo is optional.</string>
-<<<<<<< Updated upstream
 
     <!-- Request builder and invite (task 5) -->
     <string name="rb_complaint_placeholder">For example: headache in the morning for two weeks</string>
@@ -325,8 +324,6 @@
     <string name="invite_summary">%1$s, %2$s from %3$s</string>
     <string name="invite_preview_footer">What you record stays on this phone until you show the QR at your visit.</string>
     <string name="edited_by_you">Edited by you</string>
-=======
     <string name="open_scan">Read QR code</string>
     <string name="open_scan_failed">No code could be read. Allow the camera or paste the code.</string>
->>>>>>> Stashed changes
 </resources>
