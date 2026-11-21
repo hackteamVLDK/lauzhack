@@ -324,4 +324,6 @@
     <string name="invite_summary">%1$s, %2$s ab %3$s</string>
     <string name="invite_preview_footer">Was Sie erfassen, bleibt auf diesem Telefon, bis Sie beim Termin den QR-Code zeigen.</string>
     <string name="edited_by_you">Von Ihnen bearbeitet</string>
+    <string name="open_scan">QR-Code lesen</string>
+    <string name="open_scan_failed">Kein Code erkannt. Erlauben Sie die Kamera oder fügen Sie den Code ein.</string>
 </resources>

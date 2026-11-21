@@ -27,7 +27,10 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import easypaper.app.shared.generated.resources.Res
+import easypaper.app.shared.generated.resources.ic_qr_code_2
 import easypaper.app.shared.generated.resources.ic_remove
+import easypaper.app.shared.generated.resources.open_scan
+import easypaper.app.shared.generated.resources.open_scan_failed
 import easypaper.app.shared.generated.resources.open_failed
 import easypaper.app.shared.generated.resources.open_not_ours
 import easypaper.app.shared.generated.resources.open_offline
@@ -62,6 +65,7 @@ import org.easypaper.ui.components.LargeTitleScaffold
 import org.easypaper.ui.components.PlainButton
 import org.easypaper.ui.components.ProminentButton
 import org.easypaper.ui.components.TextAreaRow
+import org.easypaper.ui.components.TintedButton
 import org.easypaper.ui.shell.current
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.StringResource
@@ -152,35 +156,43 @@ fun OpenReportScreen(relayUrl: String, onOpened: (ReceivedReport) -> Unit, back:
     var code by remember { mutableStateOf("") }
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<StringResource?>(null) }
+    fun open(text: String) {
+        busy = true
+        error = null
+        scope.launch {
+            try {
+                onOpened(RelayClient(relayUrl, http).receive(text.trim()))
+                code = ""
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: RelayException) {
+                error = if (e.status == 404) Res.string.open_used else Res.string.open_failed
+            } catch (e: IllegalArgumentException) {
+                error = Res.string.open_not_ours
+            } catch (e: IOException) {
+                error = Res.string.open_offline
+            } catch (e: Exception) {
+                error = Res.string.open_failed // wrong key or damaged bytes: decryption refuses
+            } finally {
+                busy = false
+            }
+        }
+    }
+    val readQr = rememberQrReader(onCode = { text -> code = text; open(text) }, onFailure = { error = Res.string.open_scan_failed })
     LargeTitleScaffold(title = stringResource(Res.string.open_report), back = back) {
         item {
             val spacing = EasyPaperTheme.spacing
             Column {
+                if (readQr != null) {
+                    TintedButton(stringResource(Res.string.open_scan), onClick = { error = null; readQr() }, enabled = !busy,
+                        icon = Res.drawable.ic_qr_code_2, modifier = Modifier.padding(start = spacing.m, bottom = spacing.l))
+                }
                 GroupedSection(footer = stringResource(Res.string.open_report_hint)) {
                     TextAreaRow(code, { code = it; error = null }, placeholder = "ep1:…")
                 }
                 Spacer(Modifier.height(spacing.xl))
-                ProminentButton(stringResource(Res.string.open_report_button), enabled = !busy && code.isNotBlank(), modifier = Modifier.fillMaxWidth(), onClick = {
-                    busy = true
-                    scope.launch {
-                        try {
-                            onOpened(RelayClient(relayUrl, http).receive(code.trim()))
-                            code = ""
-                        } catch (e: CancellationException) {
-                            throw e
-                        } catch (e: RelayException) {
-                            error = if (e.status == 404) Res.string.open_used else Res.string.open_failed
-                        } catch (e: IllegalArgumentException) {
-                            error = Res.string.open_not_ours
-                        } catch (e: IOException) {
-                            error = Res.string.open_offline
-                        } catch (e: Exception) {
-                            error = Res.string.open_failed // wrong key or damaged bytes: decryption refuses
-                        } finally {
-                            busy = false
-                        }
-                    }
-                })
+                ProminentButton(stringResource(Res.string.open_report_button), enabled = !busy && code.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth(), onClick = { open(code) })
                 Problem(error)
             }
         }

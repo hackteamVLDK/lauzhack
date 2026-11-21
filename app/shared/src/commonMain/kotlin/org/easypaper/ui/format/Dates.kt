@@ -48,18 +48,21 @@ fun lastDay(start: LocalDate, days: Int): LocalDate = start.plus(DatePeriod(days
  * [months] start in January (genitive where the language needs it, e.g. Ukrainian).
  */
 fun formatLongDate(date: LocalDate, pattern: String, weekdays: List<String>, months: List<String>): String =
-    pattern.replace("%1\$s", weekdays[date.dayOfWeek.ordinal])
+    pattern.replace("%1\$s", weekdays.getOrElse(date.dayOfWeek.ordinal) { "" })
         .replace("%2\$d", date.day.toString())
-        .replace("%3\$s", months[date.month.ordinal])
+        .replace("%3\$s", months.getOrElse(date.month.ordinal) { "" })
 
-/** "17–21 Nov" in one month, "30 Nov – 2 Dec" across months. */
+/**
+ * "17–21 Nov" in one month, "30 Nov – 2 Dec" across months. Name lists may still be empty: on the web
+ * stringArrayResource loads them after the first frame (an index there crashed the doctor's web app).
+ */
 fun formatDateRange(from: LocalDate, to: LocalDate, oneMonth: String, twoMonths: String, months: List<String>): String =
     if (from.month == to.month && from.year == to.year) {
         oneMonth.replace("%1\$d", from.day.toString()).replace("%2\$d", to.day.toString())
-            .replace("%3\$s", months[to.month.ordinal])
+            .replace("%3\$s", months.getOrElse(to.month.ordinal) { "" })
     } else {
-        twoMonths.replace("%1\$d", from.day.toString()).replace("%2\$s", months[from.month.ordinal])
-            .replace("%3\$d", to.day.toString()).replace("%4\$s", months[to.month.ordinal])
+        twoMonths.replace("%1\$d", from.day.toString()).replace("%2\$s", months.getOrElse(from.month.ordinal) { "" })
+            .replace("%3\$d", to.day.toString()).replace("%4\$s", months.getOrElse(to.month.ordinal) { "" })
     }
 
 @Composable

@@ -66,6 +66,7 @@ kotlin {
             implementation(libs.kotlinx.coroutinesTest)
         }
         jvmMain.dependencies {
+            implementation(libs.zxing.core) // reads the patient's QR from an image file (task 30)
             implementation(libs.ktor.clientCio)
         }
         jvmTest.dependencies {
@@ -77,6 +78,7 @@ kotlin {
             implementation(libs.wrappers.browser)
         }
         wasmJsMain.dependencies {
+            implementation(npm("jsqr", "1.4.0")) // QR from the camera in every browser (task 30)
             implementation(libs.ktor.clientJs)
         }
         getByName("androidDeviceTest").dependencies {

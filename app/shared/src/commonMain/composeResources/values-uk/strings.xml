@@ -328,4 +328,6 @@
     <string name="invite_summary">%1$s, %2$s з %3$s</string>
     <string name="invite_preview_footer">Те, що ви записуєте, залишається на цьому телефоні, доки ви не покажете QR на прийомі.</string>
     <string name="edited_by_you">Відредаговано вами</string>
+    <string name="open_scan">Зчитати QR-код</string>
+    <string name="open_scan_failed">Код не зчитано. Дозвольте камеру або вставте код.</string>
 </resources>
