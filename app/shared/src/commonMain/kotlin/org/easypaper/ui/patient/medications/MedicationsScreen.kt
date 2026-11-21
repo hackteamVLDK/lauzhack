@@ -85,7 +85,7 @@ private sealed interface MedSheet {
     data object Reading : MedSheet
     data class Choose(val choices: List<Medication>) : MedSheet
     data class Check(val item: MedicineItem) : MedSheet
-    data class Type(val code: String?) : MedSheet
+    data class Type(val code: String?, val unreadable: Boolean = false) : MedSheet
 }
 
 /**
@@ -117,7 +117,8 @@ fun MedicationsScreen(
             if (problems.isEmpty()) sheet = null
         }
     }
-    val photos = rememberPhotoSource { photo ->
+    // a file that is not a photo: say so and offer typing, rather than a tap that seems to do nothing
+    val photos = rememberPhotoSource(onError = { problems = emptyList(); sheet = MedSheet.Type(code = null, unreadable = true) }) { photo ->
         sheet = MedSheet.Reading
         scope.launch {
             val match = try { db.recognize(readPhoto(photo)) } catch (_: IllegalArgumentException) { null }
@@ -180,7 +181,7 @@ fun MedicationsScreen(
                 is MedSheet.Check -> CheckForm(open.item, problems, saving,
                     save = { dose -> run { repository.confirm(requestId, widget.id, open.item, dose, now()) } },
                     delete = { scope.launch { open.item.draftIds.forEach { repository.removeEntry(requestId, it) }; sheet = null } })
-                is MedSheet.Type -> TypeForm(open.code != null, problems, saving) { name, dose ->
+                is MedSheet.Type -> TypeForm(open.code != null || open.unreadable, problems, saving) { name, dose ->
                     run { repository.addMedication(requestId, widget.id, typedMedication(name, dose, open.code), now()) }
                 }
                 null -> Unit

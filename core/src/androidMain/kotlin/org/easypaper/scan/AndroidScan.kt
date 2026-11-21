@@ -8,7 +8,9 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import org.easypaper.report.jpegRotationDegrees
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -19,7 +21,7 @@ import kotlin.coroutines.resumeWithException
  * (package) or parseBloodPressure (monitor display). The photo is turned upright by its EXIF orientation first:
  * shrinkPhoto keeps the tag instead of rotating pixels, and text recognition needs upright text.
  */
-actual suspend fun readPhoto(photo: ByteArray): PhotoReading {
+actual suspend fun readPhoto(photo: ByteArray): PhotoReading = withContext(Dispatchers.Default) { // bitmap decoding off the UI thread
     val bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.size) ?: throw IllegalArgumentException("Not an image")
     val image = InputImage.fromBitmap(bitmap, jpegRotationDegrees(photo))
     val formats = BarcodeScannerOptions.Builder().setBarcodeFormats(
@@ -32,7 +34,7 @@ actual suspend fun readPhoto(photo: ByteArray): PhotoReading {
         val lines = recognizer.process(image).await().textBlocks.flatMap { it.lines }.mapNotNull { line ->
             line.boundingBox?.let { TextLine(line.text, it.left, it.top, it.right, it.bottom) }
         }
-        return PhotoReading(codes, textByRows(lines))
+        PhotoReading(codes, textByRows(lines))
     } finally {
         scanner.close()
         recognizer.close()

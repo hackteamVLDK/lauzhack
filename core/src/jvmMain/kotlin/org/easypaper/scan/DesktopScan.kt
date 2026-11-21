@@ -9,6 +9,8 @@ import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private val HINTS = mapOf(
     DecodeHintType.POSSIBLE_FORMATS to listOf(
@@ -18,7 +20,7 @@ private val HINTS = mapOf(
 )
 
 /** Desktop: the package code from a photo file with ZXing (no OCR here: the patient types the name if there is no code). */
-actual suspend fun readPhoto(photo: ByteArray): PhotoReading {
+actual suspend fun readPhoto(photo: ByteArray): PhotoReading = withContext(Dispatchers.Default) { // decoding and ZXing take a while: never on the UI thread
     val image = ImageIO.read(ByteArrayInputStream(photo)) ?: throw IllegalArgumentException("Not an image")
     val w = image.width
     val h = image.height
@@ -32,5 +34,5 @@ actual suspend fun readPhoto(photo: ByteArray): PhotoReading {
             null
         }
     }
-    return PhotoReading(listOfNotNull(code), "")
+    PhotoReading(listOfNotNull(code), "")
 }
