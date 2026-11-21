@@ -92,7 +92,7 @@ fun DocumentsSection(state: VisitState, ai: (() -> AiClient)?, facts: List<Docum
             }
         }
     }
-    val photos = rememberPhotoSource { read(null, it) }
+    val photos = rememberPhotoSource(onError = { message = Res.string.doc_failed }) { read(null, it) }
 
     Column(Modifier.padding(top = spacing.sectionGap)) {
         Text(stringResource(Res.string.doc_title), style = EasyPaperTheme.typography.title2, color = colors.label,

@@ -16,9 +16,10 @@ private val IMAGE_FILES = setOf("jpg", "jpeg", "png", "bmp", "gif")
 
 /** Desktop: no camera; a photo file from the system file dialog. */
 @Composable
-actual fun rememberPhotoSource(onPhoto: (ByteArray) -> Unit): PhotoSource {
+actual fun rememberPhotoSource(onError: () -> Unit, onPhoto: (ByteArray) -> Unit): PhotoSource {
     val scope = rememberCoroutineScope()
     val deliver by rememberUpdatedState(onPhoto)
+    val fail by rememberUpdatedState(onError)
     return remember {
         PhotoSource(takePhoto = null, pickPhoto = {
             val dialog = FileDialog(null as Frame?, "Photo", FileDialog.LOAD).apply {
@@ -30,7 +31,7 @@ actual fun rememberPhotoSource(onPhoto: (ByteArray) -> Unit): PhotoSource {
                     val photo = withContext(Dispatchers.IO) {
                         try { shrinkPhoto(file.readBytes()) } catch (_: IllegalArgumentException) { null }
                     }
-                    photo?.let(deliver)
+                    if (photo != null) deliver(photo) else fail()
                 }
             }
         })

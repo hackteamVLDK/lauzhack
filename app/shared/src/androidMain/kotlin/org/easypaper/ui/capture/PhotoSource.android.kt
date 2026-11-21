@@ -19,10 +19,11 @@ import java.io.File
 
 /** The system camera app (full resolution, no camera permission needed) and the photo picker (no storage permission). */
 @Composable
-actual fun rememberPhotoSource(onPhoto: (ByteArray) -> Unit): PhotoSource {
+actual fun rememberPhotoSource(onError: () -> Unit, onPhoto: (ByteArray) -> Unit): PhotoSource {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val deliver by rememberUpdatedState(onPhoto)
+    val fail by rememberUpdatedState(onError)
     // the camera writes here through the FileProvider declared in this module's manifest (res/xml/photo_paths.xml)
     val file = remember { File(context.cacheDir, "photos/capture.jpg") }
     fun finish(read: () -> ByteArray?) {
@@ -31,7 +32,8 @@ actual fun rememberPhotoSource(onPhoto: (ByteArray) -> Unit): PhotoSource {
                 try {
                     read()?.let(::shrinkPhoto)
                 } catch (_: IllegalArgumentException) {
-                    null // not an image the phone can decode
+                    withContext(Dispatchers.Main) { fail() } // not an image the phone can decode
+                    null
                 } finally {
                     file.delete() // the full-size original with GPS never stays on the phone
                 }
