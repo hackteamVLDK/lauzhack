@@ -57,6 +57,8 @@
     <string name="developer">Developer</string>
     <string name="design_catalog">Design catalog</string>
     <string name="fill_demo">Fill with demo data</string>
+    <string name="open_demo_report">Open demo report</string>
+    <string name="load_demo_diary">Load demo diary</string>
     <string name="clear_data">Clear data</string>
     <string name="large_text">Larger text (200 %)</string>
     <string name="switch_to_doctor">Switch to the doctor app</string>

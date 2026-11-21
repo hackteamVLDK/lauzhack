@@ -131,6 +131,8 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
                             onDeveloper = openDeveloper,
                             actions = actions,
                             onOpenInvite = { navigator.presentSheet(PatientScreen.OpenInvite) },
+                            onLoadDemo = { scope.launch { state.fillWithDemoData() } },
+                            onSwitchRole = onSwitchRole,
                         )
                         PatientScreen.History -> HistoryScreen(
                             record, timeZone, stringResource(Res.string.tab_history), openDeveloper,

@@ -27,9 +27,11 @@ import easypaper.app.shared.generated.resources.footer_privacy
 import easypaper.app.shared.generated.resources.ic_add
 import easypaper.app.shared.generated.resources.ic_check_circle
 import easypaper.app.shared.generated.resources.ic_remove
+import easypaper.app.shared.generated.resources.load_demo_diary
 import easypaper.app.shared.generated.resources.nothing_today
 import easypaper.app.shared.generated.resources.open_invite
 import easypaper.app.shared.generated.resources.pulse
+import easypaper.app.shared.generated.resources.switch_to_doctor
 import easypaper.app.shared.generated.resources.today_empty_message
 import easypaper.app.shared.generated.resources.today_empty_title
 import easypaper.app.shared.generated.resources.undo
@@ -83,12 +85,22 @@ fun TodayScreen(
     onDeveloper: () -> Unit,
     actions: TodayActions,
     onOpenInvite: () -> Unit = {},
+    onLoadDemo: (() -> Unit)? = null,
+    onSwitchRole: (() -> Unit)? = null,
 ) {
     LargeTitleScaffold(title = title, onTitleLongPress = onDeveloper, bottomInset = false, header = { header() }) {
         if (record == null) {
             item {
                 EmptyState(stringResource(Res.string.today_empty_title), stringResource(Res.string.today_empty_message)) {
-                    TintedButton(stringResource(Res.string.open_invite), onClick = onOpenInvite)
+                    Column(verticalArrangement = Arrangement.spacedBy(EasyPaperTheme.spacing.xs)) {
+                        TintedButton(stringResource(Res.string.open_invite), onClick = onOpenInvite)
+                        if (onLoadDemo != null) {
+                            TintedButton(stringResource(Res.string.load_demo_diary), onClick = onLoadDemo)
+                        }
+                        if (onSwitchRole != null) {
+                            PlainButton(stringResource(Res.string.switch_to_doctor), onClick = onSwitchRole)
+                        }
+                    }
                 }
             }
             return@LargeTitleScaffold

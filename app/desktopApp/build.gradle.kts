@@ -15,6 +15,10 @@ dependencies {
     implementation(libs.compose.uiToolingPreview)
 }
 
+tasks.withType<JavaExec>().matching { it.name == "run" }.configureEach {
+    systemProperty("easypaper.demo", providers.systemProperty("easypaper.demo").getOrElse("true"))
+}
+
 compose.desktop {
     application {
         mainClass = "org.easypaper.MainKt"

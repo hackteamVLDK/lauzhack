@@ -37,6 +37,6 @@ private fun desktopApp() = application {
         title = "Easy Paper",
         state = rememberWindowState(width = width.dp, height = height.dp),
     ) {
-        if (role == null) App() else EasyPaperApp(role = role, settings = settings, demo = System.getProperty("easypaper.demo") == "true")
+        EasyPaperApp(role = role, settings = settings, demo = System.getProperty("easypaper.demo") == "true")
     }
 }

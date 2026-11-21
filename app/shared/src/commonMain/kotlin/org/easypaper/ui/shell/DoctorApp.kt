@@ -35,10 +35,12 @@ import easypaper.app.shared.generated.resources.ic_add
 import easypaper.app.shared.generated.resources.ic_checklist
 import easypaper.app.shared.generated.resources.ic_qr_code_2
 import easypaper.app.shared.generated.resources.new_request
+import easypaper.app.shared.generated.resources.open_demo_report
 import easypaper.app.shared.generated.resources.open_report
 import easypaper.app.shared.generated.resources.new_request_message
 import easypaper.app.shared.generated.resources.requests
 import easypaper.app.shared.generated.resources.section_entries
+import easypaper.app.shared.generated.resources.switch_to_patient
 import io.ktor.client.HttpClient
 import kotlinx.datetime.LocalDate
 import org.easypaper.ai.AiClient
@@ -54,6 +56,7 @@ import org.easypaper.ui.components.EmptyState
 import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.LargeTitleScaffold
 import org.easypaper.ui.components.ListRow
+import org.easypaper.ui.components.PlainButton
 import org.easypaper.ui.components.RowSeparator
 import org.easypaper.ui.components.PushNavigation
 import org.easypaper.ui.components.Sheet
@@ -100,6 +103,22 @@ fun DoctorApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> U
         if (screen is DoctorScreen.Visit) state.selectedReportId = screen.reportId
         navigator.resetTo(screen)
     }
+    val openDemo: () -> Unit = {
+        appScope.launch {
+            state.fillWithDemoData()
+            state.selectedReportId?.let { select(DoctorScreen.Visit(it)) }
+        }
+    }
+    val emptyActions: @Composable () -> Unit = {
+        if (state.reports.isEmpty()) {
+            Column(verticalArrangement = Arrangement.spacedBy(EasyPaperTheme.spacing.xs)) {
+                TintedButton(stringResource(Res.string.open_demo_report), onClick = openDemo)
+                if (onSwitchRole != null) {
+                    PlainButton(stringResource(Res.string.switch_to_patient), onClick = onSwitchRole)
+                }
+            }
+        }
+    }
 
     BoxWithConstraints(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background)) {
         val wide = maxWidth >= WIDE_LAYOUT
@@ -112,15 +131,15 @@ fun DoctorApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> U
             Row(Modifier.fillMaxSize()) {
                 RequestSidebar(state, detail, select, openDeveloper)
                 Box(Modifier.weight(1f)) {
-                    DoctorDetail(state, detail, settings, back = null, select = select)
+                    DoctorDetail(state, detail, settings, back = null, select = select, emptyActions = emptyActions)
                 }
             }
         } else {
             PushNavigation(navigator.stack, Modifier.fillMaxSize()) { screen ->
                 when (screen) {
-                    DoctorScreen.Home -> RequestList(state, select, openDeveloper)
+                    DoctorScreen.Home -> RequestList(state, select, openDeveloper, emptyActions)
                     DoctorScreen.DesignCatalog -> CatalogScreen(settings, BackAction(backLabel(), navigator::back))
-                    else -> DoctorDetail(state, screen, settings, back = BackAction(stringResource(Res.string.requests), navigator::back), select = select)
+                    else -> DoctorDetail(state, screen, settings, back = BackAction(stringResource(Res.string.requests), navigator::back), select = select, emptyActions = emptyActions)
                 }
             }
         }
@@ -170,10 +189,10 @@ private fun RequestSidebar(state: ShellState, current: DoctorScreen, select: (Do
 
 /** Narrow layout: the sidebar becomes the root list. */
 @Composable
-private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDeveloper: () -> Unit) {
+private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDeveloper: () -> Unit, emptyActions: @Composable () -> Unit) {
     LargeTitleScaffold(title = stringResource(Res.string.requests), onTitleLongPress = onDeveloper) {
         if (state.reports.isEmpty()) {
-            item { EmptyState(stringResource(Res.string.doctor_empty_title), stringResource(Res.string.doctor_empty_message)) }
+            item { EmptyState(stringResource(Res.string.doctor_empty_title), stringResource(Res.string.doctor_empty_message), action = emptyActions) }
         } else {
             item {
                 GroupedSection {
@@ -211,10 +230,10 @@ private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDev
 }
 
 @Composable
-private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: ShellSettings, back: BackAction?, select: (DoctorScreen) -> Unit) {
+private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: ShellSettings, back: BackAction?, select: (DoctorScreen) -> Unit, emptyActions: @Composable () -> Unit) {
     when (screen) {
         is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { report -> key(report.id) { VisitScreen(report, back, visitAi(state, report), state.reportPhotos[report.id].orEmpty()) } }
-            ?: NothingOpen()
+            ?: NothingOpen(emptyActions)
         DoctorScreen.NewRequest -> RequestBuilderScreen(back)
         // the patient's QR opens the report once (task 30); it joins the list and opens right away
         DoctorScreen.OpenReport -> OpenReportScreen(relayUrl(settings.serverUrl, defaultServerUrl()), back = back, onOpened = { received ->
@@ -227,7 +246,7 @@ private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: Shel
         } else {
             DoctorCostScreen(settings.serverUrl, settings.aiToken, back)
         }
-        else -> NothingOpen()
+        else -> NothingOpen(emptyActions)
     }
 }
 
@@ -257,7 +276,7 @@ private fun DoctorCostScreen(serverUrl: String?, aiToken: String?, back: BackAct
 
 /** Nothing selected: a quiet centered message, as in macOS split views. */
 @Composable
-private fun NothingOpen() {
+private fun NothingOpen(actions: @Composable () -> Unit) {
     val spacing = EasyPaperTheme.spacing
     Box(Modifier.fillMaxSize().padding(spacing.screenMarginWide), contentAlignment = Alignment.Center) {
         Column(
@@ -269,6 +288,7 @@ private fun NothingOpen() {
                 color = EasyPaperTheme.colors.secondaryLabel, textAlign = TextAlign.Center)
             Text(stringResource(Res.string.doctor_empty_message), style = EasyPaperTheme.typography.body,
                 color = EasyPaperTheme.colors.secondaryLabel, textAlign = TextAlign.Center)
+            actions()
         }
     }
 }

@@ -57,6 +57,8 @@
     <string name="developer">Для розробників</string>
     <string name="design_catalog">Каталог дизайну</string>
     <string name="fill_demo">Заповнити демо-даними</string>
+    <string name="open_demo_report">Відкрити демозвіт</string>
+    <string name="load_demo_diary">Завантажити демощоденник</string>
     <string name="clear_data">Очистити дані</string>
     <string name="large_text">Більший шрифт (200 %)</string>
     <string name="switch_to_doctor">Перейти до застосунку лікаря</string>

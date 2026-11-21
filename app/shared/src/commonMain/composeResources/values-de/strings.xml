@@ -57,6 +57,8 @@
     <string name="developer">Entwicklung</string>
     <string name="design_catalog">Designkatalog</string>
     <string name="fill_demo">Mit Demodaten füllen</string>
+    <string name="open_demo_report">Demobericht öffnen</string>
+    <string name="load_demo_diary">Demotagebuch laden</string>
     <string name="clear_data">Daten löschen</string>
     <string name="large_text">Größere Schrift (200 %)</string>
     <string name="switch_to_doctor">Zur Ansicht für die Praxis wechseln</string>
