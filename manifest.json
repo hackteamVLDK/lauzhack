@@ -1,30 +1,30 @@
 {
   "schema_version": 3,
-  "last_event_id": 157,
+  "last_event_id": 158,
   "files": {
     "CHANGES.md": {
       "sha256": "d3a027eef6bd71a07136feeea950e7afc75111ca7b38aa6661dbb91a31bdd8a9",
       "size": 8869
     },
     "PLANS.md": {
-      "sha256": "484c988279057e21c8fe2e8f8fc9809f9d5aceaf03344e797836b9bbc3a7b348",
-      "size": 3278
+      "sha256": "93d44ccc7dab685c5734100feaff5e7d1fe5b70f3455033c4384e9a89bc44f80",
+      "size": 3277
     },
     "PROBLEMS.md": {
       "sha256": "f3e0d2bcf565b280e2a8e83debde5d2f4278ff3666999b8338012fa14f92301e",
       "size": 655
     },
     "PROJECT.md": {
-      "sha256": "2bfbe0e15d4f5b502cac6f7d2ae8858b66a407067decac4a940f056f77e769ae",
-      "size": 7827
+      "sha256": "2b3e8764f419f7248670cee11b59c166e8218fe351b62de3345d361e83ff80c4",
+      "size": 8427
     },
     "database.sql": {
-      "sha256": "e7250ed9edec25267575fb22d9fe62b48b02ff6758abbac3d7e0dab05e0be312",
-      "size": 437580
+      "sha256": "8f8e94806aa03f88eecb286b2f9e8778a693122453b14296ca74fc704156df5d",
+      "size": 444475
     },
     "events.jsonl": {
-      "sha256": "123c422cfdc38c03369cbb5c68ce8ffa66594e153421c67c1dfcc7e06d329897",
-      "size": 59910
+      "sha256": "ea2fe42f6df7e6ac80e91486d94bf2154f1e9651f4899dc607015d61b5bb8592",
+      "size": 62203
     },
     "people/mykhailo.md": {
       "sha256": "3b4f27b6d232b65266079094e3a9d6cc34ef0d4392d9dcd25f88301fb0be8f44",
@@ -35,12 +35,12 @@
       "size": 652
     },
     "people/vlad.md": {
-      "sha256": "bbb642d0c02a8d7270bc6c70d75449f70d75f0490af50add0d693c8109b3ffe2",
-      "size": 13015
+      "sha256": "ef57e6ee8bca553edd037b4af5f9dcf5762442bd060ad8cba01c7f0bb7f767e0",
+      "size": 14144
     },
     "tasks/1.md": {
-      "sha256": "0e7d6e3a451466e523bc196920b9204a30e1db0147aa1a56ec4275d56fde5ea7",
-      "size": 9840
+      "sha256": "9cea0b821bd55b2171a5400b9fb159b8cde3bb02a940b28a8e0077d862d6023c",
+      "size": 10969
     },
     "tasks/10.md": {
       "sha256": "74dc233c175ce409cc90b3b94b5a357f2299d35c620b118338e4e6f27ed79962",
