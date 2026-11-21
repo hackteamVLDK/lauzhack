@@ -24,7 +24,7 @@ Review notes: Проверено на Linux (без Android SDK), sha 616b398: g
 Latest intent: mykhailo/MyPc-chat · 2026-11-21T15:25:27+00:00: review
 Phase: review; build 1; submitter: vlad; branch: attempt/vlad/task-2-2.
 Status: running; assignee: vlad; owner: mykhailo; client: MyPc-chat.
-Lease expires: 2026-11-21T15:28:56+00:00.
+Lease expires: 2026-11-21T15:29:26+00:00.
 Acceptance: тесты commonTest
 Checkpoint SHA: 4610fac45908b23aa747ce5838f777947e3375d3
 Review notes: -
@@ -94,7 +94,7 @@ Review notes: -
 Latest intent: mykhailo/MyPc-chat · 2026-11-21T15:25:28+00:00: review
 Phase: review; build 1; submitter: vlad; branch: attempt/vlad/task-9-1.
 Status: running; assignee: vlad; owner: mykhailo; client: MyPc-chat.
-Lease expires: 2026-11-21T15:28:56+00:00.
+Lease expires: 2026-11-21T15:29:27+00:00.
 Acceptance: без ключа не расшифровать
 Checkpoint SHA: ad5879b230ebcc719aa0b632c2b15ca507195bab
 Review notes: -
