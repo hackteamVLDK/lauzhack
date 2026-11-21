@@ -22,11 +22,11 @@ Review notes: -
 ## Task 2: Модель виджетов и данных в commonMain: схема запроса врача (список виджетов: опросник, давление, вода, еда, лекарства, дневник, вопросы врачу), ответы, зашифрованное локальное хранилище; формат схемы зафиксировать первым коммитом [JB][IMC]
 
 Latest intent: vlad/BelarusLord-chat · 2026-11-21T14:46:59+00:00: Фиксирую формат схемы запроса врача (план до каркаса), код — после #1 в main
-Phase: build; build 0; submitter: -; branch: -.
+Phase: build; build 0; submitter: -; branch: attempt/vlad/task-2-1.
 Status: running; assignee: vlad; owner: vlad; client: BelarusLord-chat.
 Lease expires: 2026-11-21T15:09:28+00:00.
 Acceptance: тесты commonTest
-Checkpoint SHA: -
+Checkpoint SHA: 4871df134c5d272ae4381581e22a0eae06b48dbe
 Review notes: -
 
 ## Task 3: Дизайн-система: docs/design.md по навыкам frontend-design + easy-paper-design (палитра light/dark, шрифты, шкала, формы, принципы, ASCII-вайрфреймы «Сегодня» пациента и сводки врача) → показать mykhailo → EasyPaperTheme в commonMain [JB]
