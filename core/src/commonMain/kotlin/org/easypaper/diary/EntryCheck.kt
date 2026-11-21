@@ -26,10 +26,10 @@ enum class EntryProblem {
 }
 
 // Typo guards: values a measuring device or a glass can physically give, NOT medical norms.
-private val SYSTOLIC = 50..300
-private val DIASTOLIC = 20..200
-private val PULSE = 20..250
-private val WATER_ML = 1..5000
+internal val SYSTOLIC = 50..300
+internal val DIASTOLIC = 20..200
+internal val PULSE = 20..250
+internal val WATER_ML = 1..5000
 
 /** Checks one entry against this request before it is saved. Empty list = fine. */
 fun CareRequest.check(entry: Entry): List<EntryProblem> {
