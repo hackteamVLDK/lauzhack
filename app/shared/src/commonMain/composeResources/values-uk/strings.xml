@@ -199,7 +199,7 @@
     <string name="removed">Прибрано</string>
     <string name="save_record">Зберегти до картки</string>
     <string name="saved_at">Збережено о %1$s</string>
-    <string name="save_hint">Підтвердьте або приберіть кожне поле, щоб зберегти. До того нічого не зберігається.</string>
+    <string name="save_hint">Підтвердьте або приберіть кожне поле, щоб завершити перегляд. До того нічого не зберігається.</string>
     <string name="original_entry">Оригінальний запис</string>
     <string name="field_complaint">Скарга</string>
     <string name="field_history">Анамнез</string>
@@ -392,4 +392,25 @@
     <string name="open_opening">Відкриваю звіт…</string>
     <string name="busy">Зайнято</string>
     <string name="problem_measurement">Це число схоже на помилку. Перевірте значення та одиницю.</string>
+    <!-- Final UI review fixes (task 44) -->
+    <string name="opening_diary">Відкриваю щоденник…</string>
+    <string name="complete_review">Завершити перегляд</string>
+    <string name="review_completed_at">Перегляд завершено о %1$s</string>
+    <string name="copy_for_record">Скопіювати для картки клініки</string>
+    <string name="copied_for_record">Скопійовано. Вставте це в картку клініки.</string>
+    <string name="report_number">Звіт %1$s</string>
+    <string name="chart_show_values">Показати значення</string>
+    <string name="chart_hide_values">Сховати значення</string>
+    <string name="rb_start_less">Почати на день раніше</string>
+    <string name="rb_start_more">Почати на день пізніше</string>
+    <string name="rb_days_less">На один день запису менше</string>
+    <string name="rb_days_more">На один день запису більше</string>
+    <string name="rb_bp_less">На одне вимірювання на день менше</string>
+    <string name="rb_bp_more">На одне вимірювання на день більше</string>
+    <string name="rb_water_less">Знизити денну мету по воді</string>
+    <string name="rb_water_more">Підвищити денну мету по воді</string>
+    <string name="doc_show">Показати документ</string>
+    <string name="doc_source_title">Документ</string>
+    <string name="date_day_month">%1$d %2$s</string>
+    <string name="chart_reading">%1$d/%2$d</string>
 </resources>

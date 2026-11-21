@@ -1,5 +1,6 @@
 package org.easypaper.ui.shell
 
+import org.easypaper.ui.doctor.DocumentSource
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -110,6 +111,9 @@ class ShellState(
 
     /** Facts read from paper documents at the visit, by report id (task 41). */
     val documents = mutableStateMapOf<String, List<DocumentFact>>()
+
+    /** The documents those facts came from, by document id, so the doctor can open them again (task 44). */
+    val documentSources = mutableStateMapOf<String, DocumentSource>()
 
     /** Photos of the reports the doctor received, by report id and photo ref (task 30). */
     val reportPhotos = mutableStateMapOf<String, Map<String, ByteArray>>()

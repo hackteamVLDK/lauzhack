@@ -1,5 +1,19 @@
 package org.easypaper.ui.doctor
 
+import easypaper.app.shared.generated.resources.doc_source_title
+import androidx.compose.foundation.text.selection.SelectionContainer
+import org.easypaper.visit.SavedClinicForm
+import org.easypaper.model.EasyPaperJson
+import easypaper.app.shared.generated.resources.review_completed_at
+import easypaper.app.shared.generated.resources.report_number
+import easypaper.app.shared.generated.resources.copy_for_record
+import easypaper.app.shared.generated.resources.copied_for_record
+import easypaper.app.shared.generated.resources.complete_review
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.foundation.layout.heightIn
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.easypaper.report.jpegRotationDegrees
@@ -146,7 +160,7 @@ fun VisitScreen(
     /** Keeps the doctor's decisions per report while they look at other screens (ShellState.visits). */
     store: MutableMap<String, VisitState>? = null,
     /** Paper documents at the visit (task 41), shown below the form; null hides the section. */
-    documents: (@Composable (VisitState) -> Unit)? = null,
+    documents: (@Composable (VisitState, onShow: (DocumentSource) -> Unit) -> Unit)? = null,
 ) {
     val wording = rememberFormWording()
     val offset = remember { currentUtcOffsetMinutes() }
@@ -159,6 +173,7 @@ fun VisitScreen(
     val timeZone = remember { TimeZone.currentSystemDefault() }
     var original by remember { mutableStateOf<Entry?>(null) }
     var editing by remember { mutableStateOf<FormFieldKey?>(null) }
+    var document by remember { mutableStateOf<DocumentSource?>(null) }
     val request = report.record.request
     val aiResult = ai?.result
     LaunchedEffect(aiResult) { aiResult?.let(state::applyAi) }
@@ -173,15 +188,16 @@ fun VisitScreen(
             pressureSeries(report.record.entries)?.let { series ->
                 item(key = "chart") {
                     SectionTitle(stringResource(Res.string.chart_title))
-                    PressureChart(series)
+                    PressureChart(series, timeZone)
                 }
             }
             item(key = "form") { ClinicFormSection(state, onEdit = { editing = it }) }
-            if (documents != null) item(key = "documents") { documents(state) }
+            if (documents != null) item(key = "documents") { documents(state) { document = it } }
             item(key = "entries") { EntriesSection(report, timeZone, onOpen = { original = it }) }
         }
         OriginalSheet(report, original, timeZone, photos, onDismiss = { original = null })
         EditSheet(state, editing, onDismiss = { editing = null })
+        DocumentSheet(document, onDismiss = { document = null })
     }
 }
 
@@ -191,6 +207,7 @@ private fun VisitHeader(report: Report) {
     val start = runCatching { LocalDate.parse(request.startDate) }.getOrNull()
     val count = report.record.entries.size
     val line = listOfNotNull(
+        stringResource(Res.string.report_number, report.shortCode()),
         start?.let { dateRange(it, lastDay(it, request.days)) },
         pluralStringResource(Res.plurals.entries, count, count),
     ).joinToString(", ")
@@ -198,12 +215,15 @@ private fun VisitHeader(report: Report) {
 }
 
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 private fun SectionTitle(text: String, trailing: (@Composable RowScope.() -> Unit)? = null) {
     val spacing = EasyPaperTheme.spacing
-    Row(
+    // FlowRow: at 200 % text the badge and the count move to the next line instead of being squeezed.
+    FlowRow(
         Modifier.fillMaxWidth().padding(start = spacing.xxs, end = spacing.xxs, top = spacing.sectionGap, bottom = spacing.xs),
-        verticalAlignment = Alignment.CenterVertically,
+        itemVerticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(spacing.xs),
+        verticalArrangement = Arrangement.spacedBy(spacing.xxs),
     ) {
         Text(text, style = EasyPaperTheme.typography.title2, color = EasyPaperTheme.colors.label, modifier = Modifier.semantics { heading() })
         trailing?.invoke(this)
@@ -219,7 +239,19 @@ private fun SummarySection(state: VisitState, ai: VisitAi?, timeZone: TimeZone, 
     val history = state.form.field(FormFieldKey.HISTORY)
     val weekdays = stringArrayResource(Res.array.weekdays_short)
     SectionTitle(stringResource(Res.string.summary)) {
-        DraftBadge(stringResource(if (summary.source == SummarySource.Facts) Res.string.facts_without_ai else Res.string.draft))
+        // The badge says where the summary stands: draft (or facts without AI), confirmed with the time, or removed.
+        when (history.state) {
+            FieldState.DRAFT -> DraftBadge(stringResource(if (summary.source == SummarySource.Facts) Res.string.facts_without_ai else Res.string.draft))
+            FieldState.CONFIRMED -> {
+                val at = state.confirmedAt[FormFieldKey.HISTORY]?.let { timeOfDay(it, timeZone) } ?: ""
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.xxs)) {
+                    Icon(painterResource(Res.drawable.ic_check_circle), contentDescription = null, tint = colors.confirmed,
+                        modifier = Modifier.size(spacing.rowIcon))
+                    Text(stringResource(Res.string.confirmed_at, at).trim(), style = EasyPaperTheme.typography.footnote, color = colors.confirmed)
+                }
+            }
+            FieldState.REJECTED -> DraftBadge(stringResource(Res.string.removed))
+        }
         val count = state.report.record.entries.size
         Text(stringResource(Res.string.written_from, count.toString()), style = EasyPaperTheme.typography.footnote, color = colors.secondaryLabel)
     }
@@ -318,7 +350,11 @@ private fun DecisionRow(field: FormField, state: VisitState, primary: StringReso
     val colors = EasyPaperTheme.colors
     val spacing = EasyPaperTheme.spacing
     val timeZone = remember { TimeZone.currentSystemDefault() }
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.m)) {
+    FlowRow(
+        itemVerticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(spacing.m),
+        verticalArrangement = Arrangement.spacedBy(spacing.xxs),
+    ) {
         when (field.state) {
             FieldState.DRAFT -> {
                 TintedButton(stringResource(primary), onClick = { state.confirm(field.key, now()) }, enabled = field.value.isNotBlank())
@@ -369,15 +405,28 @@ private fun ClinicFormSection(state: VisitState, onEdit: (FormFieldKey) -> Unit)
     Spacer(Modifier.height(spacing.l))
     val saved = state.saved
     if (saved != null) {
+        // The app has no clinic system to write to: the confirmed fields go there by copy and paste, said plainly.
         val timeZone = remember { TimeZone.currentSystemDefault() }
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.xxs)) {
-            Icon(painterResource(Res.drawable.ic_check_circle), contentDescription = null, tint = colors.confirmed,
-                modifier = Modifier.size(spacing.rowIcon))
-            Text(stringResource(Res.string.saved_at, timeOfDay(saved.savedAt, timeZone)), style = EasyPaperTheme.typography.headline,
-                color = colors.confirmed)
+        @Suppress("DEPRECATION") val clipboard = LocalClipboardManager.current
+        var copied by remember(saved) { mutableStateOf(false) }
+        Column(verticalArrangement = Arrangement.spacedBy(spacing.xxs)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.xxs)) {
+                Icon(painterResource(Res.drawable.ic_check_circle), contentDescription = null, tint = colors.confirmed,
+                    modifier = Modifier.size(spacing.rowIcon))
+                Text(stringResource(Res.string.review_completed_at, timeOfDay(saved.savedAt, timeZone)), style = EasyPaperTheme.typography.headline,
+                    color = colors.confirmed)
+            }
+            TintedButton(stringResource(Res.string.copy_for_record), onClick = {
+                clipboard.setText(AnnotatedString(EasyPaperJson.encodeToString(SavedClinicForm.serializer(), saved)))
+                copied = true
+            })
+            if (copied) {
+                Text(stringResource(Res.string.copied_for_record), style = EasyPaperTheme.typography.footnote, color = colors.secondaryLabel,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+            }
         }
     } else {
-        ProminentButton(stringResource(Res.string.save_record), onClick = { state.save(now()) }, enabled = form.canSave,
+        ProminentButton(stringResource(Res.string.complete_review), onClick = { state.save(now()) }, enabled = form.canSave,
             modifier = Modifier.fillMaxWidth())
     }
 }
@@ -428,9 +477,10 @@ private fun EntriesSection(report: Report, timeZone: TimeZone, onOpen: (Entry) -
             for (entry in entries) {
                 RowSeparator()
                 Row(
-                    Modifier.fillMaxWidth().clickable(role = Role.Button, onClick = { onOpen(entry) })
+                    Modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight).clickable(role = Role.Button, onClick = { onOpen(entry) })
                         .padding(start = spacing.m + spacing.tile + spacing.s, end = spacing.m, top = spacing.xs, bottom = spacing.xs),
                     horizontalArrangement = Arrangement.spacedBy(spacing.s),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     val date = entry.localDate(timeZone)
                     Text(dateShort.fill(date.day, monthsShort.getOrElse(date.month.ordinal) { "" }) + " " + timeOfDay(entry.at, timeZone),
@@ -461,6 +511,25 @@ private fun OriginalSheet(report: Report, entry: Entry?, timeZone: TimeZone, pho
         // the patient's photo of this entry, as received with the report (task 36)
         val ref = when (val p = e.payload) { is Food -> p.photoRef; is DiaryNote -> p.photoRef; else -> null }
         ref?.let { photos[it] }?.let { EntryPhoto(it, Modifier.padding(top = EasyPaperTheme.spacing.l)) }
+    }
+}
+
+/** The paper document a fact was read from (task 44): its pasted text or its photo, to check the fact against. */
+@Composable
+private fun DocumentSheet(document: DocumentSource?, onDismiss: () -> Unit) {
+    var shown by remember { mutableStateOf<DocumentSource?>(null) }
+    if (document != null) shown = document
+    Sheet(visible = document != null, title = stringResource(Res.string.doc_source_title), doneLabel = stringResource(Res.string.done), onDismiss = onDismiss) {
+        val d = shown ?: return@Sheet
+        d.text?.let { text ->
+            GroupedSection {
+                SelectionContainer {
+                    Text(text, style = EasyPaperTheme.typography.body, color = EasyPaperTheme.colors.label,
+                        modifier = Modifier.fillMaxWidth().padding(EasyPaperTheme.spacing.m))
+                }
+            }
+        }
+        d.image?.let { EntryPhoto(it) }
     }
 }
 

@@ -197,7 +197,7 @@
     <string name="removed">Removed</string>
     <string name="save_record">Save to clinic record</string>
     <string name="saved_at">Saved %1$s</string>
-    <string name="save_hint">Confirm or remove every field to save. Nothing is saved before that.</string>
+    <string name="save_hint">Confirm or remove every field to complete the review. Nothing is kept before that.</string>
     <string name="original_entry">Original entry</string>
     <string name="field_complaint">Complaint</string>
     <string name="field_history">History</string>
@@ -388,4 +388,25 @@
     <string name="open_opening">Opening report…</string>
     <string name="busy">Busy</string>
     <string name="problem_measurement">This number looks like a typo. Check the value and the unit.</string>
+    <!-- Final UI review fixes (task 44) -->
+    <string name="opening_diary">Opening your diary…</string>
+    <string name="complete_review">Complete review</string>
+    <string name="review_completed_at">Review completed %1$s</string>
+    <string name="copy_for_record">Copy for the clinic record</string>
+    <string name="copied_for_record">Copied. Paste it into the clinic record.</string>
+    <string name="report_number">Report %1$s</string>
+    <string name="chart_show_values">Show values</string>
+    <string name="chart_hide_values">Hide values</string>
+    <string name="rb_start_less">Start one day earlier</string>
+    <string name="rb_start_more">Start one day later</string>
+    <string name="rb_days_less">One recording day fewer</string>
+    <string name="rb_days_more">One recording day more</string>
+    <string name="rb_bp_less">One reading a day fewer</string>
+    <string name="rb_bp_more">One reading a day more</string>
+    <string name="rb_water_less">Lower the daily water target</string>
+    <string name="rb_water_more">Raise the daily water target</string>
+    <string name="doc_show">Show document</string>
+    <string name="doc_source_title">Document</string>
+    <string name="date_day_month">%1$d %2$s</string>
+    <string name="chart_reading">%1$d/%2$d</string>
 </resources>

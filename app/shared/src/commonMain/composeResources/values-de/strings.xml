@@ -197,7 +197,7 @@
     <string name="removed">Entfernt</string>
     <string name="save_record">In die Akte übernehmen</string>
     <string name="saved_at">Gespeichert %1$s</string>
-    <string name="save_hint">Bestätigen oder entfernen Sie jedes Feld, um zu speichern. Vorher wird nichts gespeichert.</string>
+    <string name="save_hint">Bestätigen oder entfernen Sie jedes Feld, um die Prüfung abzuschließen. Vorher wird nichts übernommen.</string>
     <string name="original_entry">Originaleintrag</string>
     <string name="field_complaint">Beschwerde</string>
     <string name="field_history">Anamnese</string>
@@ -388,4 +388,25 @@
     <string name="open_opening">Bericht wird geöffnet…</string>
     <string name="busy">Beschäftigt</string>
     <string name="problem_measurement">Diese Zahl sieht nach einem Tippfehler aus. Prüfen Sie Wert und Einheit.</string>
+    <!-- Final UI review fixes (task 44) -->
+    <string name="opening_diary">Tagebuch wird geöffnet…</string>
+    <string name="complete_review">Prüfung abschließen</string>
+    <string name="review_completed_at">Prüfung abgeschlossen %1$s</string>
+    <string name="copy_for_record">Für die Akte kopieren</string>
+    <string name="copied_for_record">Kopiert. Fügen Sie es in die Akte ein.</string>
+    <string name="report_number">Bericht %1$s</string>
+    <string name="chart_show_values">Werte anzeigen</string>
+    <string name="chart_hide_values">Werte ausblenden</string>
+    <string name="rb_start_less">Einen Tag früher beginnen</string>
+    <string name="rb_start_more">Einen Tag später beginnen</string>
+    <string name="rb_days_less">Einen Tag weniger erfassen</string>
+    <string name="rb_days_more">Einen Tag mehr erfassen</string>
+    <string name="rb_bp_less">Eine Messung pro Tag weniger</string>
+    <string name="rb_bp_more">Eine Messung pro Tag mehr</string>
+    <string name="rb_water_less">Tagesziel für Wasser senken</string>
+    <string name="rb_water_more">Tagesziel für Wasser erhöhen</string>
+    <string name="doc_show">Dokument anzeigen</string>
+    <string name="doc_source_title">Dokument</string>
+    <string name="date_day_month">%1$d. %2$s</string>
+    <string name="chart_reading">%1$d/%2$d</string>
 </resources>
