@@ -209,7 +209,7 @@ private fun PeriodSection(state: RequestBuilderState, today: LocalDate) {
             stringResource(Res.string.rb_start), longDate(state.startDate(today)),
             onLess = { state.changeStart(-1) }, onMore = { state.changeStart(1) },
             lessLabel = stringResource(Res.string.rb_start_less), moreLabel = stringResource(Res.string.rb_start_more),
-            canLess = state.startOffsetDays > 0,
+            canLess = state.startOffsetDays > 0, canMore = state.startOffsetDays < MAX_REQUEST_DAYS,
         )
         RowSeparator(EasyPaperTheme.spacing.m)
         StepperRow(
