@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -170,42 +169,10 @@ fun TextAreaRow(value: String, onValueChange: (String) -> Unit, placeholder: Str
     }
 }
 
-/** iOS segmented control: options in a gray capsule track, the selected one raised. */
+/** Compatibility for form questions that can still have no answer. */
 @Composable
-fun SegmentedControl(options: List<String>, selected: Int?, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
-    val spacing = EasyPaperTheme.spacing
-    val colors = EasyPaperTheme.colors
-    Row(
-        modifier.fillMaxWidth().clip(EasyPaperTheme.shapes.button).background(colors.fill).padding(spacing.xxs / 2).selectableGroup(),
-        horizontalArrangement = Arrangement.spacedBy(spacing.xxs / 2),
-    ) {
-        options.forEachIndexed { index, option ->
-            val isSelected = index == selected
-            Box(
-                Modifier.weight(1f).heightIn(min = spacing.rowMinHeight - spacing.xxs)
-                    .clip(EasyPaperTheme.shapes.small)
-                    // In dark mode the track (fill) and cellRaised are the same gray: lift the selection with label at low alpha.
-                    .background(if (!isSelected) colors.fill else if (colors.isDark) colors.label.copy(alpha = SELECTED_DARK_ALPHA) else colors.cellRaised)
-                    .selectable(
-                        selected = isSelected,
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = LocalIndication.current,
-                        role = Role.RadioButton,
-                        onClick = { onSelect(index) },
-                    )
-                    .padding(horizontal = spacing.xs),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    option,
-                    style = EasyPaperTheme.typography.subheadline.copy(fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal),
-                    color = colors.label,
-                    textAlign = TextAlign.Center,
-                )
-            }
-        }
-    }
-}
+fun SegmentedControl(options: List<String>, selected: Int?, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) =
+    V2SegmentedControl(options, selected, onSelect, modifier)
 
 /** A list of options in a grouped section with a check on the chosen one (iOS picker in a form). */
 @Composable
@@ -278,4 +245,3 @@ fun ScaleInput(value: Int?, onValueChange: (Int) -> Unit, minLabel: String, maxL
 }
 
 private const val SCALE_MAX = 10
-private const val SELECTED_DARK_ALPHA = 0.24f

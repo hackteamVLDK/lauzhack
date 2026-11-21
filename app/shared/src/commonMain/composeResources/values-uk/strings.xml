@@ -356,4 +356,35 @@
     <string name="share_offline_at">Сервер за адресою %1$s недоступний. Перевірте мережу та адресу сервера в меню розробника (довге натискання на заголовок).</string>
     <string name="clinic_code">Код доступу клініки</string>
     <string name="clinic_code_footer">Потрібен для підсумків ШІ із сервера клініки. Залишається лише в цьому вікні й не зберігається.</string>
+
+    <!-- Patient design system v2 (task 50). -->
+    <string name="v2_cancel">Скасувати</string>
+    <string name="v2_clear_search">Очистити пошук</string>
+    <string name="v2_later">Пізніше</string>
+    <string name="v2_open_profile">Відкрити профіль</string>
+    <string name="v2_catalog_title">Компоненти пацієнта v2</string>
+    <string name="v2_search_placeholder">Пошук категорій здоров’я</string>
+    <string name="v2_period_day">Д</string>
+    <string name="v2_period_week">Т</string>
+    <string name="v2_period_month">М</string>
+    <string name="v2_period_half_year">6М</string>
+    <string name="v2_show_options">Показати способи поширення</string>
+    <string name="v2_options_title">Поділитися з лікарем</string>
+    <string name="v2_option_qr">Показати QR-код</string>
+    <string name="v2_option_qr_subtitle">Зашифровано, для одноразового використання.</string>
+    <string name="v2_option_nearby">Поруч (Bluetooth)</string>
+    <string name="v2_option_nearby_subtitle">Підключитися до пристрою лікаря поруч.</string>
+    <string name="v2_option_file">Зберегти зашифрований файл</string>
+    <string name="v2_option_file_subtitle">Зберегти захищену копію для поширення.</string>
+    <string name="v2_show_onboarding">Переглянути вступ</string>
+    <string name="v2_onboarding_title">Ваше здоров’я у ваших руках</string>
+    <string name="v2_onboarding_body">Робіть щоденні записи, стежте за змінами та діліться з лікарем, коли вирішите.</string>
+    <string name="v2_onboarding_primary">Продовжити</string>
+    <string name="v2_onboarding_secondary">Не зараз</string>
+    <string name="v2_onboarding_detail">Зашифровано на цьому телефоні. Нічого не передається без вашого рішення поділитися. Усе можна видалити будь-коли.</string>
+    <string name="v2_progress_label">План на сьогодні</string>
+    <string name="v2_change_progress">Змінити прогрес</string>
+    <string name="v2_profile_sample">Приклад профілю вибрано.</string>
+    <string name="v2_qr_selected">Вибрано поширення через QR-код.</string>
+    <string name="v2_sample_initials">МТ</string>
 </resources>

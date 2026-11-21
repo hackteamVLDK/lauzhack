@@ -2,6 +2,7 @@ package org.easypaper.ui.catalog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,8 +20,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.add
 import easypaper.app.shared.generated.resources.appearance_dark
@@ -42,6 +51,35 @@ import easypaper.app.shared.generated.resources.footer_privacy
 import easypaper.app.shared.generated.resources.ic_add
 import easypaper.app.shared.generated.resources.ic_check_circle
 import easypaper.app.shared.generated.resources.ic_remove
+import easypaper.app.shared.generated.resources.ic_favorite
+import easypaper.app.shared.generated.resources.ic_qr_code_2
+import easypaper.app.shared.generated.resources.ic_history
+import easypaper.app.shared.generated.resources.ic_edit_note
+import easypaper.app.shared.generated.resources.v2_catalog_title
+import easypaper.app.shared.generated.resources.v2_search_placeholder
+import easypaper.app.shared.generated.resources.v2_period_day
+import easypaper.app.shared.generated.resources.v2_period_week
+import easypaper.app.shared.generated.resources.v2_period_month
+import easypaper.app.shared.generated.resources.v2_period_half_year
+import easypaper.app.shared.generated.resources.v2_show_options
+import easypaper.app.shared.generated.resources.v2_options_title
+import easypaper.app.shared.generated.resources.v2_option_qr
+import easypaper.app.shared.generated.resources.v2_option_qr_subtitle
+import easypaper.app.shared.generated.resources.v2_option_nearby
+import easypaper.app.shared.generated.resources.v2_option_nearby_subtitle
+import easypaper.app.shared.generated.resources.v2_option_file
+import easypaper.app.shared.generated.resources.v2_option_file_subtitle
+import easypaper.app.shared.generated.resources.v2_show_onboarding
+import easypaper.app.shared.generated.resources.v2_onboarding_title
+import easypaper.app.shared.generated.resources.v2_onboarding_body
+import easypaper.app.shared.generated.resources.v2_onboarding_primary
+import easypaper.app.shared.generated.resources.v2_onboarding_secondary
+import easypaper.app.shared.generated.resources.v2_onboarding_detail
+import easypaper.app.shared.generated.resources.v2_progress_label
+import easypaper.app.shared.generated.resources.v2_change_progress
+import easypaper.app.shared.generated.resources.v2_profile_sample
+import easypaper.app.shared.generated.resources.v2_qr_selected
+import easypaper.app.shared.generated.resources.v2_sample_initials
 import easypaper.app.shared.generated.resources.pulse
 import easypaper.app.shared.generated.resources.sample_food
 import easypaper.app.shared.generated.resources.sample_med_form
@@ -66,6 +104,13 @@ import org.easypaper.ui.components.PlainButton
 import org.easypaper.ui.components.ProminentButton
 import org.easypaper.ui.components.RowSeparator
 import org.easypaper.ui.components.TintedButton
+import org.easypaper.ui.components.AvatarButton
+import org.easypaper.ui.components.OnboardingPage
+import org.easypaper.ui.components.OptionsSheet
+import org.easypaper.ui.components.ProgressRing
+import org.easypaper.ui.components.SearchField
+import org.easypaper.ui.components.SegmentedControl
+import org.easypaper.ui.components.SheetOption
 import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.easypaper.ui.theme.tabular
@@ -78,6 +123,59 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun DesignCatalog(dark: Boolean, onDarkChange: (Boolean) -> Unit) {
+    var showOptions by remember { mutableStateOf(false) }
+    var showOnboarding by remember { mutableStateOf(false) }
+    var qrSelected by remember { mutableStateOf(false) }
+    Box(Modifier.fillMaxSize()) {
+        CatalogContent(dark, onDarkChange, { showOptions = true }, { showOnboarding = true }, qrSelected)
+        OptionsSheet(
+            visible = showOptions,
+            title = stringResource(Res.string.v2_options_title),
+            options = listOf(
+                SheetOption(
+                    title = stringResource(Res.string.v2_option_qr),
+                    subtitle = stringResource(Res.string.v2_option_qr_subtitle),
+                    icon = Res.drawable.ic_qr_code_2, enabled = true,
+                    onClick = { qrSelected = true; showOptions = false },
+                ),
+                SheetOption(
+                    title = stringResource(Res.string.v2_option_nearby),
+                    subtitle = stringResource(Res.string.v2_option_nearby_subtitle),
+                    icon = Res.drawable.ic_history, enabled = false, onClick = {},
+                ),
+                SheetOption(
+                    title = stringResource(Res.string.v2_option_file),
+                    subtitle = stringResource(Res.string.v2_option_file_subtitle),
+                    icon = Res.drawable.ic_edit_note, enabled = false, onClick = {},
+                ),
+            ),
+            onDismiss = { showOptions = false },
+        )
+        if (showOnboarding) {
+            OnboardingPage(
+                icon = Res.drawable.ic_favorite,
+                title = stringResource(Res.string.v2_onboarding_title),
+                body = stringResource(Res.string.v2_onboarding_body),
+                primary = stringResource(Res.string.v2_onboarding_primary),
+                onPrimary = { showOnboarding = false },
+                secondary = stringResource(Res.string.v2_onboarding_secondary),
+                onSecondary = { showOnboarding = false },
+            ) {
+                Text(stringResource(Res.string.v2_onboarding_detail), style = EasyPaperTheme.typography.footnote,
+                    color = EasyPaperTheme.colors.secondaryLabel)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CatalogContent(
+    dark: Boolean,
+    onDarkChange: (Boolean) -> Unit,
+    onShowOptions: () -> Unit,
+    onShowOnboarding: () -> Unit,
+    qrSelected: Boolean,
+) {
     val colors = EasyPaperTheme.colors
     val type = EasyPaperTheme.typography
     val spacing = EasyPaperTheme.spacing
@@ -200,7 +298,47 @@ fun DesignCatalog(dark: Boolean, onDarkChange: (Boolean) -> Unit) {
                 }
             }
 
+            V2CatalogSection(onShowOptions, onShowOnboarding, qrSelected)
+
             ProminentButton(stringResource(Res.string.show_qr), onClick = {}, modifier = Modifier.fillMaxWidth())
+        }
+    }
+}
+
+@Composable
+private fun V2CatalogSection(onShowOptions: () -> Unit, onShowOnboarding: () -> Unit, qrSelected: Boolean) {
+    val spacing = EasyPaperTheme.spacing
+    val colors = EasyPaperTheme.colors
+    var selected by remember { mutableIntStateOf(0) }
+    var query by remember { mutableStateOf("") }
+    var progress by remember { mutableFloatStateOf(0.6f) }
+    var profileSelected by remember { mutableStateOf(false) }
+    val progressLabel = stringResource(Res.string.v2_progress_label)
+    GroupedSection(header = stringResource(Res.string.v2_catalog_title)) {
+        Column(Modifier.padding(spacing.m), verticalArrangement = Arrangement.spacedBy(spacing.s)) {
+            SegmentedControl(
+                options = listOf(
+                    stringResource(Res.string.v2_period_day), stringResource(Res.string.v2_period_week),
+                    stringResource(Res.string.v2_period_month), stringResource(Res.string.v2_period_half_year),
+                ),
+                selected = selected, onSelect = { selected = it },
+            )
+            SearchField(query, { query = it }, stringResource(Res.string.v2_search_placeholder))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.m)) {
+                ProgressRing(progress, Modifier.semantics { contentDescription = progressLabel })
+                Text(progressLabel, style = EasyPaperTheme.typography.body, color = colors.label,
+                    modifier = Modifier.weight(1f))
+                AvatarButton(stringResource(Res.string.v2_sample_initials), { profileSelected = !profileSelected })
+            }
+            GrayButton(stringResource(Res.string.v2_change_progress), onClick = {
+                progress = if (progress >= 1f) 0f else (progress + 0.2f).coerceAtMost(1f)
+            })
+            if (profileSelected) Text(stringResource(Res.string.v2_profile_sample),
+                style = EasyPaperTheme.typography.footnote, color = colors.secondaryLabel)
+            GrayButton(stringResource(Res.string.v2_show_options), onShowOptions, Modifier.fillMaxWidth())
+            if (qrSelected) Text(stringResource(Res.string.v2_qr_selected),
+                style = EasyPaperTheme.typography.footnote, color = colors.secondaryLabel)
+            PlainButton(stringResource(Res.string.v2_show_onboarding), onShowOnboarding)
         }
     }
 }

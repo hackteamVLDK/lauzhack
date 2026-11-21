@@ -352,4 +352,35 @@
     <string name="share_offline_at">The server at %1$s could not be reached. Check the network and the server address in the developer menu (long-press the title).</string>
     <string name="clinic_code">Clinic access code</string>
     <string name="clinic_code_footer">Needed for AI summaries from the clinic's server. It stays in this window only and is not saved.</string>
+
+    <!-- Patient design system v2 (task 50). -->
+    <string name="v2_cancel">Cancel</string>
+    <string name="v2_clear_search">Clear search</string>
+    <string name="v2_later">Later</string>
+    <string name="v2_open_profile">Open profile</string>
+    <string name="v2_catalog_title">Patient components v2</string>
+    <string name="v2_search_placeholder">Search health categories</string>
+    <string name="v2_period_day">D</string>
+    <string name="v2_period_week">W</string>
+    <string name="v2_period_month">M</string>
+    <string name="v2_period_half_year">6M</string>
+    <string name="v2_show_options">Show sharing options</string>
+    <string name="v2_options_title">Share with your doctor</string>
+    <string name="v2_option_qr">Show QR code</string>
+    <string name="v2_option_qr_subtitle">Encrypted, for one-time use.</string>
+    <string name="v2_option_nearby">Nearby (Bluetooth)</string>
+    <string name="v2_option_nearby_subtitle">Connect to the doctor’s device nearby.</string>
+    <string name="v2_option_file">Save encrypted file</string>
+    <string name="v2_option_file_subtitle">Keep a protected copy to share.</string>
+    <string name="v2_show_onboarding">Preview onboarding</string>
+    <string name="v2_onboarding_title">Your health, in your hands</string>
+    <string name="v2_onboarding_body">Record your day, see changes over time, and share with your doctor when you choose.</string>
+    <string name="v2_onboarding_primary">Continue</string>
+    <string name="v2_onboarding_secondary">Not now</string>
+    <string name="v2_onboarding_detail">Encrypted on this phone. Nothing leaves unless you choose to share. You can delete everything at any time.</string>
+    <string name="v2_progress_label">Today’s plan</string>
+    <string name="v2_change_progress">Change progress</string>
+    <string name="v2_profile_sample">Profile example selected.</string>
+    <string name="v2_qr_selected">QR sharing option selected.</string>
+    <string name="v2_sample_initials">MT</string>
 </resources>

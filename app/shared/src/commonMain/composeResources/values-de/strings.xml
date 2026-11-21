@@ -352,4 +352,35 @@
     <string name="share_offline_at">Der Server unter %1$s ist nicht erreichbar. Prüfen Sie das Netz und die Serveradresse im Entwicklermenü (Titel lange drücken).</string>
     <string name="clinic_code">Zugangscode der Praxis</string>
     <string name="clinic_code_footer">Für KI-Zusammenfassungen vom Server der Praxis nötig. Er bleibt nur in diesem Fenster und wird nicht gespeichert.</string>
+
+    <!-- Patient design system v2 (task 50). -->
+    <string name="v2_cancel">Abbrechen</string>
+    <string name="v2_clear_search">Suche löschen</string>
+    <string name="v2_later">Später</string>
+    <string name="v2_open_profile">Profil öffnen</string>
+    <string name="v2_catalog_title">Patientenkomponenten v2</string>
+    <string name="v2_search_placeholder">Gesundheitskategorien suchen</string>
+    <string name="v2_period_day">T</string>
+    <string name="v2_period_week">W</string>
+    <string name="v2_period_month">M</string>
+    <string name="v2_period_half_year">6M</string>
+    <string name="v2_show_options">Freigabeoptionen anzeigen</string>
+    <string name="v2_options_title">Mit Ihrer Arztpraxis teilen</string>
+    <string name="v2_option_qr">QR-Code anzeigen</string>
+    <string name="v2_option_qr_subtitle">Verschlüsselt, zur einmaligen Verwendung.</string>
+    <string name="v2_option_nearby">In der Nähe (Bluetooth)</string>
+    <string name="v2_option_nearby_subtitle">Mit dem Gerät Ihrer Arztpraxis in der Nähe verbinden.</string>
+    <string name="v2_option_file">Verschlüsselte Datei speichern</string>
+    <string name="v2_option_file_subtitle">Eine geschützte Kopie zum Teilen speichern.</string>
+    <string name="v2_show_onboarding">Einführung ansehen</string>
+    <string name="v2_onboarding_title">Ihre Gesundheit in Ihren Händen</string>
+    <string name="v2_onboarding_body">Halten Sie Ihren Alltag fest, sehen Sie Veränderungen und teilen Sie Ihre Einträge mit Ihrer Arztpraxis, wenn Sie möchten.</string>
+    <string name="v2_onboarding_primary">Weiter</string>
+    <string name="v2_onboarding_secondary">Jetzt nicht</string>
+    <string name="v2_onboarding_detail">Auf diesem Telefon verschlüsselt. Nichts wird ohne Ihre Freigabe übertragen. Sie können jederzeit alles löschen.</string>
+    <string name="v2_progress_label">Heutiger Plan</string>
+    <string name="v2_change_progress">Fortschritt ändern</string>
+    <string name="v2_profile_sample">Profilbeispiel ausgewählt.</string>
+    <string name="v2_qr_selected">Freigabe per QR-Code ausgewählt.</string>
+    <string name="v2_sample_initials">MT</string>
 </resources>
