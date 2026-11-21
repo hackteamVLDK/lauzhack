@@ -1,6 +1,7 @@
 package org.easypaper.ui.patient
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -132,6 +133,12 @@ fun TodayScreen(
                         }
                     }
                 }
+            }
+        }
+        // A second doctor's request (or a new period) is opened the same way as the first.
+        item(key = "open-invite") {
+            Box(Modifier.fillMaxWidth().padding(top = EasyPaperTheme.spacing.s)) {
+                PlainButton(stringResource(Res.string.open_invite), onClick = onOpenInvite)
             }
         }
     }
