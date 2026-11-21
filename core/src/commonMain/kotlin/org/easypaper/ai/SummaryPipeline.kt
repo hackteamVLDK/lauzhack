@@ -100,8 +100,17 @@ class SummaryPipeline(
         }
 
         // 4. Check every line; fall back to the facts themselves.
-        val (lines, dropped) = if (answer != null) checkLines(answer, knownIds) else factLines(digest.toLocalizedText(language), knownIds) to 0
+        val (checked, dropped) = if (answer != null) checkLines(answer, knownIds) else factLines(digest.toLocalizedText(language), knownIds) to 0
         if (dropped > 0) notes += "$dropped line(s) with advice or diagnosis removed"
+        // An answer that used every output token may end mid-line: a last line without sources is a fragment.
+        val cut = answer != null && ledger.items.drop(start).lastOrNull { it.step == AiStep.Summary && !it.cached }
+            ?.let { it.outputTokens >= config.maxSummaryOutputTokens } == true
+        val whole = if (cut && checked.lastOrNull()?.supported == false) checked.dropLast(1).also { notes += "answer cut at the token limit" } else checked
+        // 5. A food photo the summary left out still reaches the doctor, marked as the vision model's words (#36).
+        // the facts without AI cite the photo entry but not what is on it, so then every label is added
+        val cited = if (answer != null) whole.flatMap { it.refs }.toSet() else emptySet()
+        val label = PHOTO_LABEL[language] ?: PHOTO_LABEL.getValue("en")
+        val lines = whole + descriptions.filterKeys { it !in cited }.map { (id, text) -> SummaryLine("$label: $text [$id]", listOf(id), supported = true) }
         return SummaryResult(
             summary = lines.joinToString("\n") { it.text },
             lines = lines,
@@ -120,6 +129,13 @@ class SummaryPipeline(
             food and drinks you see, in English, e.g. "oatmeal with banana, black tea". No judgement, no
             calories, no health or diet advice. If it is not food, answer exactly: not food.
         """.trimIndent()
+
+        /** How a photo label written by the vision model is marked in the summary, by output language. */
+        val PHOTO_LABEL = mapOf(
+            "en" to "Food photo, described by AI (not by the patient)",
+            "de" to "Essensfoto, von KI beschrieben (nicht von der Person selbst)",
+            "uk" to "Фото їжі, описане ШІ (не пацієнтом)",
+        )
 
         const val PHOTO_USER = "What food is in this photo?"
 

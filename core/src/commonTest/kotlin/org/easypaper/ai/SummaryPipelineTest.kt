@@ -94,9 +94,14 @@ class SummaryPipelineTest {
         assertTrue("Oatmeal with banana, black tea [e2]" in ex.calls[1].first.text())
         assertEquals(mapOf("e2" to "Oatmeal with banana, black tea"), result.photoDescriptions)
         assertTrue(result.usedAi)
-        assertEquals(listOf(listOf("e1"), listOf("e4")), result.lines.map { it.refs })
+        // the big model left the photo out: its label still reaches the doctor, marked as the vision model's words (#36)
+        assertEquals(listOf(listOf("e1"), listOf("e4"), listOf("e2")), result.lines.map { it.refs })
         assertTrue(result.lines.all { it.supported })
-        assertEquals("Morning blood pressure 128/84 mmHg, pulse 72 [e1]\nHeadache after lunch [e4]", result.summary)
+        assertEquals(
+            "Morning blood pressure 128/84 mmHg, pulse 72 [e1]\nHeadache after lunch [e4]\n" +
+                "Food photo, described by AI (not by the patient): Oatmeal with banana, black tea [e2]",
+            result.summary,
+        )
     }
 
     @Test
@@ -319,6 +324,7 @@ class SummaryPipelineTest {
                 SummaryLine("Headache every day", emptyList(), false),
                 SummaryLine("Patient feels tired", emptyList(), false),
                 SummaryLine("Headache after lunch [e4]", listOf("e4"), false),
+                SummaryLine("Food photo, described by AI (not by the patient): oatmeal [e2]", listOf("e2"), true),
             ),
             result.lines,
         )
@@ -388,4 +394,34 @@ class SummaryPipelineTest {
     }
 
     private fun assertNear(expected: Double, actual: Double) = assertTrue(abs(expected - actual) < 1e-12, "$expected vs $actual")
+
+    @Test
+    fun aPhotoTheSummaryCitesIsNotRepeatedAndLabelsFollowTheLanguage() = runTest {
+        val cites = FakeExecutor { model -> if (model == config.small) "Oatmeal with banana" else "Oatmeal with banana for breakfast [e2]\nHeadache after lunch [e4]" }
+        assertEquals(listOf(listOf("e2"), listOf("e4")), SummaryPipeline(cites, config).summarize(record, photos).lines.map { it.refs })
+        val leaves = FakeExecutor { model -> if (model == config.small) "Haferbrei mit Banane" else "Kopfschmerzen nach dem Mittag [e4]" }
+        assertEquals(
+            "Essensfoto, von KI beschrieben (nicht von der Person selbst): Haferbrei mit Banane [e2]",
+            SummaryPipeline(leaves, config).summarize(record, photos, language = "de").lines.last().text,
+        )
+    }
+
+    @Test
+    fun anAnswerCutAtTheTokenLimitLosesItsBrokenLastLine() = runTest {
+        // reasoning models can spend every output token; the answer then stops mid-fact
+        val cut = FakeExecutor(outputTokens = config.maxSummaryOutputTokens) { model ->
+            if (model == config.small) "Oatmeal" else "Morning blood pressure 128/84 mmHg [e1]\nMedica"
+        }
+        val result = SummaryPipeline(cut, config).summarize(record, photos)
+        assertEquals(listOf(listOf("e1"), listOf("e2")), result.lines.map { it.refs })
+        assertTrue("answer cut at the token limit" in result.note.orEmpty())
+        // the model answers nothing at all (every token spent reasoning): facts without AI, the photo label still added
+        val empty = FakeExecutor(outputTokens = config.maxSummaryOutputTokens) { model -> if (model == config.small) "Oatmeal" else "" }
+        val facts = SummaryPipeline(empty, config).summarize(record, photos)
+        assertEquals(false, facts.usedAi)
+        assertEquals("Food photo, described by AI (not by the patient): Oatmeal [e2]", facts.lines.last().text)
+                // an unsupported last line in a complete answer stays, marked unsupported
+        val whole = FakeExecutor(outputTokens = 50) { model -> if (model == config.small) "Oatmeal" else "BP 128/84 [e1]\nPatient feels tired" }
+        assertEquals(false, SummaryPipeline(whole, config).summarize(record, photos).lines[1].supported)
+    }
 }
