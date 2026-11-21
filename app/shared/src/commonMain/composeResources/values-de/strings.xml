@@ -352,4 +352,5 @@
     <string name="share_offline_at">Der Server unter %1$s ist nicht erreichbar. Prüfen Sie das Netz und die Serveradresse im Entwicklermenü (Titel lange drücken).</string>
     <string name="clinic_code">Zugangscode der Praxis</string>
     <string name="clinic_code_footer">Für KI-Zusammenfassungen vom Server der Praxis nötig. Er bleibt nur in diesem Fenster und wird nicht gespeichert.</string>
+    <string name="med_not_in_list">Diese Packung ist nicht in der Medikamentenliste. Wir haben den Namen von der Packung eingetragen — bitte prüfen.</string>
 </resources>

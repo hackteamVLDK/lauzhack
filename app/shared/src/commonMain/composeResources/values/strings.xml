@@ -352,4 +352,5 @@
     <string name="share_offline_at">The server at %1$s could not be reached. Check the network and the server address in the developer menu (long-press the title).</string>
     <string name="clinic_code">Clinic access code</string>
     <string name="clinic_code_footer">Needed for AI summaries from the clinic's server. It stays in this window only and is not saved.</string>
+    <string name="med_not_in_list">This package is not in the medicine list. We filled in the name we read on the box — please check it.</string>
 </resources>
