@@ -18,24 +18,27 @@ INSERT INTO "events" VALUES(9,8,'mykhailo','MyPc-chat','created','Ktor-серв�
 INSERT INTO "events" VALUES(10,9,'mykhailo','MyPc-chat','created','Отчёт и передача: сводка + FHIR-подобный JSON, шифрование, QR с ключом; формат отчёта зафиксировать первым коммитом [IMC][JB]','{"assignee":"vlad","criteria":"без ключа не расшифровать","title":"Отчёт и передача: сводка + FHIR-подобный JSON, шифрование, QR с ключом; формат отчёта зафиксировать первым коммитом [IMC][JB]"}','2026-11-21T14:45:14+00:00');
 INSERT INTO "events" VALUES(11,10,'mykhailo','MyPc-chat','created','Экран врача на приёме: сводка → оригиналы; предзаполненная форма с подтверждением каждого поля [IMC][JB] [старт после утверждённого docs/design.md]','{"assignee":"pavlo","criteria":"демо-отчёт открывается, без подтверждения ничего не сохраняется","title":"Экран врача на приёме: сводка → оригиналы; предзаполненная форма с подтверждением каждого поля [IMC][JB] [старт после утверждённого docs/design.md]"}','2026-11-21T14:45:14+00:00');
 INSERT INTO "events" VALUES(12,11,'mykhailo','MyPc-chat','created','Демо и презентация: облако против локального модуля по цене, общий/платформенный код, скриншоты агентов в Air [JB][IMC][AXA]','{"assignee":"mykhailo","criteria":"сценарий на 3 минуты","title":"Демо и презентация: облако против локального модуля по цене, общий/платформенный код, скриншоты агентов в Air [JB][IMC][AXA]"}','2026-11-21T14:45:14+00:00');
+INSERT INTO "events" VALUES(13,NULL,'mykhailo','MyPc-chat','base','Tasks start from branch main','{}','2026-11-21T14:45:15+00:00');
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 INSERT INTO "meta" VALUES('goal','Easy Paper — KMP-приложение (Android, Desktop, Web/Wasm, Ktor-сервер): врач собирает из виджетов запрос под жалобу, пациент несколько дней заполняет его текстом, числами и фото (еда, упаковки лекарств), а на приёме передаёт через QR зашифрованный отчёт, который ИИ сжимает в сводку со ссылками на оригиналы и предзаполненную форму клиники. Экономный ИИ-конвейер (штрих-код/OCR без LLM, маленькая модель для простого, большая один раз на сводку, кэш, учёт токенов и цены) и режим локального ИИ-модуля в клинике (Ollama). Приложение не ставит диагнозов и не советует — только собирает и структурирует факты; ИИ пишет черновик, каждое поле подтверждает врач.
 Порядок: задача 1 первая; UI-задачи 4, 5, 10 — только после утверждённого mykhailo docs/design.md (задача 3). Секреты только в env/локально; коммиты без подписи Claude; в origin не пушить.');
+INSERT INTO "meta" VALUES('base','main');
 CREATE TABLE outbox (
  event_id INTEGER PRIMARY KEY REFERENCES events(id), published INTEGER NOT NULL DEFAULT 0
 );
-INSERT INTO "outbox" VALUES(1,0);
-INSERT INTO "outbox" VALUES(2,0);
-INSERT INTO "outbox" VALUES(3,0);
-INSERT INTO "outbox" VALUES(4,0);
-INSERT INTO "outbox" VALUES(5,0);
-INSERT INTO "outbox" VALUES(6,0);
-INSERT INTO "outbox" VALUES(7,0);
-INSERT INTO "outbox" VALUES(8,0);
-INSERT INTO "outbox" VALUES(9,0);
-INSERT INTO "outbox" VALUES(10,0);
-INSERT INTO "outbox" VALUES(11,0);
-INSERT INTO "outbox" VALUES(12,0);
+INSERT INTO "outbox" VALUES(1,1);
+INSERT INTO "outbox" VALUES(2,1);
+INSERT INTO "outbox" VALUES(3,1);
+INSERT INTO "outbox" VALUES(4,1);
+INSERT INTO "outbox" VALUES(5,1);
+INSERT INTO "outbox" VALUES(6,1);
+INSERT INTO "outbox" VALUES(7,1);
+INSERT INTO "outbox" VALUES(8,1);
+INSERT INTO "outbox" VALUES(9,1);
+INSERT INTO "outbox" VALUES(10,1);
+INSERT INTO "outbox" VALUES(11,1);
+INSERT INTO "outbox" VALUES(12,1);
+INSERT INTO "outbox" VALUES(13,0);
 CREATE TABLE problems (
  id INTEGER PRIMARY KEY, task_id INTEGER NOT NULL REFERENCES tasks(id),
  member TEXT NOT NULL, description TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open',
@@ -57,6 +60,7 @@ INSERT INTO "requests" VALUES('f5060000-cc03-5a82-a0fc-46c8642a4b63','7f5f732a77
 INSERT INTO "requests" VALUES('4f34f539-763a-5031-95b4-9bd379e1e062','8c7d45e310b3e9d13aad12411607ecd53e259288d1caba86688f72032ff4cdf9',200,'{"event_id":10,"task":{"assignee":"vlad","author":"mykhailo","branch":null,"builds":0,"checkpoint_sha":null,"client":null,"created":"2026-11-21T14:45:14+00:00","criteria":"без ключа не расшифровать","id":9,"lease_expires":null,"lease_id":null,"owner":null,"phase":"plan","plan":null,"review_notes":null,"status":"ready","submitter":null,"title":"Отчёт и передача: сводка + FHIR-подобный JSON, шифрование, QR с ключом; формат отчёта зафиксировать первым коммитом [IMC][JB]","updated":"2026-11-21T14:45:14+00:00"}}','2026-11-21T14:45:14+00:00');
 INSERT INTO "requests" VALUES('ed246ea2-6534-587f-89ed-3c68447239e3','1f8103c73de86be04cbc584d41209c459b00214a527430f8bb52785f1bd3797e',200,'{"event_id":11,"task":{"assignee":"pavlo","author":"mykhailo","branch":null,"builds":0,"checkpoint_sha":null,"client":null,"created":"2026-11-21T14:45:14+00:00","criteria":"демо-отчёт открывается, без подтверждения ничего не сохраняется","id":10,"lease_expires":null,"lease_id":null,"owner":null,"phase":"plan","plan":null,"review_notes":null,"status":"ready","submitter":null,"title":"Экран врача на приёме: сводка → оригиналы; предзаполненная форма с подтверждением каждого поля [IMC][JB] [старт после утверждённого docs/design.md]","updated":"2026-11-21T14:45:14+00:00"}}','2026-11-21T14:45:14+00:00');
 INSERT INTO "requests" VALUES('35796c08-cd1a-5b98-a126-b36a93c7b902','b1d439d76956ba6fa625b9dc545c7127d6d81fa14b83df6e82aadae184f9989d',200,'{"event_id":12,"task":{"assignee":"mykhailo","author":"mykhailo","branch":null,"builds":0,"checkpoint_sha":null,"client":null,"created":"2026-11-21T14:45:14+00:00","criteria":"сценарий на 3 минуты","id":11,"lease_expires":null,"lease_id":null,"owner":null,"phase":"plan","plan":null,"review_notes":null,"status":"ready","submitter":null,"title":"Демо и презентация: облако против локального модуля по цене, общий/платформенный код, скриншоты агентов в Air [JB][IMC][AXA]","updated":"2026-11-21T14:45:14+00:00"}}','2026-11-21T14:45:14+00:00');
+INSERT INTO "requests" VALUES('e5457816-fcd0-478c-9f8f-7e2e772c820c','3c73f072227d1f152cf33beb1799e93c21dde953baa305bcfd0b188a6ee5fd95',200,'{"base":"main","event_id":13}','2026-11-21T14:45:15+00:00');
 CREATE TABLE tasks (
  id INTEGER PRIMARY KEY, title TEXT NOT NULL, criteria TEXT NOT NULL,
  author TEXT NOT NULL, assignee TEXT, status TEXT NOT NULL DEFAULT 'ready',
