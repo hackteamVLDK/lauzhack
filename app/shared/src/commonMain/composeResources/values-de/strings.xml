@@ -33,4 +33,82 @@
     <string name="show_qr">QR-Code dem Arzt zeigen</string>
     <string name="sample_sources">Mo 08:10   Do 07:55</string>
     <string name="sample_med_form">Ramipril 5 mg 1-0-0</string>
+
+    <!-- App shell (task 26) -->
+    <string name="app_name">Easy Paper</string>
+    <string name="tab_history">Verlauf</string>
+    <string name="tab_share">Teilen</string>
+    <string name="back">Zurück</string>
+    <string name="done">Fertig</string>
+    <string name="day_of">Tag %1$d von %2$d für %3$s</string>
+    <string name="starts_on">Beginnt am %1$s</string>
+    <string name="ended_on">Endete am %1$s</string>
+    <string name="today_empty_title">Noch keine Anfrage von Ihrer Praxis</string>
+    <string name="today_empty_message">Öffnen Sie den Einladungslink Ihrer Praxis auf diesem Telefon. Was Sie erfassen sollen, erscheint dann hier.</string>
+    <string name="history_empty_title">Noch keine Einträge</string>
+    <string name="history_empty_message">Ihre Einträge erscheinen hier, Tag für Tag.</string>
+    <string name="share_explain">Beim Termin zeigen Sie einen QR-Code, und der Computer in der Praxis öffnet Ihre Einträge. Bis dahin bleiben sie auf diesem Telefon.</string>
+    <string name="requests">Anfragen</string>
+    <string name="new_request">Neue Anfrage</string>
+    <string name="new_request_message">Wählen Sie, was die Person erfasst und wie viele Tage lang. Sie senden die Anfrage als Link oder QR-Code.</string>
+    <string name="doctor_empty_title">Kein Bericht geöffnet</string>
+    <string name="doctor_empty_message">Scannen Sie den QR-Code der Patientin oder des Patienten, um den Bericht zu öffnen, oder erstellen Sie eine neue Anfrage.</string>
+    <string name="section_entries">Einträge</string>
+    <string name="developer">Entwicklung</string>
+    <string name="design_catalog">Designkatalog</string>
+    <string name="fill_demo">Mit Demodaten füllen</string>
+    <string name="clear_data">Daten löschen</string>
+    <string name="large_text">Größere Schrift (200 %)</string>
+    <string name="switch_to_doctor">Zur Ansicht für die Praxis wechseln</string>
+    <string name="switch_to_patient">Zur Ansicht für Patienten wechseln</string>
+    <string name="dev_footer">Verstecktes Menü für Demos und Tests. Öffnet sich mit langem Druck auf den Bildschirmtitel.</string>
+    <string name="role_question">Wer nutzt diesen Computer?</string>
+    <string name="role_patient">Ich bin Patientin oder Patient</string>
+    <string name="role_patient_detail">Erfassen, was Ihre Praxis erfragt</string>
+    <string name="role_doctor">Ich bin Ärztin oder Arzt</string>
+    <string name="role_doctor_detail">Anfragen erstellen und Berichte öffnen</string>
+    <string name="date_long">%1$s, %2$d. %3$s</string>
+    <string name="date_range_one_month">%1$d.–%2$d. %3$s</string>
+    <string name="date_range_two_months">%1$d. %2$s – %3$d. %4$s</string>
+    <string-array name="weekdays">
+        <item>Montag</item>
+        <item>Dienstag</item>
+        <item>Mittwoch</item>
+        <item>Donnerstag</item>
+        <item>Freitag</item>
+        <item>Samstag</item>
+        <item>Sonntag</item>
+    </string-array>
+    <string-array name="months_long">
+        <item>Januar</item>
+        <item>Februar</item>
+        <item>März</item>
+        <item>April</item>
+        <item>Mai</item>
+        <item>Juni</item>
+        <item>Juli</item>
+        <item>August</item>
+        <item>September</item>
+        <item>Oktober</item>
+        <item>November</item>
+        <item>Dezember</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>Jan.</item>
+        <item>Feb.</item>
+        <item>März</item>
+        <item>Apr.</item>
+        <item>Mai</item>
+        <item>Juni</item>
+        <item>Juli</item>
+        <item>Aug.</item>
+        <item>Sept.</item>
+        <item>Okt.</item>
+        <item>Nov.</item>
+        <item>Dez.</item>
+    </string-array>
+    <plurals name="entries">
+        <item quantity="one">%1$d Eintrag</item>
+        <item quantity="other">%1$d Einträge</item>
+    </plurals>
 </resources>

@@ -33,4 +33,82 @@
     <string name="show_qr">Show QR to the doctor</string>
     <string name="sample_sources">Mon 08:10   Thu 07:55</string>
     <string name="sample_med_form">Ramipril 5 mg 1-0-0</string>
+
+    <!-- App shell (task 26) -->
+    <string name="app_name">Easy Paper</string>
+    <string name="tab_history">History</string>
+    <string name="tab_share">Share</string>
+    <string name="back">Back</string>
+    <string name="done">Done</string>
+    <string name="day_of">Day %1$d of %2$d for %3$s</string>
+    <string name="starts_on">Starts on %1$s</string>
+    <string name="ended_on">Ended on %1$s</string>
+    <string name="today_empty_title">No request from your doctor yet</string>
+    <string name="today_empty_message">Open the invite link from your doctor on this phone. What to record then appears here.</string>
+    <string name="history_empty_title">No entries yet</string>
+    <string name="history_empty_message">Your entries appear here, day by day.</string>
+    <string name="share_explain">At your visit you show a QR code, and your doctor’s computer opens your entries. Until then they stay on this phone.</string>
+    <string name="requests">Requests</string>
+    <string name="new_request">New request</string>
+    <string name="new_request_message">Choose what the patient records and for how many days. You send the request as a link or QR code.</string>
+    <string name="doctor_empty_title">No report open</string>
+    <string name="doctor_empty_message">Scan the patient’s QR code to open their report, or create a new request.</string>
+    <string name="section_entries">Entries</string>
+    <string name="developer">Developer</string>
+    <string name="design_catalog">Design catalog</string>
+    <string name="fill_demo">Fill with demo data</string>
+    <string name="clear_data">Clear data</string>
+    <string name="large_text">Larger text (200 %)</string>
+    <string name="switch_to_doctor">Switch to the doctor app</string>
+    <string name="switch_to_patient">Switch to the patient app</string>
+    <string name="dev_footer">Hidden menu for demos and testing. Opens with a long press on the screen title.</string>
+    <string name="role_question">Who is using this computer?</string>
+    <string name="role_patient">I’m a patient</string>
+    <string name="role_patient_detail">Record what your doctor asked for</string>
+    <string name="role_doctor">I’m a doctor</string>
+    <string name="role_doctor_detail">Create requests and open patient reports</string>
+    <string name="date_long">%1$s, %2$d %3$s</string>
+    <string name="date_range_one_month">%1$d–%2$d %3$s</string>
+    <string name="date_range_two_months">%1$d %2$s – %3$d %4$s</string>
+    <string-array name="weekdays">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+    <string-array name="months_long">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sep</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
+    </string-array>
+    <plurals name="entries">
+        <item quantity="one">%1$d entry</item>
+        <item quantity="other">%1$d entries</item>
+    </plurals>
 </resources>
