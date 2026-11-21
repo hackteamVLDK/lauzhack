@@ -40,7 +40,8 @@ python test.py --all    # also builds the Android APK and the Wasm web app
 
 `test.py` picks `gradlew.bat` or `./gradlew` for the OS and writes `local.properties` from
 `ANDROID_HOME` / `ANDROID_SDK_ROOT` / the default SDK path when it is missing. The default run
-works without an Android SDK; only `--all` needs it. Team Hub runs it through `teamhub.json`.
+works without an Android SDK; only `--all` needs it. It also compiles `core` for JS and Wasm, so a
+JVM-only call in shared code fails the run instead of breaking the web app later. Team Hub runs it through `teamhub.json`.
 
 ## Stay in sync
 

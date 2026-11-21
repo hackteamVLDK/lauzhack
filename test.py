@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Project tests for Easy Paper. Run from anywhere: `python test.py` (Team Hub calls it the same way).
 
-Default: JVM tests of the shared code (`core`, `app/shared` jvm = desktop target), Ktor server tests
-and a compile of the desktop app; no Android SDK needed. `--all` also builds the Android debug APK
+Default: JVM tests of the shared code (`core`, `app/shared` jvm = desktop target), a JS + Wasm compile of
+`core`, Ktor server tests and a compile of the desktop app; no Android SDK needed. `--all` also builds the Android debug APK
 (needs the SDK) and the Wasm web app.
 Extra arguments after `--` go to Gradle unchanged, e.g. `python test.py -- --rerun-tasks`.
 """
@@ -15,7 +15,9 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-QUICK = [":core:jvmTest", ":app:shared:jvmTest", ":server:test", ":app:desktopApp:compileKotlin"]
+# core is compiled for JS and Wasm too: JVM-only calls (toSortedMap, String.format, Math.*) pass the JVM tests but break the web
+QUICK = [":core:jvmTest", ":core:compileTestKotlinJs", ":core:compileTestKotlinWasmJs",
+         ":app:shared:jvmTest", ":server:test", ":app:desktopApp:compileKotlin"]
 FULL = [":app:androidApp:assembleDebug", ":app:webApp:wasmJsBrowserDistribution"]
 RESULT_DIRS = ["core", "app/shared", "server"]
 
