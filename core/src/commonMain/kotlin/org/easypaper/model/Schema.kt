@@ -1,0 +1,178 @@
+package org.easypaper.model
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
+/** Bump only together with a migration and a note to the UI/report owners. */
+const val SCHEMA_VERSION = 1
+
+/** The one JSON config for requests, records and reports. Polymorphic types use the "type" field. */
+val EasyPaperJson = Json {
+    ignoreUnknownKeys = true // older apps read newer optional fields
+    encodeDefaults = true
+}
+
+/** What the doctor builds for one complaint; the patient fills it for [days] days from [startDate]. */
+@Serializable
+data class CareRequest(
+    val schemaVersion: Int = SCHEMA_VERSION,
+    val id: String,
+    val createdAt: Long, // epoch millis UTC
+    val doctorName: String,
+    val complaint: String,
+    val startDate: String, // ISO date, e.g. "2026-11-21"
+    val days: Int,
+    val locale: String, // BCP 47, e.g. "ru", "en"
+    val widgets: List<WidgetSpec>,
+) {
+    init {
+        require(schemaVersion in 1..SCHEMA_VERSION) { "Unsupported schemaVersion $schemaVersion, app knows $SCHEMA_VERSION" }
+        require(days > 0) { "days must be > 0" }
+        require(widgets.map { it.id }.toSet().size == widgets.size) { "widget ids must be unique" }
+    }
+}
+
+@Serializable
+sealed interface WidgetSpec {
+    val id: String
+    val title: String
+    val required: Boolean
+}
+
+@Serializable
+@SerialName("questionnaire")
+data class QuestionnaireWidget(
+    override val id: String,
+    override val title: String,
+    override val required: Boolean = true,
+    val questions: List<Question>,
+) : WidgetSpec
+
+@Serializable
+data class Question(
+    val id: String,
+    val text: String,
+    val kind: QuestionKind,
+    val options: List<String> = emptyList(), // for CHOICE; for SCALE: ["min", "max"] labels, values 0..10
+)
+
+@Serializable
+enum class QuestionKind {
+    @SerialName("yesno") YES_NO,
+    @SerialName("scale") SCALE,
+    @SerialName("choice") CHOICE,
+    @SerialName("text") TEXT,
+}
+
+@Serializable
+@SerialName("blood_pressure")
+data class BloodPressureWidget(
+    override val id: String,
+    override val title: String,
+    override val required: Boolean = true,
+    val timesPerDay: Int = 2,
+) : WidgetSpec
+
+@Serializable
+@SerialName("water")
+data class WaterWidget(
+    override val id: String,
+    override val title: String,
+    override val required: Boolean = true,
+    val targetMl: Int? = null,
+) : WidgetSpec
+
+@Serializable
+@SerialName("food")
+data class FoodWidget(
+    override val id: String,
+    override val title: String,
+    override val required: Boolean = true,
+    val photo: Boolean = true, // photo is offered, never mandatory
+) : WidgetSpec
+
+@Serializable
+@SerialName("medications")
+data class MedicationsWidget(
+    override val id: String,
+    override val title: String,
+    override val required: Boolean = true,
+    val scan: Boolean = true, // barcode/OCR scan offered
+) : WidgetSpec
+
+@Serializable
+@SerialName("diary")
+data class DiaryWidget(
+    override val id: String,
+    override val title: String,
+    override val required: Boolean = false,
+) : WidgetSpec
+
+@Serializable
+@SerialName("doctor_questions")
+data class DoctorQuestionsWidget(
+    override val id: String,
+    override val title: String,
+    override val required: Boolean = false,
+) : WidgetSpec
+
+/** One thing the patient recorded. Photos are only referenced by [photoRef]; bytes live in a separate store. */
+@Serializable
+data class Entry(
+    val id: String,
+    val widgetId: String,
+    val at: Long, // epoch millis UTC
+    val payload: EntryPayload,
+)
+
+@Serializable
+sealed interface EntryPayload
+
+/** questionId -> answer: "yes"/"no", "0".."10", the chosen option, or free text. */
+@Serializable
+@SerialName("answers")
+data class Answers(val values: Map<String, String>) : EntryPayload
+
+@Serializable
+@SerialName("blood_pressure")
+data class BloodPressure(val systolic: Int, val diastolic: Int, val pulse: Int? = null) : EntryPayload
+
+@Serializable
+@SerialName("water")
+data class Water(val ml: Int) : EntryPayload
+
+@Serializable
+@SerialName("food")
+data class Food(val text: String? = null, val photoRef: String? = null) : EntryPayload
+
+@Serializable
+@SerialName("medication")
+data class Medication(
+    val name: String,
+    val code: String? = null, // GTIN / DataMatrix content
+    val dose: String? = null,
+    val source: MedicationSource,
+    val confirmed: Boolean, // patient confirmed what the scan found
+) : EntryPayload
+
+@Serializable
+enum class MedicationSource {
+    @SerialName("scan") SCAN,
+    @SerialName("manual") MANUAL,
+}
+
+@Serializable
+@SerialName("diary_note")
+data class DiaryNote(val text: String, val photoRef: String? = null) : EntryPayload
+
+@Serializable
+@SerialName("doctor_question")
+data class DoctorQuestion(val text: String) : EntryPayload
+
+/** Request + everything the patient entered: the input of the report (task #9). */
+@Serializable
+data class PatientRecord(
+    val request: CareRequest,
+    val entries: List<Entry> = emptyList(),
+)
