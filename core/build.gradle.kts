@@ -35,6 +35,7 @@ kotlin {
             api(libs.kotlinx.serializationJson)
             implementation(libs.cryptography.core)
             implementation(libs.cryptography.providerOptimal)
+            implementation(libs.ktor.clientCore)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
