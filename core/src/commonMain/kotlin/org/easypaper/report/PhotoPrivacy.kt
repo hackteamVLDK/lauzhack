@@ -1,9 +1,11 @@
 package org.easypaper.report
 
 /**
- * Removes what a phone writes into a JPEG besides the picture: EXIF (GPS position, phone model, time), XMP, IPTC
- * and comments. Keeps the colour segments (JFIF APP0, ICC APP2, Adobe APP14) and the orientation, rewritten as a
- * minimal EXIF, so the photo is not shown sideways. Image data from SOS on is copied unchanged (no re-encoding).
+ * Removes what a phone writes into a JPEG besides the picture: EXIF (GPS position, phone model, time), XMP, IPTC,
+ * MPF and comments, and everything after the main image's EOI (Ultra HDR gain maps, MPF secondary images, Motion
+ * Photo video, depth maps — each can carry its own metadata). Keeps the colour segments (JFIF APP0, ICC APP2,
+ * Adobe APP14) and the orientation, rewritten as a minimal EXIF, so the photo is not shown sideways. Scan data is
+ * copied unchanged (no re-encoding); progressive JPEGs keep all their scans.
  * Throws IllegalArgumentException for anything that is not a well-formed JPEG.
  */
 fun stripJpegMetadata(jpeg: ByteArray): ByteArray {
@@ -17,16 +19,23 @@ fun stripJpegMetadata(jpeg: ByteArray): ByteArray {
         while (i + 1 < jpeg.size && u8(i + 1) == 0xFF) i++ // fill bytes
         require(i + 1 < jpeg.size) { "Broken JPEG at byte $i" }
         val marker = u8(i + 1)
-        if (marker == 0xDA || marker == 0xD9) { // start of scan / end of image: the rest is image data
-            kept += jpeg.copyOfRange(i, jpeg.size)
-            break
-        }
+        if (marker == 0xD9) { kept += jpeg.copyOfRange(i, i + 2); break } // EOI: anything after it is dropped
         if (marker in 0xD0..0xD7 || marker == 0x01) { kept += jpeg.copyOfRange(i, i + 2); i += 2; continue }
         require(i + 3 < jpeg.size) { "Broken JPEG at byte $i" }
         val length = (u8(i + 2) shl 8) or u8(i + 3)
         require(length >= 2 && i + 2 + length <= jpeg.size) { "Broken JPEG segment at byte $i" }
+        if (marker == 0xDA) { // SOS header + entropy-coded data up to the next real marker
+            var j = i + 2 + length
+            // inside scan data FF is always followed by 00 (stuffing), D0-D7 (restart) or FF (fill)
+            while (j + 1 < jpeg.size && !(u8(j) == 0xFF && u8(j + 1) != 0x00 && u8(j + 1) !in 0xD0..0xD7 && u8(j + 1) != 0xFF)) j++
+            require(j + 1 < jpeg.size) { "JPEG scan without end" }
+            kept += jpeg.copyOfRange(i, j)
+            i = j
+            continue
+        }
         if (marker == 0xE1) orientation = orientation ?: exifOrientation(jpeg, i + 4, length - 2)
-        val drop = marker == 0xE1 || marker == 0xFE || (marker in 0xE3..0xEF && marker != 0xEE)
+        val iccProfile = marker == 0xE2 && startsWith(jpeg, i + 4, "ICC_PROFILE\u0000")
+        val drop = marker == 0xE1 || marker == 0xFE || (marker == 0xE2 && !iccProfile) || (marker in 0xE3..0xEF && marker != 0xEE)
         if (!drop) kept += jpeg.copyOfRange(i, i + 2 + length)
         i += 2 + length
     }
@@ -39,6 +48,9 @@ fun stripJpegMetadata(jpeg: ByteArray): ByteArray {
     for (part in kept) { part.copyInto(out, at); at += part.size }
     return out
 }
+
+private fun startsWith(data: ByteArray, at: Int, text: String) =
+    at + text.length <= data.size && text.indices.all { (data[at + it].toInt() and 0xFF) == text[it].code }
 
 /** Orientation (tag 0x0112) from an APP1 payload "Exif\0\0" + TIFF; null when absent or malformed. */
 internal fun exifOrientation(data: ByteArray, offset: Int, length: Int): Int? {

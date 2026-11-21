@@ -24,7 +24,8 @@ private val base64 = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT)
  * Encrypts with a fresh AES-256-GCM key per report; the report id is bound as associated data.
  * [photos] (photoRef -> bytes) must be photos referenced by this report's food/diary entries; each one is
  * encrypted with the same key and bound to "<reportId>/photo/<ref>", so photos cannot be swapped or passed off as the report.
- * JPEG photos are passed through [stripJpegMetadata] first; other formats travel as given.
+ * Photos must be JPEG (the platform converts HEIC/PNG/WebP first) and go through [stripJpegMetadata], so GPS,
+ * phone model and other metadata never leave the phone; anything else -> IllegalArgumentException.
  */
 @OptIn(ExperimentalEncodingApi::class)
 suspend fun sealReport(report: Report, photos: Map<String, ByteArray> = emptyMap()): SealedReport {
@@ -33,15 +34,15 @@ suspend fun sealReport(report: Report, photos: Map<String, ByteArray> = emptyMap
     }.toSet()
     val unknown = photos.keys - referenced
     require(unknown.isEmpty()) { "Photos not referenced by the report: $unknown" }
+    val clean = photos.mapValues { (ref, photo) ->
+        require(photo.size > 2 && photo[0] == 0xFF.toByte() && photo[1] == 0xD8.toByte()) { "Photo $ref is not a JPEG; convert it first" }
+        stripJpegMetadata(photo)
+    }
     val key = generateRecordKey()
     val cipher = aesGcm(key)
     val json = EasyPaperJson.encodeToString(Report.serializer(), report)
     val bytes = cipher.encrypt(json.encodeToByteArray(), report.id.encodeToByteArray())
-    val sealedPhotos = photos.mapValues { (ref, photo) ->
-        // JPEGs lose GPS, phone model and other metadata before they leave the phone
-        val clean = if (photo.size > 2 && photo[0] == 0xFF.toByte() && photo[1] == 0xD8.toByte()) stripJpegMetadata(photo) else photo
-        cipher.encrypt(clean, photoBinding(report.id, ref))
-    }
+    val sealedPhotos = clean.mapValues { (ref, photo) -> cipher.encrypt(photo, photoBinding(report.id, ref)) }
     return SealedReport(bytes, QR_PREFIX + report.id + ":" + base64.encode(key), sealedPhotos)
 }
 

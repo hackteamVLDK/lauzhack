@@ -92,7 +92,7 @@ class EndToEndTest {
         assertEquals(emptyList(), store.list())
 
         // 6. Sealed report with the food photo; only the QR opens it
-        val photo = ByteArray(3000) { (it % 251).toByte() }
+        val photo = org.easypaper.report.tinyJpeg(ByteArray(3000) { (it % 251).toByte() })
         val sealed = sealReport(Report(id = "rep-e2e", createdAt = start + 2 * day, record = loaded), mapOf("photo-pizza" to photo))
         assertEquals("rep-e2e", reportIdFromQr(sealed.qr))
         val received = openReport(sealed.bytes, sealed.qr)

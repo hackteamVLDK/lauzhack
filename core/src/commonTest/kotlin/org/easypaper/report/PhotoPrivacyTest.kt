@@ -103,6 +103,34 @@ class PhotoPrivacyTest {
     }
 
     @Test
+    fun everythingAfterTheMainImageIsDropped() {
+        // Ultra HDR / MPF / Motion Photo: a second JPEG with its own EXIF and an MP4 after the main EOI
+        val secondImage = bytes(0xFF, 0xD8) + seg(0xE1, exif(big = true, orientation = 1)) + scan
+        val video = "\u0000\u0000\u0000\u0018ftypmp42 GPS 46.5197N".encodeToByteArray()
+        val mpf = seg(0xE2, "MPF\u0000MM\u0000*mpf-secret".encodeToByteArray())
+        val icc = seg(0xE2, "ICC_PROFILE\u0000\u0001\u0001sRGB".encodeToByteArray())
+        val original = bytes(0xFF, 0xD8) + app0 + icc + mpf + seg(0xE1, exif(big = false, orientation = 6)) + dqt + scan + secondImage + video
+        val clean = stripJpegMetadata(original)
+        for (secret in listOf("PhoneModelX", "46.5197N", "mpf-secret", "ftypmp4")) assertFalse(clean.has(secret), "'$secret' left")
+        assertTrue(clean.has("ICC_PROFILE")) // colour profile stays
+        assertContentEquals(bytes(0xFF, 0xD9), clean.copyOfRange(clean.size - 2, clean.size))
+        assertContentEquals(scan, clean.copyOfRange(clean.size - scan.size, clean.size)) // main image intact
+        assertEquals(6, orientationOf(clean))
+    }
+
+    @Test
+    fun progressiveJpegKeepsAllScansAndDropsCommentsBetweenThem() {
+        val scan1 = bytes(0xFF, 0xDA, 0x00, 0x08, 1, 1, 0, 0, 0, 0) + bytes(0x11, 0xFF, 0x00, 0x22, 0xFF, 0xD1, 0x33)
+        val dht = seg(0xC4, ByteArray(20) { it.toByte() })
+        val scan2 = bytes(0xFF, 0xDA, 0x00, 0x08, 1, 1, 0, 1, 0x3F, 0) + bytes(0x44, 0x55)
+        val end = bytes(0xFF, 0xFF, 0xD9) // a fill byte before EOI is legal
+        val original = bytes(0xFF, 0xD8) + app0 + dqt + scan1 + seg(0xFE, "between-scans-secret".encodeToByteArray()) + dht + scan2 + end
+        val clean = stripJpegMetadata(original)
+        assertFalse(clean.has("between-scans-secret"))
+        assertContentEquals(bytes(0xFF, 0xD8) + app0 + dqt + scan1 + dht + scan2 + end, clean)
+    }
+
+    @Test
     fun photosInTheReportArriveClean() = runTest {
         val report = Report(
             id = "rep", createdAt = 0,

@@ -29,8 +29,8 @@ class PhotoTransferTest {
             ),
         ),
     )
-    private val food = ByteArray(5000) { (it * 7).toByte() }
-    private val diary = "fake jpeg bytes".encodeToByteArray()
+    private val food = tinyJpeg(ByteArray(5000) { (it * 7 % 255).toByte() })
+    private val diary = tinyJpeg("fake jpeg bytes".encodeToByteArray())
 
     @Test
     fun photosOpenWithTheReportQr() = runTest {
@@ -59,9 +59,20 @@ class PhotoTransferTest {
     }
 
     @Test
+    fun nonJpegPhotoRejected() = runTest {
+        val png = byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A) + "eXIf GPS".encodeToByteArray()
+        kotlin.test.assertFailsWith<IllegalArgumentException> { sealReport(report, mapOf("p-food" to png)) }
+    }
+
+    @Test
     fun reportWithoutPhotosUnchanged() = runTest {
         val sealed = sealReport(report)
         assertTrue(sealed.photos.isEmpty())
         assertEquals(report, openReport(sealed.bytes, sealed.qr))
     }
 }
+
+/** Minimal clean JPEG around [data] (no FF bytes in it): SOI, SOS header, scan data, EOI. */
+internal fun tinyJpeg(data: ByteArray): ByteArray =
+    byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 0xFF.toByte(), 0xDA.toByte(), 0x00, 0x08, 1, 1, 0, 0, 0x3F, 0) + data +
+        byteArrayOf(0xFF.toByte(), 0xD9.toByte())
