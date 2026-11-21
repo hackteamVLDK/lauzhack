@@ -7,7 +7,7 @@ Queue and journals are generated from SQLite. Change them through the API.
 Easy Paper — KMP-приложение (Android, Desktop, Web/Wasm, Ktor-сервер): врач собирает из виджетов запрос под жалобу, пациент несколько дней заполняет его текстом, числами и фото (еда, упаковки лекарств), а на приёме передаёт через QR зашифрованный отчёт, который ИИ сжимает в сводку со ссылками на оригиналы и предзаполненную форму клиники. Экономный ИИ-конвейер (штрих-код/OCR без LLM, маленькая модель для простого, большая один раз на сводку, кэш, учёт токенов и цены) и режим локального ИИ-модуля в клинике (Ollama). Приложение не ставит диагнозов и не советует — только собирает и структурирует факты; ИИ пишет черновик, каждое поле подтверждает врач.
 Порядок: задача 1 первая; UI-задачи 4, 5, 10 — только после утверждённого mykhailo docs/design.md (задача 3). Секреты только в env/локально; коммиты без подписи Claude; в origin не пушить.
 
-Phases: plan 11
+Phases: build 1, plan 10
 
 ## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB]
 
@@ -21,10 +21,10 @@ Review notes: -
 
 ## Task 2: Модель виджетов и данных в commonMain: схема запроса врача (список виджетов: опросник, давление, вода, еда, лекарства, дневник, вопросы врачу), ответы, зашифрованное локальное хранилище; формат схемы зафиксировать первым коммитом [JB][IMC]
 
-Latest intent: -
-Phase: plan; build 0; submitter: -; branch: -.
-Status: ready; assignee: vlad; owner: -; client: -.
-Lease expires: -.
+Latest intent: vlad/BelarusLord-chat · 2026-11-21T14:46:59+00:00: Фиксирую формат схемы запроса врача (план до каркаса), код — после #1 в main
+Phase: build; build 0; submitter: -; branch: -.
+Status: running; assignee: vlad; owner: vlad; client: BelarusLord-chat.
+Lease expires: 2026-11-21T14:49:59+00:00.
 Acceptance: тесты commonTest
 Checkpoint SHA: -
 Review notes: -
