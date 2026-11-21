@@ -2,6 +2,17 @@
 
 Every push to the hub: who, which branch, which files. Newest first.
 
+## Push 208 · 2026-11-21T15:36:02+00:00 · vlad · attempt/vlad/task-6-1
+
+vlad pushed attempt/vlad/task-6-1: 1 commit(s), 3 file(s)
+`0000000000` → `d16157353c`
+
+- d161573 UladzislauHrynevich: core: medication scan - GS1 code parsing, refdata.ch subset, OCR text search
+
+    A core/src/commonMain/kotlin/org/easypaper/scan/MedicationData.kt
+    A core/src/commonMain/kotlin/org/easypaper/scan/Scan.kt
+    A core/src/commonTest/kotlin/org/easypaper/scan/ScanTest.kt
+
 ## Push 185 · 2026-11-21T15:29:47+00:00 · mykhailo · attempt/mykhailo/task-1-2
 
 mykhailo pushed attempt/mykhailo/task-1-2: 1 commit(s), 2 file(s)

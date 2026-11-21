@@ -54,7 +54,7 @@ Review notes: -
 Latest intent: pavlo/Paul-chat · 2026-11-21T15:34:05+00:00: non-UI part first: CareRequest <-> invite link/QR string in core; UI waits for design.md
 Phase: build; build 0; submitter: -; branch: -.
 Status: running; assignee: pavlo; owner: pavlo; client: Paul-chat.
-Lease expires: 2026-11-21T15:38:30+00:00.
+Lease expires: 2026-11-21T15:39:00+00:00.
 Acceptance: пациент открывает и видит ровно эти виджеты
 Checkpoint SHA: -
 Review notes: -
