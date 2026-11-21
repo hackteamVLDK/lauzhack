@@ -1,5 +1,6 @@
 package org.easypaper.visit
 
+import org.easypaper.ai.SummaryPipeline
 import org.easypaper.model.Entry
 import org.easypaper.model.PatientRecord
 import org.easypaper.model.WidgetSpec
@@ -66,6 +67,16 @@ fun parseSummary(summary: String?, record: PatientRecord): ParsedSummary {
         SummaryLine(parts)
     }
     return ParsedSummary(lines)
+}
+
+/**
+ * A summary that arrived with a report was not written by this app's pipeline: it goes through the same check
+ * (SummaryPipeline.checkLines) before the doctor sees it — lines with advice or a diagnosis are dropped and links
+ * to entries the record does not have are removed. Returns the checked text and how many lines were dropped.
+ */
+fun checkedReportSummary(summary: String, record: PatientRecord): Pair<String, Int> {
+    val (lines, dropped) = SummaryPipeline.checkLines(summary, record.entries.map { it.id }.toSet())
+    return lines.joinToString("\n") { it.text } to dropped
 }
 
 /** Originals for the doctor: every widget of the request in its order, with its entries sorted by time. */

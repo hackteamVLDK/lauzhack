@@ -16,6 +16,7 @@ import org.easypaper.visit.FormFieldKey
 import org.easypaper.visit.FormWording
 import org.easypaper.visit.SavedClinicForm
 import org.easypaper.visit.SummaryPart
+import org.easypaper.visit.checkedReportSummary
 import org.easypaper.visit.parseSummary
 import org.easypaper.visit.prefillClinicForm
 
@@ -58,7 +59,8 @@ fun visitSummary(report: Report, ai: SummaryResult?, utcOffsetMinutes: Int = 0):
             if (ai.usedAi) SummarySource.Ai else SummarySource.Facts,
         )
     }
-    val (text, source) = report.summary?.takeIf { it.isNotBlank() }?.let { it to SummarySource.Report }
+    // A summary that came with the report gets the pipeline's check: no advice, no diagnoses, no invented links.
+    val (text, source) = report.summary?.takeIf { it.isNotBlank() }?.let { checkedReportSummary(it, record).first to SummarySource.Report }
         ?: (record.factDigest(utcOffsetMinutes).toText() to SummarySource.Facts)
     val parsed = parseSummary(text, record)
     return VisitSummary(
@@ -77,7 +79,8 @@ fun visitSummary(report: Report, ai: SummaryResult?, utcOffsetMinutes: Int = 0):
 @Stable
 class VisitState(
     val report: Report,
-    wording: FormWording,
+    val wording: FormWording,
+    /** The doctor's (and usually the patient's) time zone: days of the facts are local days. */
     private val utcOffsetMinutes: Int = 0,
 ) {
     var summary: VisitSummary by mutableStateOf(visitSummary(report, null, utcOffsetMinutes))

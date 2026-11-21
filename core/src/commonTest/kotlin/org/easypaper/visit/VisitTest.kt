@@ -197,4 +197,14 @@ class VisitTest {
         assertFalse(history.edited)
         assertEquals(FieldState.CONFIRMED, updated.field(FormFieldKey.COMPLAINT).state)
     }
+
+    @Test
+    fun aReportsOwnSummaryLosesAdviceAndDiagnoses() {
+        val (text, dropped) = checkedReportSummary(
+            "Morning blood pressure 125-131 mmHg [e01, e07]\nYou should take ibuprofen [e27]\nProbably migraine [e06]\nWater [e99]",
+            Demo.record,
+        )
+        assertEquals(2, dropped)
+        assertEquals(listOf("Morning blood pressure 125-131 mmHg [e01, e07]", "Water"), text.lines())
+    }
 }

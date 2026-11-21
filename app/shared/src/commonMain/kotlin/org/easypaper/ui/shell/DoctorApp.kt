@@ -232,7 +232,7 @@ private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDev
 @Composable
 private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: ShellSettings, back: BackAction?, select: (DoctorScreen) -> Unit, emptyActions: @Composable () -> Unit) {
     when (screen) {
-        is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { report -> key(report.id) { VisitScreen(report, back, visitAi(state, report), state.reportPhotos[report.id].orEmpty()) } }
+        is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { report -> key(report.id) { VisitScreen(report, back, visitAi(state, report), state.reportPhotos[report.id].orEmpty(), store = state.visits) } }
             ?: NothingOpen(emptyActions)
         DoctorScreen.NewRequest -> RequestBuilderScreen(back)
         // the patient's QR opens the report once (task 30); it joins the list and opens right away

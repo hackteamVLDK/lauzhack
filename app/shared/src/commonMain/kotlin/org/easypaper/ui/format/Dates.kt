@@ -11,11 +11,15 @@ import easypaper.app.shared.generated.resources.weekdays
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.offsetAt
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
+
+/** Minutes the device's time zone is ahead of UTC right now (CET: 60), for days of facts in local time. */
+fun currentUtcOffsetMinutes(): Int = TimeZone.currentSystemDefault().offsetAt(Clock.System.now()).totalSeconds / 60
 
 /** Today in the device's time zone. */
 fun today(): LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())

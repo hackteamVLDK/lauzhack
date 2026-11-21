@@ -11,6 +11,8 @@ import org.easypaper.ai.AiStatus
 import org.easypaper.ai.AiUsage
 import org.easypaper.ai.SummaryResult
 import org.easypaper.demo.Demo
+import org.easypaper.ui.doctor.VisitState
+import org.easypaper.ui.format.currentUtcOffsetMinutes
 import org.easypaper.model.DiaryNote
 import org.easypaper.model.Entry
 import org.easypaper.model.Food
@@ -60,6 +62,9 @@ class ShellState(
     /** Every AI call made from this app, for the cost screen (#32). */
     val aiUsage = mutableStateListOf<AiUsage>()
 
+    /** The doctor's work on each opened report (decisions, saved form), kept while they look at other screens. */
+    val visits = mutableMapOf<String, VisitState>()
+
     /** AI summaries by report id. */
     val aiResults = mutableStateMapOf<String, SummaryResult>()
 
@@ -77,7 +82,7 @@ class ShellState(
         aiBusy[report.id] = true
         aiFailed.remove(report.id)
         try {
-            val result = ai.summarize(report.record, reportPhotos[report.id].orEmpty()) // food photos without text get described (#36)
+            val result = ai.summarize(report.record, reportPhotos[report.id].orEmpty(), utcOffsetMinutes = currentUtcOffsetMinutes()) // food photos without text get described (#36)
             aiResults[report.id] = result
             aiUsage += result.usage
             refreshAiStatus()

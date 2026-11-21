@@ -323,4 +323,5 @@
     <string name="invite_start">Start recording</string>
     <string name="invite_summary">%1$s, %2$s from %3$s</string>
     <string name="invite_preview_footer">What you record stays on this phone until you show the QR at your visit.</string>
+    <string name="edited_by_you">Edited by you</string>
 </resources>

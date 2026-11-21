@@ -61,6 +61,7 @@ import easypaper.app.shared.generated.resources.date_short
 import easypaper.app.shared.generated.resources.done
 import easypaper.app.shared.generated.resources.draft
 import easypaper.app.shared.generated.resources.edit
+import easypaper.app.shared.generated.resources.edited_by_you
 import easypaper.app.shared.generated.resources.entries
 import easypaper.app.shared.generated.resources.facts_without_ai
 import easypaper.app.shared.generated.resources.field_bp
@@ -103,6 +104,7 @@ import org.easypaper.ui.components.Sheet
 import org.easypaper.ui.components.TextAreaRow
 import org.easypaper.ui.components.TintedButton
 import org.easypaper.ui.components.category
+import org.easypaper.ui.format.currentUtcOffsetMinutes
 import org.easypaper.ui.format.dateRange
 import org.easypaper.ui.format.lastDay
 import org.easypaper.ui.format.longDate
@@ -136,9 +138,22 @@ class VisitAi(val result: SummaryResult?, val busy: Boolean, val failed: Boolean
  * clinic form confirmed field by field, and every entry. Nothing is saved until each field is decided.
  */
 @Composable
-fun VisitScreen(report: Report, back: BackAction?, ai: VisitAi? = null, photos: Map<String, ByteArray> = emptyMap()) {
+fun VisitScreen(
+    report: Report,
+    back: BackAction?,
+    ai: VisitAi? = null,
+    photos: Map<String, ByteArray> = emptyMap(),
+    /** Keeps the doctor's decisions per report while they look at other screens (ShellState.visits). */
+    store: MutableMap<String, VisitState>? = null,
+) {
     val wording = rememberFormWording()
-    val state = remember(report.id, wording) { VisitState(report, wording) }
+    val offset = remember { currentUtcOffsetMinutes() }
+    val state = remember(report.id, wording) {
+        val kept = store?.get(report.id)
+        // Keep what the doctor decided; rebuild only an untouched state whose texts were made before the language loaded.
+        if (kept != null && (kept.wording == wording || kept.decided > 0 || kept.saved != null)) kept
+        else VisitState(report, wording, offset).also { store?.put(report.id, it) }
+    }
     val timeZone = remember { TimeZone.currentSystemDefault() }
     var original by remember { mutableStateOf<Entry?>(null) }
     var editing by remember { mutableStateOf<FormFieldKey?>(null) }
@@ -205,7 +220,15 @@ private fun SummarySection(state: VisitState, ai: VisitAi?, timeZone: TimeZone, 
         val count = state.report.record.entries.size
         Text(stringResource(Res.string.written_from, count.toString()), style = EasyPaperTheme.typography.footnote, color = colors.secondaryLabel)
     }
-    GroupedSection {
+    // What the doctor confirms is what they see: once edited, the history text replaces the summary lines.
+    if (history.edited) {
+        GroupedSection {
+            Column(Modifier.fillMaxWidth().padding(spacing.m), verticalArrangement = Arrangement.spacedBy(spacing.xxs)) {
+                Text(history.value, style = EasyPaperTheme.typography.callout, color = colors.label)
+                Text(stringResource(Res.string.edited_by_you), style = EasyPaperTheme.typography.footnote, color = colors.secondaryLabel)
+            }
+        }
+    } else GroupedSection {
         summary.lines.forEachIndexed { index, line ->
             if (index > 0) RowSeparator(spacing.m)
             Column(Modifier.fillMaxWidth().padding(horizontal = spacing.m, vertical = spacing.s)) {

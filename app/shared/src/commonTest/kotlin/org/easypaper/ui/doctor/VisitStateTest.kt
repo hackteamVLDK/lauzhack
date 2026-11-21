@@ -3,6 +3,9 @@ package org.easypaper.ui.doctor
 import org.easypaper.ai.SummaryLine
 import org.easypaper.ai.SummaryResult
 import org.easypaper.demo.Demo
+import org.easypaper.model.Entry
+import org.easypaper.model.PatientRecord
+import org.easypaper.model.Water
 import org.easypaper.visit.FieldState
 import org.easypaper.visit.FormFieldKey
 import org.easypaper.visit.demoVisitReport
@@ -132,4 +135,26 @@ class VisitStateTest {
         val summary = visitSummary(Demo.report, aiResult.copy(usedAi = false, note = "AI is off on this server"))
         assertEquals(SummarySource.Facts, summary.source)
     }
+
+    @Test
+    fun aSummaryThatCameWithTheReportLosesAdvice() {
+        val report = demoVisitReport().copy(summary = "You should take ibuprofen [e27]" + NL + "Water 990 mL per day [e25]")
+        val summary = visitSummary(report, ai = null)
+        assertEquals(listOf("Water 990 mL per day"), summary.lines.map { it.text })
+    }
+
+    @Test
+    fun waterDaysFollowTheLocalTimeZone() {
+        val request = Demo.request
+        // 00:30 and 08:00 on 21 Nov in CET (UTC+1): one local day, two UTC days.
+        val entries = listOf(
+            Entry("w1", "w", 1_795_217_400_000L, Water(250)), // 2026-11-20T23:30Z
+            Entry("w2", "w", 1_795_244_400_000L, Water(125)), // 2026-11-21T07:00Z
+        )
+        val report = org.easypaper.report.Report(id = "r-tz", createdAt = 0, record = PatientRecord(request, entries))
+        assertEquals("375 ml per day on average, days: 1", VisitState(report, wording, utcOffsetMinutes = 60).form.field(FormFieldKey.FLUID_INTAKE).value)
+        assertEquals("187 ml per day on average, days: 2", VisitState(report, wording, utcOffsetMinutes = 0).form.field(FormFieldKey.FLUID_INTAKE).value)
+    }
+
+    private companion object { const val NL = "\n" }
 }
