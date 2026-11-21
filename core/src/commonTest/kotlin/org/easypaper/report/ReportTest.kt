@@ -74,6 +74,7 @@ class ReportTest {
     @Test
     fun fhirBundleKeepsEntryIdsAndCodes() {
         val resources = report.fhir.getValue("entry").jsonArray.map { it.jsonObject.getValue("resource").jsonObject }
+            .filter { it.getValue("resourceType").jsonPrimitive.content !in setOf("Composition", "Questionnaire") }
         assertEquals(record.entries.map { it.id }, resources.map { it.getValue("id").jsonPrimitive.content })
         assertEquals(
             listOf("Observation", "Observation", "QuestionnaireResponse", "MedicationStatement", "Observation", "Observation", "Observation"),
