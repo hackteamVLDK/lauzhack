@@ -246,4 +246,7 @@
     <string name="chart_upper">верхній</string>
     <string name="chart_lower">нижній</string>
     <string name="chart_description">Графік тиску: верхній %1$s, нижній %2$s мм рт. ст., вимірювань: %3$d.</string>
+    <!-- device storage could not be opened (task 27) -->
+    <string name="storage_error_title">Не вдалося відкрити щоденник</string>
+    <string name="storage_error_message">На цьому пристрої нічого не змінено й не видалено. Закрийте застосунок і відкрийте знову; якщо це повторюється, повідомте вашу клініку.</string>
 </resources>

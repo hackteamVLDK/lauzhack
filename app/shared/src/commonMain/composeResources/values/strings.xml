@@ -244,4 +244,7 @@
     <string name="chart_upper">upper</string>
     <string name="chart_lower">lower</string>
     <string name="chart_description">Blood pressure chart: upper %1$s, lower %2$s mmHg, %3$d readings.</string>
+    <!-- device storage could not be opened (task 27) -->
+    <string name="storage_error_title">Your diary could not be opened</string>
+    <string name="storage_error_message">Nothing on this device was changed or deleted. Close the app and open it again; if this keeps happening, tell your clinic.</string>
 </resources>
