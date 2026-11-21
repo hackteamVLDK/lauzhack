@@ -430,7 +430,7 @@ private fun EntriesSection(report: Report, timeZone: TimeZone, onOpen: (Entry) -
                     horizontalArrangement = Arrangement.spacedBy(spacing.s),
                 ) {
                     val date = entry.localDate(timeZone)
-                    Text(dateShort.fill(date.day, monthsShort[date.month.ordinal]) + " " + timeOfDay(entry.at, timeZone),
+                    Text(dateShort.fill(date.day, monthsShort.getOrElse(date.month.ordinal) { "" }) + " " + timeOfDay(entry.at, timeZone),
                         style = EasyPaperTheme.typography.footnote.tabular(), color = EasyPaperTheme.colors.secondaryLabel,
                         modifier = Modifier.padding(top = spacing.xxs / 2))
                     Text(entryText(entry, record.request), style = EasyPaperTheme.typography.callout, color = EasyPaperTheme.colors.label)
