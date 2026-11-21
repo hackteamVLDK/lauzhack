@@ -11,10 +11,10 @@ Phases: accepted 2, plan 8, review 1
 
 ## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB]
 
-Latest intent: mykhailo/MyPc-chat · 2026-11-21T15:28:27+00:00: fix по ревью vlad: test.py без Android SDK
+Latest intent: vlad/BelarusLord-chat · 2026-11-21T15:32:13+00:00: review
 Phase: review; build 2; submitter: mykhailo; branch: attempt/mykhailo/task-1-2.
-Status: ready; assignee: mykhailo; owner: -; client: -.
-Lease expires: -.
+Status: running; assignee: mykhailo; owner: vlad; client: BelarusLord-chat.
+Lease expires: 2026-11-21T15:35:13+00:00.
 Acceptance: python test.py зелёный на Windows и Linux, Desktop и Android запускаются
 Checkpoint SHA: 81198aa71f84701fbcb36f08746d2689edfeae44
 Review notes: Проверено на Linux (без Android SDK), sha 616b398: gradlew :core:jvmTest :app:shared:jvmTest :server:test :app:desktopApp:compileKotlin — BUILD SUCCESSFUL; :app:desktopApp:run — окно стартует, 20 с без исключений; .claude/skills, teamhub.json, .gitattributes на месте. ПРОБЛЕМА (критерий 'python test.py зелёный на Linux'): test.py:66-68 — при отсутствии Android SDK возвращает 2 ещё до Gradle, хотя QUICK-задачам SDK не нужен (проверено: они проходят без local.properties). Т.к. teamhub.json запуска
