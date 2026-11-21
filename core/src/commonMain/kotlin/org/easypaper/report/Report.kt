@@ -8,6 +8,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.easypaper.model.Answers
 import org.easypaper.model.BloodPressure
 import org.easypaper.model.DiaryNote
@@ -16,6 +17,9 @@ import org.easypaper.model.Entry
 import org.easypaper.model.Food
 import org.easypaper.model.Medication
 import org.easypaper.model.PatientRecord
+import org.easypaper.model.Question
+import org.easypaper.model.QuestionKind
+import org.easypaper.model.QuestionnaireWidget
 import org.easypaper.model.Water
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -45,18 +49,76 @@ data class Report(
 private const val LOINC = "http://loinc.org"
 private const val UCUM = "http://unitsofmeasure.org"
 
-/** FHIR-like Bundle (type collection). Every resource id is the [Entry.id], so a summary can link to originals. */
-fun PatientRecord.toFhirBundle(): JsonObject = buildJsonObject {
-    put("resourceType", "Bundle")
+/**
+ * FHIR-like Bundle (type collection): first a Composition (table of contents, one section per doctor's widget,
+ * status preliminary: patient-reported, not confirmed by a doctor), then one Questionnaire per questionnaire widget,
+ * then one resource per entry. Entry resource ids are the [Entry.id], so a summary can link to originals.
+ */
+fun PatientRecord.toFhirBundle(): JsonObject {
+    val questionsByWidget = request.widgets.filterIsInstance<QuestionnaireWidget>()
+        .associate { w -> w.id to w.questions.associateBy { it.id } }
+    val resources = entries.map { it to it.toFhir(questionsByWidget[it.widgetId].orEmpty()) }
+    return buildJsonObject {
+        put("resourceType", "Bundle")
+        put("id", request.id)
+        put("type", "collection")
+        putJsonArray("entry") {
+            addJsonObject { put("resource", composition(resources)) }
+            for (w in request.widgets.filterIsInstance<QuestionnaireWidget>()) addJsonObject { put("resource", w.toFhirQuestionnaire()) }
+            for ((_, resource) in resources) addJsonObject { put("resource", resource) }
+        }
+    }
+}
+
+private fun PatientRecord.composition(resources: List<Pair<Entry, JsonObject>>): JsonObject = buildJsonObject {
+    fun ref(resource: JsonObject) = resource.getValue("resourceType").jsonPrimitive.content + "/" + resource.getValue("id").jsonPrimitive.content
+    put("resourceType", "Composition")
     put("id", request.id)
-    put("type", "collection")
-    putJsonArray("entry") {
-        for (entry in entries) addJsonObject { put("resource", entry.toFhir()) }
+    put("status", "preliminary")
+    putJsonObject("type") { put("text", "Patient-reported record") }
+    put("date", request.startDate)
+    put("title", "Patient-reported record: ${request.complaint}")
+    putJsonArray("author") { addJsonObject { put("display", "Patient") } }
+    val known = request.widgets.map { it.id }.toSet()
+    val sections = request.widgets.map { w -> w.title to resources.filter { it.first.widgetId == w.id } } +
+        listOf("Other" to resources.filter { it.first.widgetId !in known })
+    putJsonArray("section") {
+        for ((title, items) in sections) if (items.isNotEmpty()) addJsonObject {
+            put("title", title)
+            putJsonArray("entry") { for ((_, r) in items) addJsonObject { put("reference", ref(r)) } }
+        }
+    }
+}
+
+private fun QuestionnaireWidget.toFhirQuestionnaire(): JsonObject = buildJsonObject {
+    put("resourceType", "Questionnaire")
+    put("id", id)
+    put("status", "active")
+    put("title", title)
+    putJsonArray("item") {
+        for (q in questions) addJsonObject {
+            put("linkId", q.id)
+            put("text", q.text)
+            put("type", when (q.kind) { QuestionKind.YES_NO -> "boolean"; QuestionKind.SCALE -> "integer"; QuestionKind.CHOICE -> "choice"; QuestionKind.TEXT -> "string" })
+            if (q.kind == QuestionKind.CHOICE) putJsonArray("answerOption") {
+                for (o in q.options) addJsonObject { putJsonObject("valueCoding") { put("code", o); put("display", o) } }
+            }
+        }
+    }
+}
+
+/** Typed by the question kind; a value that does not fit stays a string, so nothing is lost. */
+private fun JsonObjectBuilder.answerValue(q: Question?, value: String) {
+    when {
+        q?.kind == QuestionKind.YES_NO && (value == "yes" || value == "no") -> put("valueBoolean", value == "yes")
+        q?.kind == QuestionKind.SCALE && value.toIntOrNull() != null -> put("valueInteger", value.toInt())
+        q?.kind == QuestionKind.CHOICE -> putJsonObject("valueCoding") { put("code", value); put("display", value) }
+        else -> put("valueString", value)
     }
 }
 
 @OptIn(ExperimentalTime::class)
-private fun Entry.toFhir(): JsonObject = buildJsonObject {
+private fun Entry.toFhir(questions: Map<String, Question>): JsonObject = buildJsonObject {
     put("id", id)
     val time = Instant.fromEpochMilliseconds(at).toString()
     when (val p = payload) {
@@ -87,12 +149,13 @@ private fun Entry.toFhir(): JsonObject = buildJsonObject {
         is Answers -> {
             put("resourceType", "QuestionnaireResponse")
             put("status", "completed")
-            put("questionnaire", widgetId)
+            put("questionnaire", "Questionnaire/$widgetId")
             put("authored", time)
             putJsonArray("item") {
                 for ((question, answer) in p.values) addJsonObject {
                     put("linkId", question)
-                    putJsonArray("answer") { addJsonObject { put("valueString", answer) } }
+                    questions[question]?.let { put("text", it.text) }
+                    putJsonArray("answer") { addJsonObject { answerValue(questions[question], answer) } }
                 }
             }
         }
