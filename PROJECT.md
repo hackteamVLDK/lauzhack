@@ -11,10 +11,10 @@ Phases: build 1, plan 9, review 1
 
 ## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB]
 
-Latest intent: mykhailo/MyPc-chat · 2026-11-21T14:45:25+00:00: Каркас KMP: Android/Desktop/Web/Server + test.py + teamhub.json + skills
+Latest intent: vlad/BelarusLord-chat · 2026-11-21T15:14:16+00:00: review
 Phase: review; build 1; submitter: mykhailo; branch: attempt/mykhailo/task-1-1.
-Status: ready; assignee: mykhailo; owner: -; client: -.
-Lease expires: -.
+Status: running; assignee: mykhailo; owner: vlad; client: BelarusLord-chat.
+Lease expires: 2026-11-21T15:17:16+00:00.
 Acceptance: python test.py зелёный на Windows и Linux, Desktop и Android запускаются
 Checkpoint SHA: 616b398c1dbd3b80d75aca5d95d9336cbac2ac12
 Review notes: -
