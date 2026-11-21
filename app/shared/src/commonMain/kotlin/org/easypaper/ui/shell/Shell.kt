@@ -1,5 +1,12 @@
 package org.easypaper.ui.shell
 
+import easypaper.app.shared.generated.resources.opening_diary
+import androidx.compose.ui.Alignment
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -81,11 +88,19 @@ fun EasyPaperApp(
     }
 }
 
-/** Opening the device storage (blank for the moment it takes), or why it could not be opened. */
+/** Opening the device storage (the first start creates the key: it can take a moment), or why it could not be opened. */
 @Composable
 private fun StorageState(error: Throwable?) {
-    Box(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background)) {
-        if (error != null) EmptyState(stringResource(Res.string.storage_error_title), stringResource(Res.string.storage_error_message))
+    val spacing = EasyPaperTheme.spacing
+    Box(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background).padding(spacing.screenMargin), contentAlignment = Alignment.Center) {
+        if (error != null) {
+            EmptyState(stringResource(Res.string.storage_error_title), stringResource(Res.string.storage_error_message))
+        } else {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacing.s)) {
+                CircularProgressIndicator(Modifier.size(spacing.xxl), color = EasyPaperTheme.colors.tint, strokeWidth = spacing.xxs / 2)
+                Text(stringResource(Res.string.opening_diary), style = EasyPaperTheme.typography.body, color = EasyPaperTheme.colors.secondaryLabel)
+            }
+        }
     }
 }
 

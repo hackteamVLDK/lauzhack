@@ -1,5 +1,13 @@
 package org.easypaper.ui.doctor
 
+import easypaper.app.shared.generated.resources.rb_water_more
+import easypaper.app.shared.generated.resources.rb_water_less
+import easypaper.app.shared.generated.resources.rb_bp_more
+import easypaper.app.shared.generated.resources.rb_bp_less
+import easypaper.app.shared.generated.resources.rb_days_more
+import easypaper.app.shared.generated.resources.rb_days_less
+import easypaper.app.shared.generated.resources.rb_start_more
+import easypaper.app.shared.generated.resources.rb_start_less
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -195,18 +203,19 @@ fun RequestBuilderScreen(back: BackAction?, onCreated: (CareRequest) -> Unit = {
 
 @Composable
 private fun PeriodSection(state: RequestBuilderState, today: LocalDate) {
-    val less = stringResource(Res.string.less)
-    val more = stringResource(Res.string.more)
+    // Each button names what it changes: a screen reader hears "One recording day more", not "More" twice.
     GroupedSection(Modifier.padding(top = EasyPaperTheme.spacing.sectionGap), header = stringResource(Res.string.rb_period)) {
         StepperRow(
             stringResource(Res.string.rb_start), longDate(state.startDate(today)),
-            onLess = { state.changeStart(-1) }, onMore = { state.changeStart(1) }, lessLabel = less, moreLabel = more,
-            canLess = state.startOffsetDays > 0,
+            onLess = { state.changeStart(-1) }, onMore = { state.changeStart(1) },
+            lessLabel = stringResource(Res.string.rb_start_less), moreLabel = stringResource(Res.string.rb_start_more),
+            canLess = state.startOffsetDays > 0, canMore = state.startOffsetDays < MAX_REQUEST_DAYS,
         )
         RowSeparator(EasyPaperTheme.spacing.m)
         StepperRow(
             stringResource(Res.string.rb_length), pluralStringResource(Res.plurals.days, state.days, state.days),
-            onLess = { state.changeDays(-1) }, onMore = { state.changeDays(1) }, lessLabel = less, moreLabel = more,
+            onLess = { state.changeDays(-1) }, onMore = { state.changeDays(1) },
+            lessLabel = stringResource(Res.string.rb_days_less), moreLabel = stringResource(Res.string.rb_days_more),
             canLess = state.days > 1, canMore = state.days < MAX_REQUEST_DAYS,
         )
     }
@@ -223,8 +232,10 @@ private fun WidgetsSection(state: RequestBuilderState, titles: Map<WidgetKind, S
         WidgetKind.entries.forEachIndexed { index, kind ->
             if (index > 0) RowSeparator()
             val on = state.enabled[kind] == true
-            CategoryRow(kind.category, titles.getValue(kind), trailing = {
-                IosSwitch(on, onCheckedChange = { state.enabled[kind] = it })
+            val title = titles.getValue(kind)
+            CategoryRow(kind.category, title, trailing = {
+                // The switch carries the category's name: "Blood pressure, switch, on", not an unnamed switch.
+                IosSwitch(on, onCheckedChange = { state.enabled[kind] = it }, modifier = Modifier.semanticsLabel(title))
             }) {
                 if (on) WidgetOptions(state, kind)
             }
@@ -235,11 +246,10 @@ private fun WidgetsSection(state: RequestBuilderState, titles: Map<WidgetKind, S
 /** Options that change what the patient is asked for; only where there is a real choice. */
 @Composable
 private fun WidgetOptions(state: RequestBuilderState, kind: WidgetKind) {
-    val less = stringResource(Res.string.less)
-    val more = stringResource(Res.string.more)
     when (kind) {
         WidgetKind.BloodPressure -> Options {
-            InlineStepper(stringResource(Res.string.rb_times_per_day, state.bpTimesPerDay), less, more,
+            InlineStepper(stringResource(Res.string.rb_times_per_day, state.bpTimesPerDay),
+                stringResource(Res.string.rb_bp_less), stringResource(Res.string.rb_bp_more),
                 canLess = state.bpTimesPerDay > 1, canMore = state.bpTimesPerDay < BP_TIMES_MAX,
                 onLess = { state.changeBpTimes(-1) }, onMore = { state.changeBpTimes(1) })
         }
@@ -247,7 +257,8 @@ private fun WidgetOptions(state: RequestBuilderState, kind: WidgetKind) {
             val sep = stringResource(Res.string.decimal_separator).firstOrNull() ?: '.'
             val label = if (state.waterTargetMl == 0) stringResource(Res.string.rb_water_no_target)
             else stringResource(Res.string.rb_water_target, litres(state.waterTargetMl, sep))
-            InlineStepper(label, less, more, canLess = state.waterTargetMl > 0, canMore = state.waterTargetMl < WATER_TARGET_MAX_ML,
+            InlineStepper(label, stringResource(Res.string.rb_water_less), stringResource(Res.string.rb_water_more),
+                canLess = state.waterTargetMl > 0, canMore = state.waterTargetMl < WATER_TARGET_MAX_ML,
                 onLess = { state.changeWaterTarget(-1) }, onMore = { state.changeWaterTarget(1) })
         }
         WidgetKind.Questionnaire -> Options { QuestionsEditor(state) }

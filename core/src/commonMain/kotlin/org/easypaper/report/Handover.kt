@@ -3,6 +3,7 @@ package org.easypaper.report
 import org.easypaper.model.DiaryNote
 import org.easypaper.model.Food
 import org.easypaper.model.PatientRecord
+import org.easypaper.storage.DiaryRepository
 import org.easypaper.storage.PatientRepository
 
 /** What the doctor's app holds after scanning the QR: the report and every photo it references, decrypted. */
@@ -16,7 +17,14 @@ private val PatientRecord.photoRefs: List<String>
  * ciphertext to the relay and returns the QR string ("ep1:<id>:<key>") to show the doctor. A photo missing from
  * the phone is left out rather than failing the whole handover.
  */
-suspend fun PatientRepository.handover(record: PatientRecord, relay: RelayClient, now: Long, summary: String? = null): String {
+suspend fun PatientRepository.handover(record: PatientRecord, relay: RelayClient, now: Long, summary: String? = null): String =
+    handover(record, relay, now, summary) { photo(it) }
+
+/** The same from the v2 diary (#47): [record] is a [org.easypaper.diary.selection] of categories and days. */
+suspend fun DiaryRepository.handover(record: PatientRecord, relay: RelayClient, now: Long, summary: String? = null): String =
+    handover(record, relay, now, summary) { photo(it) }
+
+private suspend fun handover(record: PatientRecord, relay: RelayClient, now: Long, summary: String?, photo: suspend (String) -> ByteArray?): String {
     val report = Report(id = newReportId(), createdAt = now, record = record, summary = summary)
     val photos = record.photoRefs.mapNotNull { ref -> photo(ref)?.let { ref to it } }.toMap()
     val sealed = sealReport(report, photos)

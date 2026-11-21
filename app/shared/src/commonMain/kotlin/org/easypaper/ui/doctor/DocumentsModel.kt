@@ -3,6 +3,9 @@ package org.easypaper.ui.doctor
 import org.easypaper.ai.DocumentFact
 import org.easypaper.visit.FormFieldKey
 
+/** The document a fact was read from, kept for the visit so the doctor can check the fact against it. */
+class DocumentSource(val text: String?, val image: ByteArray?)
+
 /** Where a fact from a clinic document goes in the clinic form (task 41): medicines to Medications, the rest to History. */
 fun DocumentFact.formField(): FormFieldKey = if (field == "medication") FormFieldKey.MEDICATIONS else FormFieldKey.HISTORY
 

@@ -4,6 +4,7 @@ import io.ktor.server.testing.testApplication
 import org.easypaper.demo.Demo
 import org.easypaper.model.Entry
 import org.easypaper.model.Food
+import org.easypaper.diary.selection
 import org.easypaper.report.RelayClient
 import org.easypaper.report.RelayException
 import org.easypaper.report.handover
@@ -60,5 +61,21 @@ class HandoverTest {
 
         assertEquals(404, assertFailsWith<RelayException> { relay.receive(qr2) }.status, "second time the link does not work")
         assertFailsWith<IllegalArgumentException> { relay.receive("https://example.com/not-ours") }
+    }
+
+    @Test
+    fun aDiarySelectionWithAPhotoReachesTheDoctor() = testApplication {
+        application { module(Relay()) }
+        val relay = RelayClient("http://localhost", client)
+        val blobs = Blobs()
+        val diary = org.easypaper.storage.DiaryRepository(blobs, Random.nextBytes(32)).also { it.refresh() }
+        val at = Demo.record.entries.minOf { it.at }
+        val food = org.easypaper.diary.ownWidgetId(org.easypaper.diary.EntryCategory.FOOD)
+        assertEquals(emptyList(), diary.add(Entry("own-1", food, at, Food("soup")), photo = jpeg))
+        val day = kotlin.time.Instant.fromEpochMilliseconds(at).toString().take(10)
+        val record = diary.diary.value.selection(setOf(org.easypaper.diary.EntryCategory.FOOD), day, day)
+        val received = relay.receive(diary.handover(record, relay, now = 3_000))
+        assertEquals(record, received.report.record)
+        assertContentEquals(jpeg, received.photos.getValue("photo/own-1"))
     }
 }

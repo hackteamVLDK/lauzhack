@@ -9,6 +9,7 @@ import org.easypaper.model.DiaryWidget
 import org.easypaper.model.DoctorQuestionsWidget
 import org.easypaper.model.Entry
 import org.easypaper.model.FoodWidget
+import org.easypaper.model.MeasurementsWidget
 import org.easypaper.model.MedicationsWidget
 import org.easypaper.model.PatientRecord
 import org.easypaper.model.QuestionnaireWidget
@@ -67,7 +68,7 @@ fun todayFor(record: PatientRecord, today: LocalDate, timeZone: TimeZone): List<
             }
             is QuestionnaireWidget -> WidgetToday.Questions(widget, todays.lastOrNull())
             is DoctorQuestionsWidget -> WidgetToday.Asked(widget, all)
-            is FoodWidget, is MedicationsWidget, is DiaryWidget -> WidgetToday.Notes(widget, todays)
+            is FoodWidget, is MedicationsWidget, is DiaryWidget, is MeasurementsWidget -> WidgetToday.Notes(widget, todays)
         }
     }
 }

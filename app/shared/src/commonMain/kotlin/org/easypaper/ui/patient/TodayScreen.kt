@@ -1,5 +1,7 @@
 package org.easypaper.ui.patient
 
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -151,7 +153,8 @@ private fun PressureRow(today: WidgetToday.Pressure, timeZone: TimeZone, actions
     val time = today.latestAt?.let { timeOfDay(it, timeZone) }
     CategoryRow(today.widget.category, today.widget.title, trailing = time?.let { { Footnote(it) } }) {
         today.latest?.let { bp ->
-            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(EasyPaperTheme.spacing.xs)) {
+            // FlowRow: at 200 % text the unit and the pulse go to the next line instead of being cut off.
+            FlowRow(itemVerticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(EasyPaperTheme.spacing.xs)) {
                 AnimatedNumber(bp.systolic, text = "${bp.systolic}/${bp.diastolic}", style = type.title1, color = colors.label)
                 Text(stringResource(Res.string.unit_mmhg), style = type.subheadline, color = colors.secondaryLabel,
                     modifier = Modifier.padding(bottom = EasyPaperTheme.spacing.xxs))

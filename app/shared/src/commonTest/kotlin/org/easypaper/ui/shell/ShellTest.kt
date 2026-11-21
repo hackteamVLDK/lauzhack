@@ -111,7 +111,8 @@ class ShellTest {
             ),
             categories,
         )
-        assertEquals(Category.entries.toSet(), categories.toSet())
+        // the person's own measurements (#52) are not something the demo doctor asks for
+        assertEquals(Category.entries.toSet(), (categories + org.easypaper.model.MeasurementsWidget("m", "Measurements").category).toSet())
     }
 
     @Test

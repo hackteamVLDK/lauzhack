@@ -1,5 +1,7 @@
 package org.easypaper.ui.shell
 
+import org.easypaper.ui.doctor.shortCode
+import easypaper.app.shared.generated.resources.report_number
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -234,7 +236,11 @@ private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDev
 private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: ShellSettings, back: BackAction?, select: (DoctorScreen) -> Unit, emptyActions: @Composable () -> Unit) {
     when (screen) {
         is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { report -> key(report.id) { VisitScreen(report, back, visitAi(state, report), state.reportPhotos[report.id].orEmpty(), store = state.visits,
-                documents = { visit -> DocumentsSection(visit, state.server?.let { server -> { server.ai } }, state.documents[report.id].orEmpty()) { state.documents[report.id] = it } }) } }
+                documents = { visit, show ->
+                    DocumentsSection(visit, state.server?.let { server -> { server.ai } }, state.documents[report.id].orEmpty(),
+                        onFacts = { state.documents[report.id] = it }, sources = state.documentSources,
+                        onSource = { id, source -> state.documentSources[id] = source }, onShow = show)
+                }) } }
             ?: NothingOpen(emptyActions)
         DoctorScreen.NewRequest -> RequestBuilderScreen(back)
         // the patient's QR opens the report once (task 30); it joins the list and opens right away
@@ -314,6 +320,13 @@ private fun NothingOpen(actions: @Composable () -> Unit) {
 
 @Composable
 private fun reportPeriod(report: Report): String? {
+    val number = stringResource(Res.string.report_number, report.shortCode())
+    return listOfNotNull(number, reportDates(report)).joinToString(", ")
+}
+
+/** "17–21 Nov" from the request's start date and length; null for a malformed date. */
+@Composable
+private fun reportDates(report: Report): String? {
     val request = report.record.request
     val start = runCatching { LocalDate.parse(request.startDate) }.getOrNull() ?: return null
     return dateRange(start, lastDay(start, request.days))

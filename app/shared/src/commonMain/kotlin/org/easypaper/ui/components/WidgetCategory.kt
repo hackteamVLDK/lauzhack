@@ -4,6 +4,7 @@ import org.easypaper.model.BloodPressureWidget
 import org.easypaper.model.DiaryWidget
 import org.easypaper.model.DoctorQuestionsWidget
 import org.easypaper.model.FoodWidget
+import org.easypaper.model.MeasurementsWidget
 import org.easypaper.model.MedicationsWidget
 import org.easypaper.model.QuestionnaireWidget
 import org.easypaper.model.WaterWidget
@@ -20,4 +21,5 @@ val WidgetSpec.category: Category
         is QuestionnaireWidget -> Category.Questionnaire
         is DiaryWidget -> Category.Diary
         is DoctorQuestionsWidget -> Category.DoctorQuestion
+        is MeasurementsWidget -> Category.Measurements
     }

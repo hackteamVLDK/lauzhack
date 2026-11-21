@@ -6,6 +6,7 @@ import org.easypaper.model.BloodPressure
 import org.easypaper.model.DiaryNote
 import org.easypaper.model.DoctorQuestion
 import org.easypaper.model.Food
+import org.easypaper.model.Measurement
 import org.easypaper.model.Medication
 import org.easypaper.model.PatientRecord
 import org.easypaper.model.QuestionnaireWidget
@@ -30,7 +31,12 @@ data class FactDigest(
     val medications: List<MedicationFact>,
     val questions: List<QuestionFact>,
     val notes: List<NoteFact>,
+    /** The person's own measurements (#52), one series per name and unit, e.g. weight in kg. */
+    val measurements: List<MeasurementFact> = emptyList(),
 )
+
+@Serializable
+data class MeasurementFact(val name: String, val unit: String, val values: List<DatedValue>)
 
 /** avg is rounded half up. */
 @Serializable
@@ -108,11 +114,20 @@ fun PatientRecord.factDigest(utcOffsetMinutes: Int = 0): FactDigest {
             else -> null
         }
     }
+    val measurements = sorted.filter { it.payload is Measurement }
+        .groupBy { (it.payload as Measurement).let { m -> m.name.trim().lowercase() to m.unit.trim() } }
+        .map { (_, list) ->
+            val first = list.first().payload as Measurement
+            MeasurementFact(first.name.trim(), first.unit.trim(), list.map { DatedValue(day(it.at), number((it.payload as Measurement).value), it.id) })
+        }
     return FactDigest(
         request.id, request.complaint, sorted.firstOrNull()?.let { day(it.at) }, sorted.lastOrNull()?.let { day(it.at) },
-        entries.size, bp, water, meds, questions, notes,
+        entries.size, bp, water, meds, questions, notes, measurements,
     )
 }
+
+/** 72.0 -> "72", 72.5 -> "72.5": as the person would write it. */
+private fun number(value: Double): String = if (value % 1.0 == 0.0 && kotlin.math.abs(value) < 1e15) value.toLong().toString() else value.toString()
 
 private fun range(values: List<Int>): IntRange3? =
     if (values.isEmpty()) null
@@ -142,4 +157,5 @@ fun FactDigest.toText(): String = buildString {
         val photo = n.photoRef?.let { " (photo $it)" } ?: ""
         appendLine("$label ${n.date}: ${n.text ?: ""}$photo [${n.ref}]")
     }
+    for (m in measurements) appendLine("${m.name} (${m.unit}): " + m.values.joinToString("; ") { "${it.date} ${it.value} [${it.ref}]" })
 }.trimEnd()

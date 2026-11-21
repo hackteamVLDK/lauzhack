@@ -1,5 +1,10 @@
 package org.easypaper.ui.doctor
 
+import org.easypaper.ui.components.PlainButton
+import easypaper.app.shared.generated.resources.doc_show
+import easypaper.app.shared.generated.resources.draft
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -59,10 +64,19 @@ import kotlin.random.Random
  * Paper documents at the visit (task 41): the doctor pastes the text of a discharge letter or lab report, or adds a
  * photo of it; the clinic module (#8, never the cloud) lists the facts with the document's own words. "Add to form"
  * puts a fact into the clinic form as the doctor's edit — the field stays a draft until the doctor confirms it.
- * [ai] is null when there is no server; [facts] live in ShellState so they survive leaving the screen.
+ * [ai] is null when there is no server; [facts] and the documents they came from ([sources], by document id) live in
+ * ShellState so they survive leaving the screen. [onShow] opens a document over the visit screen.
  */
 @Composable
-fun DocumentsSection(state: VisitState, ai: (() -> AiClient)?, facts: List<DocumentFact>, onFacts: (List<DocumentFact>) -> Unit) {
+fun DocumentsSection(
+    state: VisitState,
+    ai: (() -> AiClient)?,
+    facts: List<DocumentFact>,
+    onFacts: (List<DocumentFact>) -> Unit,
+    sources: Map<String, DocumentSource> = emptyMap(),
+    onSource: (String, DocumentSource) -> Unit = { _, _ -> },
+    onShow: (DocumentSource) -> Unit = {},
+) {
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
     val scope = rememberCoroutineScope()
@@ -78,7 +92,9 @@ fun DocumentsSection(state: VisitState, ai: (() -> AiClient)?, facts: List<Docum
         scope.launch {
             message = try {
                 val id = "doc-" + Random.nextInt(1_000_000)
-                val found = client.extractDocument(id, text = text, image = image).facts
+                // Every fact points at the document it came from, whatever id the server echoes.
+                val found = client.extractDocument(id, text = text, image = image).facts.map { it.copy(documentId = id) }
+                if (found.isNotEmpty()) onSource(id, DocumentSource(text, image))
                 onFacts(facts + found)
                 if (found.isEmpty()) Res.string.doc_none else null
             } catch (e: CancellationException) {
@@ -114,23 +130,33 @@ fun DocumentsSection(state: VisitState, ai: (() -> AiClient)?, facts: List<Docum
         if (facts.isNotEmpty()) GroupedSection(Modifier.padding(top = spacing.s)) {
             facts.forEachIndexed { index, fact ->
                 if (index > 0) RowSeparator(spacing.m)
-                FactRow(fact, inForm = state.hasFact(fact, fromDocument), onAdd = { state.addFact(fact, fromDocument) })
+                val source = sources[fact.documentId]
+                FactRow(fact, inForm = state.hasFact(fact, fromDocument), onAdd = { state.addFact(fact, fromDocument) },
+                    onShow = source?.let { { onShow(it) } })
             }
         }
     }
 }
 
 @Composable
-private fun FactRow(fact: DocumentFact, inForm: Boolean, onAdd: () -> Unit) {
+@OptIn(ExperimentalLayoutApi::class)
+private fun FactRow(fact: DocumentFact, inForm: Boolean, onAdd: () -> Unit, onShow: (() -> Unit)?) {
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
     Column(Modifier.fillMaxWidth().padding(horizontal = spacing.m, vertical = spacing.s), verticalArrangement = Arrangement.spacedBy(spacing.xxs)) {
-        DraftBadge(stringResource(fieldName(fact.field)))
+        // What kind of fact, and that it is the module's draft: it reaches the form only through the doctor.
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.xs), itemVerticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(fieldName(fact.field)), style = EasyPaperTheme.typography.footnote, color = colors.secondaryLabel)
+            DraftBadge(stringResource(Res.string.draft))
+        }
         Text(fact.value, style = EasyPaperTheme.typography.body, color = colors.label)
         Text("«${fact.quote}»", style = EasyPaperTheme.typography.footnote, color = colors.secondaryLabel)
         Text(stringResource(if (fact.verified) Res.string.doc_quote_checked else Res.string.doc_quote_unchecked),
             style = EasyPaperTheme.typography.footnote, color = if (fact.verified) colors.confirmed else colors.secondaryLabel)
-        TintedButton(stringResource(if (inForm) Res.string.doc_in_form else Res.string.doc_to_form), enabled = !inForm, onClick = onAdd)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.m), itemVerticalAlignment = Alignment.CenterVertically) {
+            TintedButton(stringResource(if (inForm) Res.string.doc_in_form else Res.string.doc_to_form), enabled = !inForm, onClick = onAdd)
+            onShow?.let { PlainButton(stringResource(Res.string.doc_show), onClick = it) }
+        }
     }
 }
 

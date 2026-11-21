@@ -46,6 +46,7 @@ import easypaper.app.shared.generated.resources.ic_edit_note
 import easypaper.app.shared.generated.resources.ic_favorite
 import easypaper.app.shared.generated.resources.ic_pill
 import easypaper.app.shared.generated.resources.ic_restaurant
+import easypaper.app.shared.generated.resources.ic_scale
 import easypaper.app.shared.generated.resources.ic_water_drop
 import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
@@ -62,6 +63,7 @@ val Category.icon: DrawableResource
         Category.Questionnaire -> Res.drawable.ic_checklist
         Category.Diary -> Res.drawable.ic_edit_note
         Category.DoctorQuestion -> Res.drawable.ic_chat_bubble
+        Category.Measurements -> Res.drawable.ic_scale
     }
 
 /** 29 dp rounded tile in the category color with a white glyph, like Settings and Health on iOS. */

@@ -156,17 +156,22 @@ fun TextAreaRow(value: String, onValueChange: (String) -> Unit, placeholder: Str
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
     val type = EasyPaperTheme.typography
-    Box(modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight * 2).padding(spacing.m)) {
-        if (value.isEmpty()) Text(placeholder, style = type.body, color = colors.secondaryLabel)
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
-            textStyle = type.body.copy(color = colors.label),
-            cursorBrush = SolidColor(colors.tint),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            modifier = Modifier.fillMaxWidth().semantics { contentDescription = placeholder },
-        )
-    }
+    // The text field is the whole cell (padding and placeholder live in its decoration), so a tap anywhere in the
+    // cell, also below a short text, puts the cursor there.
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        textStyle = type.body.copy(color = colors.label),
+        cursorBrush = SolidColor(colors.tint),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        modifier = modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight * 2).semantics { contentDescription = placeholder },
+        decorationBox = { field ->
+            Box(Modifier.fillMaxWidth().padding(spacing.m)) {
+                if (value.isEmpty()) Text(placeholder, style = type.body, color = colors.secondaryLabel)
+                field()
+            }
+        },
+    )
 }
 
 /** Compatibility for form questions that can still have no answer. */
