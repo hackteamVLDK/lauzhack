@@ -4,6 +4,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import org.easypaper.ui.components.TextFieldRow
+import easypaper.app.shared.generated.resources.clinic_code_footer
+import easypaper.app.shared.generated.resources.clinic_code
 import androidx.compose.ui.Modifier
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.appearance_dark
@@ -72,6 +75,21 @@ fun ColumnScope.DeveloperMenuContent(
             RowSeparator(inset)
             val label = if (state.role == Role.Doctor) Res.string.switch_to_patient else Res.string.switch_to_doctor
             ListRow(stringResource(label), titleColor = EasyPaperTheme.colors.link, chevron = false, onClick = { onSwitchRole(); onDone() })
+        }
+    }
+    // The doctor's access code for AI on the clinic's server (#37): typed here, kept only in memory.
+    if (state.role != Role.Patient) {
+        GroupedSection(
+            Modifier.padding(top = EasyPaperTheme.spacing.sectionGap),
+            header = stringResource(Res.string.clinic_code),
+            footer = stringResource(Res.string.clinic_code_footer),
+        ) {
+            TextFieldRow(
+                settings.aiToken.orEmpty(),
+                { settings.aiToken = it.trim().ifEmpty { null } },
+                placeholder = stringResource(Res.string.clinic_code),
+                secret = true,
+            )
         }
     }
 }

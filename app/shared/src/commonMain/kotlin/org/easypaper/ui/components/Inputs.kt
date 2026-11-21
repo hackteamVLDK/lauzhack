@@ -34,6 +34,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.ic_add
@@ -87,7 +89,14 @@ fun NumberFieldRow(
 
 /** One line of text in a grouped cell (a name, a short answer); [placeholder] says what to type. */
 @Composable
-fun TextFieldRow(value: String, onValueChange: (String) -> Unit, placeholder: String, modifier: Modifier = Modifier) {
+fun TextFieldRow(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+    /** A secret (access code): shown as dots, no autocorrect. */
+    secret: Boolean = false,
+) {
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
     val type = EasyPaperTheme.typography
@@ -100,6 +109,8 @@ fun TextFieldRow(value: String, onValueChange: (String) -> Unit, placeholder: St
             singleLine = true,
             textStyle = type.body.copy(color = colors.label),
             cursorBrush = SolidColor(colors.tint),
+            visualTransformation = if (secret) PasswordVisualTransformation() else VisualTransformation.None,
+            keyboardOptions = if (secret) KeyboardOptions(keyboardType = KeyboardType.Password, autoCorrectEnabled = false) else KeyboardOptions.Default,
             modifier = Modifier.fillMaxWidth().semantics { contentDescription = placeholder },
         )
     }
