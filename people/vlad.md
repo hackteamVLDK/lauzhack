@@ -11,3 +11,4 @@
 ФАЙЛЫ: только shared/src/commonMain/.../model/**, .../storage/**, commonTest, platform actual для BlobStore/KeyProvider; gradle — одна зависимость в shared (согласую с mykhailo).
 ТЕСТЫ (commonTest): round-trip JSON всех WidgetSpec/EntryPayload; неизвестный type -> ошибка, лишние поля игнор; schemaVersion; шифрованное хранилище: save/load, другой ключ -> не расшифровать, порча байт -> ошибка. python test.py.
 РИСКИ: wasm-крипто асинхронное (suspend API везде); формат меняю только с schemaVersion+1 и сообщением Павлу.
+- Event 21 · 2026-11-21T14:47:16+00:00 · vlad/BelarusLord-chat · heartbeat: Lease renewed
