@@ -35,6 +35,9 @@ class ShellSettings(dark: Boolean? = null, largeText: Boolean = false, serverUrl
     var largeText: Boolean by mutableStateOf(largeText)
     /** Optional Easy Paper server for live AI status; null keeps the captured demo only. */
     var serverUrl: String? by mutableStateOf(serverUrl)
+    /** Called when the server address is changed in the developer menu, so it is kept for the next launch. */
+    var saveServerUrl: (String?) -> Unit = {}
+
     /** Clinic access token for AI requests; kept in memory and never displayed. */
     var aiToken: String? by mutableStateOf(aiToken)
 }

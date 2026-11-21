@@ -44,7 +44,7 @@ import easypaper.app.shared.generated.resources.share_failed
 import easypaper.app.shared.generated.resources.share_new
 import easypaper.app.shared.generated.resources.share_none
 import easypaper.app.shared.generated.resources.share_none_message
-import easypaper.app.shared.generated.resources.share_offline
+import easypaper.app.shared.generated.resources.share_offline_at
 import easypaper.app.shared.generated.resources.share_qr
 import easypaper.app.shared.generated.resources.share_show
 import easypaper.app.shared.generated.resources.tab_share
@@ -121,7 +121,7 @@ fun ShareScreen(repository: PatientRepository, relayUrl: String, onDeveloper: ((
                             } catch (e: CancellationException) {
                                 throw e
                             } catch (e: IOException) {
-                                error = Res.string.share_offline
+                                error = Res.string.share_offline_at
                             } catch (e: Exception) {
                                 error = Res.string.share_failed // relay full or refused; the record on the phone is untouched
                             } finally {
@@ -129,7 +129,7 @@ fun ShareScreen(repository: PatientRepository, relayUrl: String, onDeveloper: ((
                             }
                         }
                     })
-                    Problem(error)
+                    Problem(error, relayUrl)
                 }
                 else -> Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                     // dark modules on white with a quiet zone in both themes, as scanners expect
@@ -201,7 +201,7 @@ fun OpenReportScreen(relayUrl: String, onOpened: (ReceivedReport) -> Unit, back:
 
 /** An error as a sentence with an icon, announced to screen readers. */
 @Composable
-private fun Problem(message: StringResource?) {
+private fun Problem(message: StringResource?, vararg args: Any) {
     if (message == null) return
     val colors = EasyPaperTheme.colors
     val spacing = EasyPaperTheme.spacing
@@ -211,6 +211,6 @@ private fun Problem(message: StringResource?) {
     ) {
         Icon(painterResource(Res.drawable.ic_remove), contentDescription = null, tint = colors.destructive,
             modifier = Modifier.size(spacing.rowIcon).padding(end = spacing.xxs))
-        Text(stringResource(message), style = EasyPaperTheme.typography.subheadline, color = colors.destructive)
+        Text(stringResource(message, *args), style = EasyPaperTheme.typography.subheadline, color = colors.destructive)
     }
 }

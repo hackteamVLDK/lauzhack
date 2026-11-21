@@ -44,6 +44,12 @@ fun EasyPaperApp(
     /** An invite link the app was opened with (task 5). */
     invite: String? = null,
 ) {
+    // The server address set in the developer menu (a real phone needs the laptop's address) survives a restart.
+    val savedServer = rememberSavedSetting("serverUrl")
+    remember(savedServer) {
+        if (settings.serverUrl == null) settings.serverUrl = savedServer.value
+        settings.saveServerUrl = savedServer::update
+    }
     // The demo stays in memory so it never mixes with the patient's real records on the device.
     val device = if (demo) remember { Result.success(inMemoryPatientRepository()) } else rememberDeviceRepository()
     val repository = device?.getOrNull()
