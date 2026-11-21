@@ -21,6 +21,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 REMOTES = ("hub", "origin")
 ENV = dict(os.environ, GIT_TERMINAL_PROMPT="0", GIT_MERGE_AUTOEDIT="no")
+# Under pythonw every console child (git, ssh) would otherwise flash its own terminal window.
+NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
 
 class Pull:
@@ -42,7 +44,8 @@ class Pull:
     def git(self, *args):
         try:
             result = subprocess.run(["git", *args], cwd=self.repo, capture_output=True, text=True,
-                                    encoding="utf-8", errors="replace", env=ENV, timeout=60)
+                                    encoding="utf-8", errors="replace", env=ENV, timeout=60,
+                                    creationflags=NO_WINDOW)
         except subprocess.TimeoutExpired:
             return 124, "", "timed out"
         return result.returncode, result.stdout.strip(), result.stderr.strip()
