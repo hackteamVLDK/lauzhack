@@ -24,6 +24,7 @@ private val base64 = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT)
  * Encrypts with a fresh AES-256-GCM key per report; the report id is bound as associated data.
  * [photos] (photoRef -> bytes) must be photos referenced by this report's food/diary entries; each one is
  * encrypted with the same key and bound to "<reportId>/photo/<ref>", so photos cannot be swapped or passed off as the report.
+ * JPEG photos are passed through [stripJpegMetadata] first; other formats travel as given.
  */
 @OptIn(ExperimentalEncodingApi::class)
 suspend fun sealReport(report: Report, photos: Map<String, ByteArray> = emptyMap()): SealedReport {
@@ -36,7 +37,11 @@ suspend fun sealReport(report: Report, photos: Map<String, ByteArray> = emptyMap
     val cipher = aesGcm(key)
     val json = EasyPaperJson.encodeToString(Report.serializer(), report)
     val bytes = cipher.encrypt(json.encodeToByteArray(), report.id.encodeToByteArray())
-    val sealedPhotos = photos.mapValues { (ref, photo) -> cipher.encrypt(photo, photoBinding(report.id, ref)) }
+    val sealedPhotos = photos.mapValues { (ref, photo) ->
+        // JPEGs lose GPS, phone model and other metadata before they leave the phone
+        val clean = if (photo.size > 2 && photo[0] == 0xFF.toByte() && photo[1] == 0xD8.toByte()) stripJpegMetadata(photo) else photo
+        cipher.encrypt(clean, photoBinding(report.id, ref))
+    }
     return SealedReport(bytes, QR_PREFIX + report.id + ":" + base64.encode(key), sealedPhotos)
 }
 
