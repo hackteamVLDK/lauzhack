@@ -1,6 +1,14 @@
 package org.easypaper.ui.doctor
 
 import androidx.compose.foundation.background
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import easypaper.app.shared.generated.resources.ai_failed
+import easypaper.app.shared.generated.resources.ai_not_used
+import easypaper.app.shared.generated.resources.ai_write
+import easypaper.app.shared.generated.resources.ai_writing
+import easypaper.app.shared.generated.resources.chart_title
+import org.easypaper.ai.SummaryResult
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -108,18 +116,23 @@ private const val LINKS_SHOWN = 4
 @OptIn(ExperimentalTime::class)
 private fun now(): Long = Clock.System.now().toEpochMilliseconds()
 
+/** The AI summary of this report from the server: the result, whether it is being written, whether the last try failed. */
+class VisitAi(val result: SummaryResult?, val busy: Boolean, val failed: Boolean, val onWrite: () -> Unit)
+
 /**
  * The doctor's visit screen (docs/design.md wireframe): the summary with links to the originals, the
  * clinic form confirmed field by field, and every entry. Nothing is saved until each field is decided.
  */
 @Composable
-fun VisitScreen(report: Report, back: BackAction?) {
+fun VisitScreen(report: Report, back: BackAction?, ai: VisitAi? = null) {
     val wording = rememberFormWording()
     val state = remember(report.id, wording) { VisitState(report, wording) }
     val timeZone = remember { TimeZone.currentSystemDefault() }
     var original by remember { mutableStateOf<Entry?>(null) }
     var editing by remember { mutableStateOf<FormFieldKey?>(null) }
     val request = report.record.request
+    val aiResult = ai?.result
+    LaunchedEffect(aiResult) { aiResult?.let(state::applyAi) }
 
     Box(Modifier.fillMaxSize()) {
         LargeTitleScaffold(
@@ -127,7 +140,13 @@ fun VisitScreen(report: Report, back: BackAction?) {
             back = back,
             header = { VisitHeader(report) },
         ) {
-            item(key = "summary") { SummarySection(state, timeZone, onOpen = { original = it }, onEdit = { editing = FormFieldKey.HISTORY }) }
+            item(key = "summary") { SummarySection(state, ai, timeZone, onOpen = { original = it }, onEdit = { editing = FormFieldKey.HISTORY }) }
+            pressureSeries(report.record.entries)?.let { series ->
+                item(key = "chart") {
+                    SectionTitle(stringResource(Res.string.chart_title))
+                    PressureChart(series)
+                }
+            }
             item(key = "form") { ClinicFormSection(state, onEdit = { editing = it }) }
             item(key = "entries") { EntriesSection(report, timeZone, onOpen = { original = it }) }
         }
@@ -163,7 +182,7 @@ private fun SectionTitle(text: String, trailing: (@Composable RowScope.() -> Uni
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SummarySection(state: VisitState, timeZone: TimeZone, onOpen: (Entry) -> Unit, onEdit: () -> Unit) {
+private fun SummarySection(state: VisitState, ai: VisitAi?, timeZone: TimeZone, onOpen: (Entry) -> Unit, onEdit: () -> Unit) {
     val colors = EasyPaperTheme.colors
     val spacing = EasyPaperTheme.spacing
     val summary = state.summary
@@ -203,6 +222,33 @@ private fun SummarySection(state: VisitState, timeZone: TimeZone, onOpen: (Entry
     }
     Spacer(Modifier.height(spacing.s))
     DecisionRow(history, state, primary = Res.string.confirm_summary, onEdit = onEdit)
+    if (ai != null) AiRow(ai)
+}
+
+/** "Write summary with AI": progress in the button while the server works; what happened when it did not. */
+@Composable
+private fun AiRow(ai: VisitAi) {
+    val colors = EasyPaperTheme.colors
+    val spacing = EasyPaperTheme.spacing
+    Column(Modifier.padding(top = spacing.xs), verticalArrangement = Arrangement.spacedBy(spacing.xxs)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.xs)) {
+            TintedButton(
+                stringResource(if (ai.busy) Res.string.ai_writing else Res.string.ai_write),
+                onClick = ai.onWrite,
+                enabled = !ai.busy,
+            )
+            if (ai.busy) CircularProgressIndicator(Modifier.size(spacing.rowIcon), color = colors.tint, strokeWidth = spacing.xxs / 2)
+        }
+        val message = when {
+            ai.failed -> Res.string.ai_failed
+            ai.result != null && !ai.result.usedAi -> Res.string.ai_not_used
+            else -> null
+        }
+        if (message != null) {
+            Text(stringResource(message), style = EasyPaperTheme.typography.footnote,
+                color = if (ai.failed) colors.destructive else colors.secondaryLabel)
+        }
+    }
 }
 
 /** "Mon 08:10": opens the original entry. */

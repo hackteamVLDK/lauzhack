@@ -230,4 +230,14 @@
     <string name="med_check">Scan prüfen</string>
     <string name="med_reading">Foto wird gelesen…</string>
     <string name="med_other">Nicht dabei? Selbst eingeben</string>
+
+    <!-- Doctor visit, AI and chart (task 10 step 3) -->
+    <string name="ai_write">Zusammenfassung mit KI schreiben</string>
+    <string name="ai_writing">Wird geschrieben…</string>
+    <string name="ai_failed">Die KI ist nicht erreichbar. Die Zusammenfassung aus den Fakten bleibt; versuchen Sie es später erneut.</string>
+    <string name="ai_not_used">Der Server hat ohne KI geantwortet; die Zusammenfassung zeigt die Fakten.</string>
+    <string name="chart_title">Blutdruck</string>
+    <string name="chart_upper">oberer Wert</string>
+    <string name="chart_lower">unterer Wert</string>
+    <string name="chart_description">Blutdruck-Diagramm: oberer Wert %1$s, unterer Wert %2$s mmHg, %3$d Messungen.</string>
 </resources>

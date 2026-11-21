@@ -230,4 +230,14 @@
     <string name="med_check">Check the scan</string>
     <string name="med_reading">Reading the photo…</string>
     <string name="med_other">Not on the list? Type it in</string>
+
+    <!-- Doctor visit, AI and chart (task 10 step 3) -->
+    <string name="ai_write">Write summary with AI</string>
+    <string name="ai_writing">Writing…</string>
+    <string name="ai_failed">AI is not reachable. The summary from the facts stays; try again later.</string>
+    <string name="ai_not_used">The server answered without AI; the summary shows the facts.</string>
+    <string name="chart_title">Blood pressure</string>
+    <string name="chart_upper">upper</string>
+    <string name="chart_lower">lower</string>
+    <string name="chart_description">Blood pressure chart: upper %1$s, lower %2$s mmHg, %3$d readings.</string>
 </resources>

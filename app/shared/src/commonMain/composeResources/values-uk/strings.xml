@@ -232,4 +232,14 @@
     <string name="med_check">Перевірити скан</string>
     <string name="med_reading">Читаю фото…</string>
     <string name="med_other">Немає в списку? Ввести вручну</string>
+
+    <!-- Doctor visit, AI and chart (task 10 step 3) -->
+    <string name="ai_write">Скласти підсумок за допомогою ШІ</string>
+    <string name="ai_writing">Складаю…</string>
+    <string name="ai_failed">ШІ недоступний. Підсумок із фактів залишається; спробуйте пізніше.</string>
+    <string name="ai_not_used">Сервер відповів без ШІ; підсумок показує факти.</string>
+    <string name="chart_title">Тиск</string>
+    <string name="chart_upper">верхній</string>
+    <string name="chart_lower">нижній</string>
+    <string name="chart_description">Графік тиску: верхній %1$s, нижній %2$s мм рт. ст., вимірювань: %3$d.</string>
 </resources>
