@@ -64,7 +64,7 @@ Review notes: -
 Latest intent: vlad/BelarusLord-chat · 2026-11-21T15:33:18+00:00: core: разбор штрих-кода/DataMatrix, локальная база, поиск по OCR-тексту
 Phase: build; build 0; submitter: -; branch: -.
 Status: running; assignee: vlad; owner: vlad; client: BelarusLord-chat.
-Lease expires: 2026-11-21T15:36:45+00:00.
+Lease expires: 2026-11-21T15:37:15+00:00.
 Acceptance: 10+ препаратов распознаются
 Checkpoint SHA: -
 Review notes: -
