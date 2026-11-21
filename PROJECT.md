@@ -7,7 +7,7 @@ Queue and journals are generated from SQLite. Change them through the API.
 Easy Paper — KMP-приложение (Android, Desktop, Web/Wasm, Ktor-сервер): врач собирает из виджетов запрос под жалобу, пациент несколько дней заполняет его текстом, числами и фото (еда, упаковки лекарств), а на приёме передаёт через QR зашифрованный отчёт, который ИИ сжимает в сводку со ссылками на оригиналы и предзаполненную форму клиники. Экономный ИИ-конвейер (штрих-код/OCR без LLM, маленькая модель для простого, большая один раз на сводку, кэш, учёт токенов и цены) и режим локального ИИ-модуля в клинике (Ollama). Приложение не ставит диагнозов и не советует — только собирает и структурирует факты; ИИ пишет черновик, каждое поле подтверждает врач.
 Порядок: задача 1 первая; UI-задачи 4, 5, 10 — только после утверждённого mykhailo docs/design.md (задача 3). Секреты только в env/локально; коммиты без подписи Claude; в origin не пушить.
 
-Phases: build 2, plan 8, review 1
+Phases: build 1, plan 8, review 2
 
 ## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB]
 
@@ -92,11 +92,11 @@ Review notes: -
 ## Task 9: Отчёт и передача: сводка + FHIR-подобный JSON, шифрование, QR с ключом; формат отчёта зафиксировать первым коммитом [IMC][JB]
 
 Latest intent: vlad/BelarusLord-chat · 2026-11-21T15:22:40+00:00: формат отчёта + шифрование + QR-строка в core
-Phase: build; build 0; submitter: -; branch: -.
-Status: running; assignee: vlad; owner: vlad; client: BelarusLord-chat.
-Lease expires: 2026-11-21T15:26:44+00:00.
+Phase: review; build 1; submitter: vlad; branch: attempt/vlad/task-9-1.
+Status: ready; assignee: vlad; owner: -; client: -.
+Lease expires: -.
 Acceptance: без ключа не расшифровать
-Checkpoint SHA: -
+Checkpoint SHA: ad5879b230ebcc719aa0b632c2b15ca507195bab
 Review notes: -
 
 ## Task 10: Экран врача на приёме: сводка → оригиналы; предзаполненная форма с подтверждением каждого поля [IMC][JB] [старт после утверждённого docs/design.md]
