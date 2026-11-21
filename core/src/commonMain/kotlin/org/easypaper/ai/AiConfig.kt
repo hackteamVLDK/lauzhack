@@ -20,7 +20,7 @@ data class ModelPrice(val inputPerMillionUsd: Double, val outputPerMillionUsd: D
  * once per report on facts that were already computed without AI.
  */
 data class AiConfig(
-    /** Shown on the price screen (#32): "OpenRouter (cloud)" or "Ollama (clinic module)". */
+    /** Provider label shown on the price screen (#32). */
     val providerName: String,
     val small: LLModel,
     val big: LLModel,
@@ -40,6 +40,26 @@ data class AiConfig(
     fun price(model: LLModel): ModelPrice? = prices[model.id]
 
     companion object {
+        /** Together list prices from /v1/models, in USD per 1M tokens. */
+        fun together(): AiConfig = AiConfig(
+            providerName = "Together AI (cloud)",
+            // Koog's OpenRouterLLMClient registers as OpenRouter and the executor routes by model.provider,
+            // even when its base URL points to Together's OpenAI-compatible API.
+            small = LLModel(LLMProvider.OpenRouter, "nvidia/NVIDIA-Nemotron-3.5-Super-VL", VISION_CHAT),
+            big = LLModel(
+                LLMProvider.OpenRouter, "MiniMaxAI/MiniMax-M3.1-Flash",
+                listOf(LLMCapability.Completion, LLMCapability.Temperature),
+            ),
+            prices = mapOf(
+                "nvidia/NVIDIA-Nemotron-3.5-Super-VL" to ModelPrice(0.15, 0.50),
+                "MiniMaxAI/MiniMax-M3.1-Flash" to ModelPrice(0.15, 0.60),
+            ),
+            // Both models reason before answering; with the default limits the reasoning used every output token
+            // and the answer came back empty. 4000 tokens cost at most $0.0024 per summary.
+            maxPhotoOutputTokens = 1_000,
+            maxSummaryOutputTokens = 4_000,
+        )
+
         /**
          * Cloud through OpenRouter. The API key lives only on the Ktor server (#8); clients never see it.
          * Prices: OpenRouter list prices in USD per 1M tokens at the time of writing; the server can override them.

@@ -39,12 +39,14 @@ Configure these environment variables in the server process, then run `./gradlew
 
 | Variable | Purpose |
 |---|---|
-| `EASYPAPER_AI` | `cloud`, `clinic` or `off`. Defaults to `cloud` when `OPENROUTER_API_KEY` is set, otherwise `off`. |
-| `OPENROUTER_API_KEY` | OpenRouter API key for cloud mode; stays on the server. Not needed for `clinic` or `off`. |
+| `EASYPAPER_AI` | `cloud`, `clinic` or `off`. Defaults to `cloud` when either `TOGETHER_API_KEY` or `OPENROUTER_API_KEY` is set, otherwise `off`. |
+| `EASYPAPER_CLOUD` | `together` or `openrouter`. Defaults to `together` when `TOGETHER_API_KEY` is set, otherwise `openrouter`. Only the selected provider's key is used. |
+| `TOGETHER_API_KEY` | Together AI API key for cloud mode with `EASYPAPER_CLOUD=together`; stays on the server. |
+| `OPENROUTER_API_KEY` | OpenRouter API key for cloud mode with `EASYPAPER_CLOUD=openrouter`; stays on the server. Cloud keys are not needed for `clinic` or `off`. |
 | `EASYPAPER_CLINIC_TOKEN` | Private clinic access token. Clients send the matching value in `X-EasyPaper-Clinic-Token` for every `/ai/*` request. |
 | `EASYPAPER_BUDGET_USD` | Server AI spending cap in USD (cloud default: `9.00`). |
 
-For example, set `EASYPAPER_AI=cloud`, `OPENROUTER_API_KEY`, `EASYPAPER_CLINIC_TOKEN` and
+For example, set `EASYPAPER_AI=cloud`, `EASYPAPER_CLOUD=together`, `TOGETHER_API_KEY`, `EASYPAPER_CLINIC_TOKEN` and
 `EASYPAPER_BUDGET_USD=9.00` in your local environment before starting the server. Do not put real
 credentials in commands saved to Git, frontend bundles or logs. Clinic mode uses local Ollama;
 `EASYPAPER_OLLAMA_URL` defaults to `http://localhost:11434` and `EASYPAPER_OLLAMA_MODEL` to `gemma4:12b`.
@@ -55,11 +57,11 @@ With a configured token, a missing or incorrect header returns `401`, including 
 All `/ai/*` requests share a sliding limit of 30 requests per minute per connection IP, including
 failed authentication and status requests; further requests return `429`. Forwarded IP headers
 are not trusted, so clients behind the same reverse proxy share its connection IP limit.
-The clinic token and OpenRouter key are never logged or included in responses.
+The clinic token and cloud provider keys are never logged or included in responses.
 
 **Cloud privacy:** de-identified facts sent for AI processing leave the clinic and are sent to
-OpenRouter in cloud mode. Easy Paper only collects and structures facts; it does not diagnose or
-give medical advice. Documents are processed only in clinic mode.
+Together AI or OpenRouter according to `EASYPAPER_CLOUD` in cloud mode. Easy Paper only collects and
+structures facts; it does not diagnose or give medical advice. Documents are processed only in clinic mode.
 
 For deployment, put Ktor behind a reverse proxy that terminates **HTTPS** and forwards requests
 to the server on a private interface. Preserve `X-EasyPaper-Clinic-Token` and exclude it and
@@ -97,6 +99,11 @@ python test.py --all    # also builds the Android APK and the Wasm web app
 works without an Android SDK; only `--all` needs it. It also compiles `core` for JS and Wasm, so a
 JVM-only call in shared code fails the run instead of breaking the web app later. Team Hub runs it through `teamhub.json`.
 
+Live AI tests are disabled by default. Set `EASYPAPER_LIVE=together` and `TOGETHER_API_KEY` to use
+Together AI, `EASYPAPER_LIVE=openrouter` and `OPENROUTER_API_KEY` for OpenRouter, or
+`EASYPAPER_LIVE=ollama` for local Ollama. The live server test also requires `EASYPAPER_CLINIC_TOKEN`.
+Keys are read from the environment and never printed.
+
 ## Stay in sync
 
 ```
@@ -109,5 +116,5 @@ reported once. On Windows without a console window:
 
 ## Secrets
 
-API keys (OpenRouter and others) live only in environment variables or untracked local files,
+API keys (Together AI, OpenRouter and others) live only in environment variables or untracked local files,
 never in Git or logs. The cloud key stays on the server; clients never see it.

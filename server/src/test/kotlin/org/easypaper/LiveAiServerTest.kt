@@ -9,12 +9,22 @@ import kotlin.test.assertTrue
 /**
  * The server with a real model, off by default. EASYPAPER_LIVE=ollama runs the clinic module against the local
  * Ollama (daytime only); EASYPAPER_LIVE=openrouter uses OPENROUTER_API_KEY from the environment (never printed).
+ * EASYPAPER_LIVE=together uses TOGETHER_API_KEY from the environment (never printed).
  */
 class LiveAiServerTest {
     @Test
     fun clinicModuleEndToEnd() {
-        val live = System.getenv("EASYPAPER_LIVE") ?: return println("LiveAiServerTest skipped: set EASYPAPER_LIVE")
-        val ai = AiService.fromEnv { name -> if (name == "EASYPAPER_AI") (if (live == "ollama") "clinic" else "cloud") else System.getenv(name) }
+        val live = System.getenv("EASYPAPER_LIVE")
+        if (live !in listOf("ollama", "openrouter", "together")) {
+            return println("LiveAiServerTest skipped: set EASYPAPER_LIVE=ollama, openrouter or together")
+        }
+        val ai = AiService.fromEnv { name ->
+            when (name) {
+                "EASYPAPER_AI" -> if (live == "ollama") "clinic" else "cloud"
+                "EASYPAPER_CLOUD" -> live
+                else -> System.getenv(name)
+            }
+        }
         val token = System.getenv("EASYPAPER_CLINIC_TOKEN")
             ?: error("Set EASYPAPER_CLINIC_TOKEN for the live server test")
         testApplication {

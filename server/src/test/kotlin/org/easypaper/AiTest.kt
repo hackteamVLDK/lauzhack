@@ -30,6 +30,7 @@ import org.easypaper.ai.SummaryRequest
 import org.easypaper.ai.SummaryResult
 import org.easypaper.demo.Demo
 import org.easypaper.model.EasyPaperJson
+import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -178,6 +179,64 @@ class AiTest {
         assertEquals("anthropic/claude-haiku-4.5", status.bigModel)
         assertEquals(9.0, status.budgetUsd)
         assertFalse("sk-" in text || "apiKey" in text || "OPENROUTER" in text)
+    }
+
+    @Test
+    fun togetherKeyEnablesCloudAndStatusNeverReturnsIt() {
+        val key = UUID.randomUUID().toString()
+        val environment = mapOf("TOGETHER_API_KEY" to key)
+        val ai = AiService.fromEnv(environment::get)
+        app(ai) {
+            val response = client.get("/ai/status")
+            assertEquals(HttpStatusCode.OK, response.status)
+            val text = response.bodyAsText()
+            val status = EasyPaperJson.decodeFromString(AiStatus.serializer(), text)
+            assertEquals("cloud", status.mode)
+            assertEquals("Together AI (cloud)", status.provider)
+            assertTrue(status.keyConfigured)
+            assertEquals("nvidia/NVIDIA-Nemotron-3.5-Super-VL", status.smallModel)
+            assertEquals("MiniMaxAI/MiniMax-M3.1-Flash", status.bigModel)
+            assertEquals(AiConfig.together().prices, status.prices)
+            assertFalse(key in text || "apiKey" in text || "TOGETHER_API_KEY" in text)
+            assertFalse(response.headers.entries().any { (_, values) -> values.any { key in it } })
+        }
+    }
+
+    @Test
+    fun cloudSelectionUsesOnlyTheSelectedProvidersKey() {
+        val key = UUID.randomUUID().toString()
+        // An explicitly selected provider without its own key stays unconfigured,
+        // even though the other cloud key makes the default AI mode cloud.
+        for ((selected, otherKey, expectedProvider) in listOf(
+            Triple("together", "OPENROUTER_API_KEY", "Together AI (cloud)"),
+            Triple("openrouter", "TOGETHER_API_KEY", "OpenRouter (cloud)"),
+        )) {
+            val environment = mapOf("EASYPAPER_CLOUD" to selected, otherKey to key)
+            val status = AiService.fromEnv(environment::get).status()
+            assertEquals("cloud", status.mode)
+            assertEquals(expectedProvider, status.provider)
+            assertFalse(status.keyConfigured)
+        }
+    }
+
+    @Test
+    fun togetherHasPriorityByDefaultAndOpenRouterCanBeSelectedExplicitly() {
+        val environment = mapOf(
+            "TOGETHER_API_KEY" to UUID.randomUUID().toString(),
+            "OPENROUTER_API_KEY" to UUID.randomUUID().toString(),
+        )
+        val together = AiService.fromEnv(environment::get).status()
+        assertEquals("Together AI (cloud)", together.provider)
+        assertTrue(together.keyConfigured)
+        val selected = environment + ("EASYPAPER_CLOUD" to "openrouter")
+        val openRouter = AiService.fromEnv(selected::get).status()
+        assertEquals("OpenRouter (cloud)", openRouter.provider)
+        assertTrue(openRouter.keyConfigured)
+        val onlyOpenRouter = environment - "TOGETHER_API_KEY"
+        val fallback = AiService.fromEnv(onlyOpenRouter::get).status()
+        assertEquals("OpenRouter (cloud)", fallback.provider)
+        assertTrue(fallback.keyConfigured)
+        assertEquals("off", AiService.fromEnv { null }.status().mode)
     }
 
     @Test

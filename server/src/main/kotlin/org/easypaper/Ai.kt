@@ -43,6 +43,7 @@ import org.easypaper.ai.SummaryResult
 import org.easypaper.ai.UsageLedger
 import org.easypaper.ai.clinicExecutor
 import org.easypaper.ai.cloudExecutor
+import org.easypaper.ai.togetherExecutor
 import org.easypaper.model.EasyPaperJson
 import java.security.MessageDigest
 import java.util.ArrayDeque
@@ -51,7 +52,7 @@ import kotlin.io.encoding.Base64
 enum class AiMode { CLOUD, CLINIC, OFF }
 
 /**
- * The server's AI (task 8). CLOUD: Koog + OpenRouter with the key from this process's environment only — it is
+ * The server's AI (task 8). CLOUD: Koog + Together/OpenRouter with the key from this process's environment only — it is
  * never logged, returned or sent to a client — and a hard spending cap for the team's $10 key. CLINIC: Koog +
  * local Ollama, nothing leaves the clinic, documents can be read. OFF: summaries are the facts without AI.
  * One request at a time: the demo's laptop runs a 12B model, and the ledger stays in order.
@@ -101,21 +102,31 @@ class AiService(
 
     companion object {
         /**
-         * EASYPAPER_AI = cloud | clinic | off (default: cloud when OPENROUTER_API_KEY is set, otherwise off).
+         * EASYPAPER_AI = cloud | clinic | off (default: cloud when either cloud key is set, otherwise off).
+         * EASYPAPER_CLOUD = together | openrouter (default: together when TOGETHER_API_KEY is set, otherwise openrouter).
          * EASYPAPER_BUDGET_USD caps cloud spending (default 9.00 of the team's $10). EASYPAPER_OLLAMA_URL and
          * EASYPAPER_OLLAMA_MODEL select the clinic module's local model.
          */
         fun fromEnv(env: (String) -> String? = System::getenv): AiService {
-            val key = env("OPENROUTER_API_KEY")?.trim().orEmpty()
+            val togetherKey = env("TOGETHER_API_KEY")?.trim().orEmpty()
+            val openRouterKey = env("OPENROUTER_API_KEY")?.trim().orEmpty()
+            val useTogether = when (env("EASYPAPER_CLOUD")?.lowercase()) {
+                "together" -> true
+                "openrouter" -> false
+                else -> togetherKey.isNotEmpty()
+            }
+            val key = if (useTogether) togetherKey else openRouterKey
             val mode = when (env("EASYPAPER_AI")?.lowercase()) {
                 "cloud" -> AiMode.CLOUD
                 "clinic" -> AiMode.CLINIC
                 "off" -> AiMode.OFF
-                else -> if (key.isNotEmpty()) AiMode.CLOUD else AiMode.OFF
+                else -> if (togetherKey.isNotEmpty() || openRouterKey.isNotEmpty()) AiMode.CLOUD else AiMode.OFF
             }
             return when (mode) {
                 AiMode.CLOUD -> AiService(
-                    AiMode.CLOUD, key.takeIf { it.isNotEmpty() }?.let(::cloudExecutor), AiConfig.cloud(),
+                    AiMode.CLOUD,
+                    key.takeIf { it.isNotEmpty() }?.let { if (useTogether) togetherExecutor(it) else cloudExecutor(it) },
+                    if (useTogether) AiConfig.together() else AiConfig.cloud(),
                     env("EASYPAPER_BUDGET_USD")?.toDoubleOrNull() ?: 9.0, keyConfigured = key.isNotEmpty(),
                 )
                 AiMode.CLINIC -> AiService(

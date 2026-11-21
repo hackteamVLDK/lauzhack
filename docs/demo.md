@@ -66,7 +66,7 @@ $total = $shared + $other
 | Run | Input / output tokens | Latency | Token charge |
 |---|---|---|---|
 | Local Ollama `gemma4:12b`, already measured | 1279 / 443 | 8.7 s | $0 |
-| Cloud OpenRouter | TODO after obtaining the key | TODO | TODO |
+| Cloud Together AI (MiniMax-M3.1-Flash, measured) | 1137 in / 3214 out (mostly reasoning) | 23.0 s | $0.0021 per summary |
 
 The local measurement does not establish a live image-model run: `Demo.record` has food text and no actual photo bytes. Prepare an undescribed food photo to exercise the vision step. `CostComparison.kt` reprices recorded token counts at configured cloud rates; that estimate is not a measured cloud run. Local $0 excludes hardware and electricity. The demo laptop simulates the clinic module.
 

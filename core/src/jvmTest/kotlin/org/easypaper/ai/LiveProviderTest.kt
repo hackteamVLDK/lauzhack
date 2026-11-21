@@ -9,6 +9,7 @@ import kotlin.test.assertTrue
  * Real model run, off by default (no network in CI and no Ollama at night):
  *   EASYPAPER_LIVE=ollama  -> local clinic module (Ollama, gemma4:12b)
  *   EASYPAPER_LIVE=openrouter + OPENROUTER_API_KEY -> cloud
+ *   EASYPAPER_LIVE=together + TOGETHER_API_KEY -> cloud
  * Prints the summary and the usage ledger; never prints the key.
  */
 class LiveProviderTest {
@@ -17,7 +18,8 @@ class LiveProviderTest {
         val (executor, config) = when (System.getenv("EASYPAPER_LIVE")) {
             "ollama" -> clinicExecutor() to AiConfig.clinic(System.getenv("EASYPAPER_OLLAMA_MODEL") ?: "gemma4:12b")
             "openrouter" -> cloudExecutor(System.getenv("OPENROUTER_API_KEY").orEmpty()) to AiConfig.cloud()
-            else -> return@runBlocking println("LiveProviderTest skipped: set EASYPAPER_LIVE=ollama or openrouter")
+            "together" -> togetherExecutor(System.getenv("TOGETHER_API_KEY").orEmpty()) to AiConfig.together()
+            else -> return@runBlocking println("LiveProviderTest skipped: set EASYPAPER_LIVE=ollama, openrouter or together")
         }
         val pipeline = SummaryPipeline(executor, config)
         val result = pipeline.summarize(Demo.record)
