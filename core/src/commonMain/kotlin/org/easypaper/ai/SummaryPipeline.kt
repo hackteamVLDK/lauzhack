@@ -1,0 +1,202 @@
+package org.easypaper.ai
+
+import ai.koog.prompt.dsl.prompt
+import ai.koog.prompt.executor.model.PromptExecutorAPI
+import ai.koog.prompt.llm.LLModel
+import ai.koog.prompt.message.AttachmentContent
+import ai.koog.prompt.message.AttachmentSource
+import ai.koog.prompt.message.MessagePart
+import ai.koog.prompt.params.LLMParams
+import org.easypaper.model.Food
+import org.easypaper.model.PatientRecord
+import org.easypaper.report.factDigest
+import org.easypaper.report.toText
+import kotlin.time.TimeSource
+
+/** One line of the doctor's summary with the entries it is based on. Unsupported lines are shown as such. */
+data class SummaryLine(val text: String, val refs: List<String>, val supported: Boolean)
+
+data class SummaryResult(
+    /** Goes into Report.summary: one fact per line, each ending with [e01, e02]. */
+    val summary: String,
+    val lines: List<SummaryLine>,
+    /** false: the doctor gets the facts computed without AI (budget, no executor, or AI failed). */
+    val usedAi: Boolean,
+    /** AI descriptions of food photos the patient left without text, by entry id. */
+    val photoDescriptions: Map<String, String>,
+    val usage: List<AiUsage>,
+    /** Why AI was skipped or what was removed, for the price screen; null when nothing happened. */
+    val note: String? = null,
+)
+
+/**
+ * The frugal AI pipeline (task 7), shared by every platform on Koog's [PromptExecutorAPI]:
+ * 1. facts without AI ([factDigest]): numbers, ranges, medications, answers, notes, all with entry ids;
+ * 2. a small vision model only for food photos without text (size-capped, cached);
+ * 3. the big model once per report, writing only facts with references, no diagnoses, no advice;
+ * 4. every line checked: references must point to real entries, advice and diagnoses are dropped;
+ * 5. a budget per report: when the estimate is above it, the facts are returned without AI.
+ * The patient's name never reaches a prompt: the digest has none.
+ */
+class SummaryPipeline(
+    private val executor: PromptExecutorAPI,
+    private val config: AiConfig,
+    private val cache: AiCache = InMemoryAiCache(),
+    val ledger: UsageLedger = UsageLedger(),
+) {
+    /** Last provider error (class and message, never the prompt), for the note and the price screen. */
+    private var lastError: String? = null
+
+    suspend fun summarize(
+        record: PatientRecord,
+        photos: Map<String, ByteArray> = emptyMap(),
+        utcOffsetMinutes: Int = 0,
+    ): SummaryResult {
+        val start = ledger.items.size
+        val knownIds = record.entries.map { it.id }.toSet()
+        val facts = record.factDigest(utcOffsetMinutes).toText()
+        val notes = mutableListOf<String>()
+        var spent = 0.0
+
+        // 2. Photos the patient did not describe; the patient's own words always win over a model's guess.
+        val descriptions = linkedMapOf<String, String>()
+        val untold = record.entries.filter { (it.payload as? Food)?.let { f -> f.text.isNullOrBlank() && f.photoRef != null } == true }
+        for (entry in untold) {
+            if (descriptions.size >= config.maxPhotos) { notes += "only ${config.maxPhotos} photos described"; break }
+            val bytes = photos[(entry.payload as Food).photoRef] ?: continue
+            if (bytes.size > config.maxPhotoBytes) { notes += "photo ${entry.id} too large, skipped"; continue }
+            val estimate = estimateCost(config.small, estimateTokens(PHOTO_SYSTEM) + PHOTO_IMAGE_TOKENS, config.maxPhotoOutputTokens)
+            if (spent + estimate > config.budgetUsdPerReport) { notes += "budget reached before photo ${entry.id}"; break }
+            val answer = call(AiStep.PhotoDescription, config.small, PHOTO_SYSTEM, PHOTO_USER, bytes, config.maxPhotoOutputTokens)
+                ?: continue
+            spent += ledger.items.last().costUsd
+            cleanDescription(answer)?.let { descriptions[entry.id] = it }
+        }
+
+        // 3. One call to the big model on facts only.
+        val input = buildString {
+            append(facts)
+            if (descriptions.isNotEmpty()) {
+                append("\nFood photos described by a vision model (not by the patient):")
+                for ((id, text) in descriptions) append("\n- $text [$id]")
+            }
+        }
+        val estimate = estimateCost(config.big, estimateTokens(SUMMARY_SYSTEM + input), config.maxSummaryOutputTokens)
+        val answer = if (spent + estimate > config.budgetUsdPerReport) {
+            notes += "budget: summary without AI"
+            null
+        } else {
+            call(AiStep.Summary, config.big, SUMMARY_SYSTEM, input, null, config.maxSummaryOutputTokens)
+                .also { if (it == null) notes += "AI not reachable (${lastError ?: "empty answer"}): summary without AI" }
+        }
+
+        // 4. Check every line; fall back to the facts themselves.
+        val (lines, dropped) = if (answer != null) checkLines(answer, knownIds) else factLines(facts, knownIds) to 0
+        if (dropped > 0) notes += "$dropped line(s) with advice or diagnosis removed"
+        return SummaryResult(
+            summary = lines.joinToString("\n") { it.text },
+            lines = lines,
+            usedAi = answer != null,
+            photoDescriptions = descriptions,
+            usage = ledger.items.drop(start),
+            note = notes.takeIf { it.isNotEmpty() }?.joinToString("; "),
+        )
+    }
+
+    /** One model call through the cache; records usage. null when the call fails. */
+    private suspend fun call(step: AiStep, model: LLModel, system: String, user: String, image: ByteArray?, maxTokens: Int): String? {
+        val key = cacheKey(model.id.encodeToByteArray(), system.encodeToByteArray(), user.encodeToByteArray(), image ?: ByteArray(0))
+        cache.get(key)?.let { cached ->
+            ledger.add(AiUsage(step, config.providerName, model.id, 0, 0, 0.0, cached = true, millis = 0))
+            return cached
+        }
+        val p = prompt("easypaper-${step.name.lowercase()}", LLMParams(temperature = 0.0, maxTokens = maxTokens, additionalProperties = config.extraParams.ifEmpty { null })) {
+            system(system)
+            user {
+                part(MessagePart.Text(user))
+                if (image != null) image(AttachmentSource.Image(AttachmentContent.Binary.Bytes(image), "jpeg"))
+            }
+        }
+        val mark = TimeSource.Monotonic.markNow()
+        val response = try {
+            executor.execute(p, model)
+        } catch (e: Exception) {
+            if (e is kotlin.coroutines.cancellation.CancellationException) throw e
+            lastError = (e::class.simpleName ?: "error") + ": " + (e.message ?: "").take(200)
+            return null
+        }
+        val text = response.textContent().trim()
+        val input = response.metaInfo.inputTokensCount ?: estimateTokens(system + user)
+        val output = response.metaInfo.outputTokensCount ?: estimateTokens(text)
+        ledger.add(
+            AiUsage(step, config.providerName, model.id, input, output,
+                config.price(model)?.cost(input, output) ?: 0.0, cached = false, millis = mark.elapsedNow().inWholeMilliseconds),
+        )
+        if (text.isNotEmpty()) cache.put(key, text)
+        return text.ifEmpty { null }
+    }
+
+    private fun estimateCost(model: LLModel, inputTokens: Int, outputTokens: Int) =
+        config.price(model)?.cost(inputTokens, outputTokens) ?: 0.0
+
+    internal companion object {
+        const val PHOTO_IMAGE_TOKENS = 1_300 // upper bound of a downscaled photo for current vision models
+
+        val PHOTO_SYSTEM = """
+            You label photos of food for a patient's food diary. Answer with 3 to 8 plain words naming the
+            food and drinks you see, in English, e.g. "oatmeal with banana, black tea". No judgement, no
+            calories, no health or diet advice. If it is not food, answer exactly: not food.
+        """.trimIndent()
+
+        const val PHOTO_USER = "What food is in this photo?"
+
+        val SUMMARY_SYSTEM = """
+            You prepare a short pre-visit summary for a doctor from a patient's diary facts.
+            Rules:
+            - Use ONLY the facts given. Never add, guess or generalise beyond them.
+            - One fact per line, at most 12 lines, most relevant to the complaint first.
+            - End every line with the ids of the entries it is based on, exactly as given: [e01] or [e01, e02].
+            - No diagnosis, no interpretation of causes, no advice, no recommendations, no reassurance.
+            - Keep numbers and units exactly as given (mmHg, mL). Mention unconfirmed medications as unconfirmed.
+            - Quote questions the patient asks the doctor; do not answer them.
+            - Plain English, no headings, no bullet symbols, no markdown.
+        """.trimIndent()
+
+        private val REFS = Regex("""\[([A-Za-z0-9_-]+(?:\s*,\s*[A-Za-z0-9_-]+)*)\]\s*$""")
+        private val BULLET = Regex("""^\s*(?:[-*•]|\d+[.)])\s*""")
+        // Advice or diagnosis in the languages of the app and of the models' slips (EN, DE, RU, UK).
+        private val ADVICE = Regex(
+            """(?<![\p{L}])(?:should|recommend\p{L}*|advis\p{L}*|diagnos\p{L}*|likely|probably|suggests?|consider|must|""" +
+                """empfehl\p{L}*|sollte\p{L}*|vermutlich|рекоменд\p{L}*|следует|советую|диагноз\p{L}*|вероятно|""" +
+                """варто|радимо|ймовірно)(?![\p{L}])""",
+            RegexOption.IGNORE_CASE,
+        )
+
+        /** Splits the model's answer into checked lines; returns the lines and how many were dropped as advice. */
+        fun checkLines(answer: String, knownIds: Set<String>): Pair<List<SummaryLine>, Int> {
+            var dropped = 0
+            val lines = answer.lines().map { it.replace(BULLET, "").trim() }.filter { it.isNotEmpty() }.mapNotNull { line ->
+                if (ADVICE.containsMatchIn(line)) { dropped++; return@mapNotNull null }
+                val match = REFS.find(line)
+                val refs = match?.groupValues?.get(1)?.split(',')?.map { it.trim() }.orEmpty()
+                val real = refs.filter { it in knownIds }
+                val body = match?.let { line.substring(0, it.range.first).trimEnd() } ?: line
+                val text = if (real.isEmpty()) body else "$body ${real.joinToString(", ", "[", "]")}"
+                SummaryLine(text, real, supported = real.isNotEmpty() && real.size == refs.size)
+            }
+            return lines to dropped
+        }
+
+        /** The facts without AI, line by line, as the fallback summary. */
+        fun factLines(facts: String, knownIds: Set<String>): List<SummaryLine> = facts.lines().filter { it.isNotBlank() }.map { line ->
+            val refs = Regex("""\[([^\]]+)\]""").findAll(line).flatMap { it.groupValues[1].split(',') }.map { it.trim() }.filter { it in knownIds }.toList()
+            SummaryLine(line.trim(), refs, supported = refs.isNotEmpty())
+        }
+
+        /** Keeps the photo label short and plain; "not food" and empty answers are dropped. */
+        fun cleanDescription(answer: String): String? {
+            val text = answer.lines().firstOrNull { it.isNotBlank() }?.trim()?.trim('"', '.', ' ')?.take(80) ?: return null
+            return text.takeIf { it.isNotEmpty() && !it.equals("not food", ignoreCase = true) && !ADVICE.containsMatchIn(it) }
+        }
+    }
+}

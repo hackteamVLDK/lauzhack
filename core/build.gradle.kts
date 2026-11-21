@@ -36,6 +36,14 @@ kotlin {
             implementation(libs.cryptography.core)
             implementation(libs.cryptography.providerOptimal)
             implementation(libs.ktor.clientCore)
+            api(libs.koog.promptExecutorModel) // shared AI logic on Koog (org.easypaper.ai)
+        }
+        jvmMain.dependencies {
+            // real providers: server (cloud, key only there) and the clinic module (local Ollama)
+            implementation(libs.koog.openrouterClient)
+            implementation(libs.koog.ollamaClient)
+            implementation(libs.koog.httpClientKtor)
+            implementation(libs.ktor.clientCio)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
