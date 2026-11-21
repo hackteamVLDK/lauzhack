@@ -7,7 +7,7 @@ Queue and journals are generated from SQLite. Change them through the API.
 Easy Paper — KMP-приложение (Android, Desktop, Web/Wasm, Ktor-сервер): врач собирает из виджетов запрос под жалобу, пациент несколько дней заполняет его текстом, числами и фото (еда, упаковки лекарств), а на приёме передаёт через QR зашифрованный отчёт, который ИИ сжимает в сводку со ссылками на оригиналы и предзаполненную форму клиники. Экономный ИИ-конвейер (штрих-код/OCR без LLM, маленькая модель для простого, большая один раз на сводку, кэш, учёт токенов и цены) и режим локального ИИ-модуля в клинике (Ollama). Приложение не ставит диагнозов и не советует — только собирает и структурирует факты; ИИ пишет черновик, каждое поле подтверждает врач.
 Порядок: задача 1 первая; UI-задачи 4, 5, 10 — только после утверждённого mykhailo docs/design.md (задача 3). Секреты только в env/локально; коммиты без подписи Claude; в origin не пушить.
 
-Phases: accepted 3, build 2, plan 6
+Phases: accepted 3, build 3, plan 5
 
 ## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB]
 
@@ -52,7 +52,7 @@ Review notes: -
 ## Task 5: Конструктор запроса врача (Web + Desktop): виджеты + срок → приглашение (ссылка/QR) [JB][IMC] [старт после утверждённого docs/design.md]
 
 Latest intent: pavlo/Paul-chat · 2026-11-21T15:34:05+00:00: non-UI part first: CareRequest <-> invite link/QR string in core; UI waits for design.md
-Phase: plan; build 0; submitter: -; branch: -.
+Phase: build; build 0; submitter: -; branch: -.
 Status: running; assignee: pavlo; owner: pavlo; client: Paul-chat.
 Lease expires: 2026-11-21T15:37:29+00:00.
 Acceptance: пациент открывает и видит ровно эти виджеты
