@@ -2,6 +2,24 @@
 
 Every push to the hub: who, which branch, which files. Newest first.
 
+## Push 149 · 2026-11-21T15:19:21+00:00 · mykhailo · main
+
+mykhailo pushed main: 4 commit(s), 7 file(s)
+`616b398c1d` → `36ac13425e`
+
+- 4871df1 UladzislauHrynevich: core: data schema v1 for requests, widgets and patient entries
+- f09b561 UladzislauHrynevich: core: encrypted record store (AES-256-GCM via cryptography-kotlin)
+- 3d93acc Mykhailo Titov: core: kotlinx-serialization, cryptography-kotlin and coroutines-test for the data model (task 2)
+- 36ac134 Mykhailo Titov: Merge task 2 work so far (data schema v1, encrypted record store) into main
+
+    M build.gradle.kts
+    M core/build.gradle.kts
+    A core/src/commonMain/kotlin/org/easypaper/model/Schema.kt
+    A core/src/commonMain/kotlin/org/easypaper/storage/RecordStore.kt
+    A core/src/commonTest/kotlin/org/easypaper/model/SchemaTest.kt
+    A core/src/commonTest/kotlin/org/easypaper/storage/RecordStoreTest.kt
+    M gradle/libs.versions.toml
+
 ## Push 122 · 2026-11-21T15:12:05+00:00 · mykhailo · main
 
 mykhailo pushed main: 1 commit(s), 62 file(s)

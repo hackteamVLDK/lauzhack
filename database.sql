@@ -167,6 +167,7 @@ INSERT INTO "events" VALUES(145,1,'vlad','BelarusLord-chat','heartbeat','Lease r
 INSERT INTO "events" VALUES(146,2,'vlad','BelarusLord-chat','heartbeat','Lease renewed','{"task_id":2}','2026-11-21T15:18:39+00:00');
 INSERT INTO "events" VALUES(147,1,'vlad','BelarusLord-chat','heartbeat','Lease renewed','{"task_id":1}','2026-11-21T15:19:09+00:00');
 INSERT INTO "events" VALUES(148,2,'vlad','BelarusLord-chat','heartbeat','Lease renewed','{"task_id":2}','2026-11-21T15:19:09+00:00');
+INSERT INTO "events" VALUES(149,NULL,'mykhailo','git','push','mykhailo pushed main: 4 commit(s), 7 file(s)','{"commits":4,"file_count":7,"files":["M build.gradle.kts","M core/build.gradle.kts","A core/src/commonMain/kotlin/org/easypaper/model/Schema.kt","A core/src/commonMain/kotlin/org/easypaper/storage/RecordStore.kt","A core/src/commonTest/kotlin/org/easypaper/model/SchemaTest.kt","A core/src/commonTest/kotlin/org/easypaper/storage/RecordStoreTest.kt","M gradle/libs.versions.toml"],"log":["4871df1 UladzislauHrynevich: core: data schema v1 for requests, widgets and patient entries","f09b561 UladzislauHrynevich: core: encrypted record store (AES-256-GCM via cryptography-kotlin)","3d93acc Mykhailo Titov: core: kotlinx-serialization, cryptography-kotlin and coroutines-test for the data model (task 2)","36ac134 Mykhailo Titov: Merge task 2 work so far (data schema v1, encrypted record store) into main"],"new":"36ac13425e1bf8710e45c33c77714aa27afae02f","old":"616b398c1dbd3b80d75aca5d95d9336cbac2ac12","ref":"refs/heads/main"}','2026-11-21T15:19:21+00:00');
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 INSERT INTO "meta" VALUES('goal','Easy Paper — KMP-приложение (Android, Desktop, Web/Wasm, Ktor-сервер): врач собирает из виджетов запрос под жалобу, пациент несколько дней заполняет его текстом, числами и фото (еда, упаковки лекарств), а на приёме передаёт через QR зашифрованный отчёт, который ИИ сжимает в сводку со ссылками на оригиналы и предзаполненную форму клиники. Экономный ИИ-конвейер (штрих-код/OCR без LLM, маленькая модель для простого, большая один раз на сводку, кэш, учёт токенов и цены) и режим локального ИИ-модуля в клинике (Ollama). Приложение не ставит диагнозов и не советует — только собирает и структурирует факты; ИИ пишет черновик, каждое поле подтверждает врач.
 Порядок: задача 1 первая; UI-задачи 4, 5, 10 — только после утверждённого mykhailo docs/design.md (задача 3). Секреты только в env/локально; коммиты без подписи Claude; в origin не пушить.');
@@ -320,8 +321,9 @@ INSERT INTO "outbox" VALUES(143,1);
 INSERT INTO "outbox" VALUES(144,1);
 INSERT INTO "outbox" VALUES(145,1);
 INSERT INTO "outbox" VALUES(146,1);
-INSERT INTO "outbox" VALUES(147,0);
-INSERT INTO "outbox" VALUES(148,0);
+INSERT INTO "outbox" VALUES(147,1);
+INSERT INTO "outbox" VALUES(148,1);
+INSERT INTO "outbox" VALUES(149,0);
 CREATE TABLE problems (
  id INTEGER PRIMARY KEY, task_id INTEGER NOT NULL REFERENCES tasks(id),
  member TEXT NOT NULL, description TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open',
@@ -502,6 +504,6 @@ CREATE TABLE workers (
  PRIMARY KEY (member, client)
 );
 INSERT INTO "workers" VALUES('mykhailo','MyPc-worker','{"executor":"claude","five_hour":{"resets_at":1795119000.0,"status":"allowed","utilization":0.0},"job_cost":0.08,"measured_at":1795117014.4137092,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","seven_day":{"resets_at":1795658400.0,"status":"allowed","utilization":0.08},"task":null,"wake_at":null}',1.79527434973488092e+09);
-INSERT INTO "workers" VALUES('pavlo','Paul-worker','{"executor":"claude","job_cost":0.08,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","task":null,"wake_at":null}',1.79527433919946312e+09);
-INSERT INTO "workers" VALUES('vlad','BelarusLord-worker','{"executor":"claude","five_hour":{"resets_at":1795290000.0,"status":"allowed","utilization":0.05},"job_cost":0.08,"measured_at":1795274080.8663964,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","seven_day":{"resets_at":1795824000.0,"status":"allowed","utilization":0.04},"task":null,"wake_at":null}',1.79527434087373924e+09);
+INSERT INTO "workers" VALUES('pavlo','Paul-worker','{"executor":"claude","job_cost":0.08,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","task":null,"wake_at":null}',1.7952743599351089e+09);
+INSERT INTO "workers" VALUES('vlad','BelarusLord-worker','{"executor":"claude","five_hour":{"resets_at":1795290000.0,"status":"allowed","utilization":0.05},"job_cost":0.08,"measured_at":1795274080.8663964,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","seven_day":{"resets_at":1795824000.0,"status":"allowed","utilization":0.04},"task":null,"wake_at":null}',1.79527436139771699e+09);
 COMMIT;
