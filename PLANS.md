@@ -2,7 +2,7 @@
 
 Each AI publishes its plan here before it changes code.
 
-## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB] (review)
+## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB] (accepted)
 
 Попытка 2 по ревью vlad: test.py требует Android SDK только с --all; без SDK быстрые задачи (:core:jvmTest :app:shared:jvmTest :server:test :app:desktopApp:compileKotlin) идут без local.properties, с предупреждением. Файл: test.py. Ветка attempt/mykhailo/task-1-2 от main 7b0491c. Проверка: python test.py на Windows; в WSL Ubuntu без ANDROID_HOME и без local.properties (как у vlad); --all без SDK -> понятная ошибка, код 2.
 
