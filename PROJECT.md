@@ -14,7 +14,7 @@ Phases: build 1, plan 9, review 1
 Latest intent: vlad/BelarusLord-chat · 2026-11-21T15:14:16+00:00: review
 Phase: review; build 1; submitter: mykhailo; branch: attempt/mykhailo/task-1-1.
 Status: running; assignee: mykhailo; owner: vlad; client: BelarusLord-chat.
-Lease expires: 2026-11-21T15:23:41+00:00.
+Lease expires: 2026-11-21T15:24:12+00:00.
 Acceptance: python test.py зелёный на Windows и Linux, Desktop и Android запускаются
 Checkpoint SHA: 616b398c1dbd3b80d75aca5d95d9336cbac2ac12
 Review notes: -
@@ -24,7 +24,7 @@ Review notes: -
 Latest intent: vlad/BelarusLord-chat · 2026-11-21T14:46:59+00:00: Фиксирую формат схемы запроса врача (план до каркаса), код — после #1 в main
 Phase: build; build 0; submitter: -; branch: attempt/vlad/task-2-1.
 Status: running; assignee: vlad; owner: vlad; client: BelarusLord-chat.
-Lease expires: 2026-11-21T15:23:41+00:00.
+Lease expires: 2026-11-21T15:24:12+00:00.
 Acceptance: тесты commonTest
 Checkpoint SHA: f09b5613854ebd5d0e07cba296f44b0b27dda4d2
 Review notes: -
