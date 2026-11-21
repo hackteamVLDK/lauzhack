@@ -1,34 +1,34 @@
 {
   "schema_version": 3,
-  "last_event_id": 195,
+  "last_event_id": 197,
   "files": {
     "CHANGES.md": {
       "sha256": "7e5c5cea4ed3704ad3116a9e78d22be1551bd1a827ee6c5ed7a99f3fcec3a1aa",
       "size": 11889
     },
     "PLANS.md": {
-      "sha256": "db40f409215a2632516c0f4db55c34f4d0368d7d503d9ec969a902f2e238af06",
-      "size": 6366
+      "sha256": "223a02c545c779ce1cef881166fc1e4bca54121c370d81c27ddf521a93682eca",
+      "size": 7899
     },
     "PROBLEMS.md": {
       "sha256": "e07a3e09b9e17f7de2e55c9ccbe8d68e72fcdf6b3b4bd53209e2665eb56dcabe",
       "size": 1965
     },
     "PROJECT.md": {
-      "sha256": "78767c62fbaf467f6f9bf0a9ac0730d332a15128b2bf89a01eb9f0edd92e33b0",
-      "size": 10252
+      "sha256": "d01ac7edf4b8e850454622c41d4c1a2e269cb8b9621fef1df09d2aed3f8a4e9c",
+      "size": 10383
     },
     "database.sql": {
-      "sha256": "a2303c6e5f9e27350409ff1e4a4fd53b539e129ee1a0dcdd8f058f8ccd97833d",
-      "size": 560886
+      "sha256": "8cafa9205496e2947036520cf6926b68dbaf0cb46d9bb2fccce42cb4afb65f62",
+      "size": 568077
     },
     "events.jsonl": {
-      "sha256": "fdbea9d0d3c583514120e8abb3e7c66138caaf4d377b08e4a31099739288cf46",
-      "size": 94728
+      "sha256": "a1b5e5fa176cd41c7ce59bf0d129424aa371f918d9097f84f471ef0ab41a5766",
+      "size": 97477
     },
     "people/mykhailo.md": {
-      "sha256": "a9fad49736b1510bae376475a3835b7b44569f573921c79a920516d5fce2ef05",
-      "size": 17144
+      "sha256": "fa452e493caef63a74ef903187b1420cbac607d860a22ef0d7163822e42b7fbd",
+      "size": 18500
     },
     "people/pavlo.md": {
       "sha256": "b9d217a2ca820fe1b9e664e06490429e29298d8c86cd1c97c08b653ac830c77d",
@@ -55,8 +55,8 @@
       "size": 15419
     },
     "tasks/3.md": {
-      "sha256": "03d4acf6077df23b50c020f4fd55d003fb1c301c3245bf7249e83a19198b02b2",
-      "size": 853
+      "sha256": "4e435470fc9d06b51148d2b3f7dc6ecf0ba46ccc5a67d7dd88a78e6c5f23bc25",
+      "size": 2209
     },
     "tasks/4.md": {
       "sha256": "3f2c398d566676ea93ba2ff95072a7a366e0276975f329ccbacfe1cb34bb4ae3",
