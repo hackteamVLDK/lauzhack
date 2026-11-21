@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "last_event_id": 153,
+  "last_event_id": 155,
   "files": {
     "CHANGES.md": {
       "sha256": "d3a027eef6bd71a07136feeea950e7afc75111ca7b38aa6661dbb91a31bdd8a9",
@@ -15,16 +15,16 @@
       "size": 655
     },
     "PROJECT.md": {
-      "sha256": "8e89829f560b857222855a16ed26442a131b044b13662671abc442f50528b6cf",
+      "sha256": "0dd1d93b5ce6b6b89aa327e6f8a11bd775d1ea41e3c60f8df8e002228e5a13bf",
       "size": 7827
     },
     "database.sql": {
-      "sha256": "3cc61248e4a978629a4c4a023e65f0ec5130026dd4907e728c64c77032120c94",
-      "size": 427647
+      "sha256": "b9a28ae28bfab60599dbe90e741e91325bcfb9c2134b1d2705cfd7b7951d6359",
+      "size": 432617
     },
     "events.jsonl": {
-      "sha256": "3cdd0d600c6a05e8559bad28283d69064af210d308ab85b0ba049d2751a8a360",
-      "size": 59222
+      "sha256": "7481d9da4a4f1fa6dfa2fcbc439c326a119228acb7b97cb718406fbe2eac48ea",
+      "size": 59566
     },
     "people/mykhailo.md": {
       "sha256": "3b4f27b6d232b65266079094e3a9d6cc34ef0d4392d9dcd25f88301fb0be8f44",
@@ -35,12 +35,12 @@
       "size": 652
     },
     "people/vlad.md": {
-      "sha256": "981f726835767acbddff39e304d785dfe672e53a0c59456288af439297e95c1b",
-      "size": 12639
+      "sha256": "cf372f7f0c27b92868cdcd82b4fab892f48dbed0bcafb36ddb2ce2d2edad9c22",
+      "size": 12827
     },
     "tasks/1.md": {
-      "sha256": "2f2a47c0521c78edb8a326f8c4de4699fecc21bf69416c15875be3b7b57d5d90",
-      "size": 9652
+      "sha256": "7db0dfa27ed33d1b4de09695ab08cc40ead41d3604e3abe3f3c0707c39b70023",
+      "size": 9746
     },
     "tasks/10.md": {
       "sha256": "74dc233c175ce409cc90b3b94b5a357f2299d35c620b118338e4e6f27ed79962",
@@ -51,8 +51,8 @@
       "size": 550
     },
     "tasks/2.md": {
-      "sha256": "0dca33fd6efb7ed8b1d77b8918b2a85cdfeeb66541a3fbc3933e63994c54b906",
-      "size": 12125
+      "sha256": "8b95775bfcc5111af86efee1dcb97800db7ef2516a84d9006016c527973e71e9",
+      "size": 12219
     },
     "tasks/3.md": {
       "sha256": "03d4acf6077df23b50c020f4fd55d003fb1c301c3245bf7249e83a19198b02b2",
