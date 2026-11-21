@@ -7,7 +7,7 @@ Queue and journals are generated from SQLite. Change them through the API.
 Easy Paper — KMP-приложение (Android, Desktop, Web/Wasm, Ktor-сервер): врач собирает из виджетов запрос под жалобу, пациент несколько дней заполняет его текстом, числами и фото (еда, упаковки лекарств), а на приёме передаёт через QR зашифрованный отчёт, который ИИ сжимает в сводку со ссылками на оригиналы и предзаполненную форму клиники. Экономный ИИ-конвейер (штрих-код/OCR без LLM, маленькая модель для простого, большая один раз на сводку, кэш, учёт токенов и цены) и режим локального ИИ-модуля в клинике (Ollama). Приложение не ставит диагнозов и не советует — только собирает и структурирует факты; ИИ пишет черновик, каждое поле подтверждает врач.
 Порядок: задача 1 первая; UI-задачи 4, 5, 10 — только после утверждённого mykhailo docs/design.md (задача 3). Секреты только в env/локально; коммиты без подписи Claude; в origin не пушить.
 
-Phases: build 1, plan 8, review 2
+Phases: accepted 2, build 1, plan 8
 
 ## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB]
 
@@ -22,12 +22,12 @@ Review notes: Проверено на Linux (без Android SDK), sha 616b398: g
 ## Task 2: Модель виджетов и данных в commonMain: схема запроса врача (список виджетов: опросник, давление, вода, еда, лекарства, дневник, вопросы врачу), ответы, зашифрованное локальное хранилище; формат схемы зафиксировать первым коммитом [JB][IMC]
 
 Latest intent: mykhailo/MyPc-chat · 2026-11-21T15:25:27+00:00: review
-Phase: review; build 1; submitter: vlad; branch: attempt/vlad/task-2-2.
-Status: running; assignee: vlad; owner: mykhailo; client: MyPc-chat.
-Lease expires: 2026-11-21T15:29:26+00:00.
+Phase: accepted; build 1; submitter: vlad; branch: attempt/vlad/task-2-2.
+Status: done; assignee: vlad; owner: mykhailo; client: MyPc-chat.
+Lease expires: -.
 Acceptance: тесты commonTest
 Checkpoint SHA: 4610fac45908b23aa747ce5838f777947e3375d3
-Review notes: -
+Review notes: PASS на 4610fac: python test.py зелёный (Windows), 11 тестов core/commonTest (схема v1 round-trip, неизвестный виджет, AES-GCM: чужой ключ, порча байт, перенос блоба под другой id). Код Schema.kt/RecordStore.kt совпадает с тем, что уже в main (36ac134). Сборка: в main остаются kotlinx-serialization-json 1.13.0 (свежая, вместо 1.9.0) и api(...) вместо implementation — EasyPaperJson публичный и нужен app/shared и server; ветку вливаю в main стратегией ours для build-файлов. Дальше: платформенные B
 
 ## Task 3: Дизайн-система: docs/design.md по навыкам frontend-design + easy-paper-design (палитра light/dark, шрифты, шкала, формы, принципы, ASCII-вайрфреймы «Сегодня» пациента и сводки врача) → показать mykhailo → EasyPaperTheme в commonMain [JB]
 
@@ -92,12 +92,12 @@ Review notes: -
 ## Task 9: Отчёт и передача: сводка + FHIR-подобный JSON, шифрование, QR с ключом; формат отчёта зафиксировать первым коммитом [IMC][JB]
 
 Latest intent: mykhailo/MyPc-chat · 2026-11-21T15:25:28+00:00: review
-Phase: review; build 1; submitter: vlad; branch: attempt/vlad/task-9-1.
-Status: running; assignee: vlad; owner: mykhailo; client: MyPc-chat.
-Lease expires: 2026-11-21T15:29:27+00:00.
+Phase: accepted; build 1; submitter: vlad; branch: attempt/vlad/task-9-1.
+Status: done; assignee: vlad; owner: mykhailo; client: MyPc-chat.
+Lease expires: -.
 Acceptance: без ключа не расшифровать
 Checkpoint SHA: ad5879b230ebcc719aa0b632c2b15ca507195bab
-Review notes: -
+Review notes: PASS на ad5879b: python test.py зелёный (Windows), 18 тестов, из них 4 ReportTest: JSON round-trip, открывается только своим QR (чужой ключ и порча байт -> ошибка, нет открытого текста в байтах), мусорные QR отклоняются, FHIR id/типы/LOINC/draft. Критерий «без ключа не расшифровать» выполнен: новый AES-256-GCM ключ на отчёт, reportId как AAD, ключ только в QR ep1:<id>:<base64url>. Вынос aesGcm в storage — хорошо, RecordStore и Transfer используют один код. Замечаний, блокирующих слияние, нет; вл
 
 ## Task 10: Экран врача на приёме: сводка → оригиналы; предзаполненная форма с подтверждением каждого поля [IMC][JB] [старт после утверждённого docs/design.md]
 
