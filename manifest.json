@@ -1,14 +1,14 @@
 {
   "schema_version": 3,
-  "last_event_id": 99,
+  "last_event_id": 101,
   "files": {
     "CHANGES.md": {
-      "sha256": "9e0448bab04ed52fba53aa1490e6eb93b293a46c87a1ba1c1354cce4858e3394",
-      "size": 261
+      "sha256": "50be2c6261902e3029cf92ff1334e2f2bc4e79125028aada2db6a179711958b2",
+      "size": 651
     },
     "PLANS.md": {
-      "sha256": "d53748323de1d6d7da111c4f2e91a40374e7f9781332f06d16cf1beab5c18adb",
-      "size": 4739
+      "sha256": "93d44ccc7dab685c5734100feaff5e7d1fe5b70f3455033c4384e9a89bc44f80",
+      "size": 3277
     },
     "PROBLEMS.md": {
       "sha256": "fbdfa752fc4f25e9af99e797f07709a42ff90a3c95ab2a21b9c9cef9097786c6",
@@ -19,12 +19,12 @@
       "size": 7753
     },
     "database.sql": {
-      "sha256": "b827da4130daf64be305f9ac3c97e4bc6a5ef9a38ac05c9516ef2a8b0e6a216d",
-      "size": 293959
+      "sha256": "c7092b4a4bfe925bc168e96b003959aad7fca2d180c82dab63adc26f9910edbb",
+      "size": 296906
     },
     "events.jsonl": {
-      "sha256": "c350d26655b7c249754e397866c3f49011742e4f67670575a7eb32b79c76c1d6",
-      "size": 33583
+      "sha256": "553e37b1fc002d671bee071d4b0e31eaebefc4577c13b06fa099dd3b989efd27",
+      "size": 36112
     },
     "people/mykhailo.md": {
       "sha256": "dc6f9d9faf678df17971b0cf999c192e71b29444c8b2708942be093539610a65",
@@ -35,8 +35,8 @@
       "size": 9
     },
     "people/vlad.md": {
-      "sha256": "18ba50bd28bef5fd7eea2c650f0e71568201d4decda95b42c2166f9523fc9880",
-      "size": 6251
+      "sha256": "a928f732fb1946cae34e1ebeb23e0f425f69c285c0b6f6a0b32ab08832089fe2",
+      "size": 7319
     },
     "tasks/1.md": {
       "sha256": "3de8d562b5ec912ff74ed695951635c83e5598f125d9053c1809c1c6adf5fcb1",
@@ -51,8 +51,8 @@
       "size": 550
     },
     "tasks/2.md": {
-      "sha256": "6aa0e5366605a45109a0b09478a56fbd3d083ccffb079d501332a2e589f1d962",
-      "size": 7188
+      "sha256": "657075c0c3eb478bd4bed1007ea49a9b704434ad5868da74b2285f8c09aebdac",
+      "size": 8136
     },
     "tasks/3.md": {
       "sha256": "03d4acf6077df23b50c020f4fd55d003fb1c301c3245bf7249e83a19198b02b2",

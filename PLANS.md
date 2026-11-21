@@ -12,14 +12,5 @@ Each AI publishes its plan here before it changes code.
 
 ## Task 2: Модель виджетов и данных в commonMain: схема запроса врача (список виджетов: опросник, давление, вода, еда, лекарства, дневник, вопросы врачу), ответы, зашифрованное локальное хранилище; формат схемы зафиксировать первым коммитом [JB][IMC] (build)
 
-ЧТО. Модуль shared, commonMain, пакет <корень каркаса>.model (kotlinx.serialization, JSON, поле schemaVersion=1).
-ФОРМАТ СХЕМЫ (первый коммит, сразу deliver — нужен #4,#5,#10,#9):
-- CareRequest{schemaVersion, id, createdAt, doctorName, complaint, startDate, days, locale, widgets: List<WidgetSpec>}
-- WidgetSpec — sealed, дискриминатор "type": questionnaire{questions: List<Question(id,text,kind=yesno|scale|choice|text,options)>}, blood_pressure{timesPerDay}, water{targetMl?}, food{photo:Boolean}, medications{scan:Boolean}, diary{}, doctor_questions{}. У каждого id, title, required.
-- Ответы: Entry{id, widgetId, at(Instant), payload: EntryPayload} — sealed: Answers(map qid->value), BloodPressure(sys,dia,pulse?), Water(ml), Food(text?, photoRef?), Medication(name, code?, dose?, source=scan|manual, confirmed), DiaryNote(text, photoRef?), DoctorQuestion(text).
-- PatientRecord{request, entries} — то, что идёт в отчёт #9. Фото — только photoRef (id файла), байты отдельно.
-ХРАНИЛИЩЕ. interface RecordStore (save/load/list) в commonMain; EncryptedRecordStore = AES-256-GCM поверх interface BlobStore (expect/actual: файл на JVM/Android, localStorage на wasmJs; InMemory для тестов). Ключ — из платформенного keystore (actual), в commonMain только интерфейс KeyProvider. Крипто: dev.whyoleg.cryptography (JVM/Android/wasm) — если не встанет в каркас, спрошу.
-ФАЙЛЫ: только shared/src/commonMain/.../model/**, .../storage/**, commonTest, platform actual для BlobStore/KeyProvider; gradle — одна зависимость в shared (согласую с mykhailo).
-ТЕСТЫ (commonTest): round-trip JSON всех WidgetSpec/EntryPayload; неизвестный type -> ошибка, лишние поля игнор; schemaVersion; шифрованное хранилище: save/load, другой ключ -> не расшифровать, порча байт -> ошибка. python test.py.
-РИСКИ: wasm-крипто асинхронное (suspend API везде); формат меняю только с schemaVersion+1 и сообщением Павлу.
+ПОПРАВКА к плану: модуль core (KMP без UI, по плану #1), пакет org.easypaper.model. Шаг 1 (сейчас): core/src/commonMain/kotlin/org/easypaper/model/Schema.kt + commonTest/SchemaTest.kt — формат схемы v1 (CareRequest, WidgetSpec x7, Entry/EntryPayload x7, PatientRecord, EasyPaperJson; время = epoch millis Long, startDate = ISO-строка, без kotlinx-datetime). Gradle-файлы #1 НЕ трогаю: core нужен плагин kotlin serialization + kotlinx-serialization-json в commonMain. Шаг 2 (после каркаса и согласования dev.whyoleg.cryptography с mykhailo): storage/ RecordStore + EncryptedRecordStore AES-256-GCM + BlobStore/KeyProvider actual. Тесты шага 1 прогнаны во временном JVM-проекте вне репо: 5/5 зелёные.
 
