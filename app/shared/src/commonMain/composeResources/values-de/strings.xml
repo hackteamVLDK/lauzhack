@@ -264,4 +264,9 @@
     <string name="open_failed">Mit diesem Code lässt sich der Bericht nicht öffnen.</string>
     <string name="open_offline">Der Server ist nicht erreichbar.</string>
     <string name="entry_photo">Foto der Patientin / des Patienten</string>
+    <!-- Patient photos (task 4 step 2) -->
+    <string name="take_photo">Foto aufnehmen</string>
+    <string name="choose_photo">Foto auswählen</string>
+    <string name="remove_photo">Foto entfernen</string>
+    <string name="photo_optional">Ein Foto ist freiwillig.</string>
 </resources>

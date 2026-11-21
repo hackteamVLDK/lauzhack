@@ -41,6 +41,7 @@ import kotlinx.datetime.TimeZone
 import org.easypaper.model.DiaryWidget
 import org.easypaper.model.Entry
 import org.easypaper.model.FoodWidget
+import org.easypaper.model.MedicationsWidget
 import org.easypaper.model.PatientRecord
 import org.easypaper.ui.components.CategoryRow
 import org.easypaper.ui.components.AnimatedNumber
@@ -63,6 +64,8 @@ class TodayActions(
     val add: (widgetId: String) -> Unit,
     val addWater: (widgetId: String) -> Unit,
     val removeEntry: (entryId: String) -> Unit,
+    /** Opens the medicines screen (task 31) for this widget. */
+    val openMedicines: (widgetId: String) -> Unit,
 )
 
 /**
@@ -185,7 +188,14 @@ private fun NotesRow(today: WidgetToday.Notes, timeZone: TimeZone, actions: Toda
         else -> null // medicines are recorded on their own screen (task 31)
     }
     val last = today.entries.lastOrNull()
-    CategoryRow(today.widget.category, today.widget.title, trailing = last?.let { { Footnote(timeOfDay(it.at, timeZone)) } }) {
+    // Medicines open their own screen (scan, confirm, "Taken now"): the row drills in.
+    val open = if (today.widget is MedicationsWidget) ({ actions.openMedicines(today.widget.id) }) else null
+    CategoryRow(
+        today.widget.category,
+        today.widget.title,
+        trailing = last?.let { { Footnote(timeOfDay(it.at, timeZone)) } },
+        onClick = open,
+    ) {
         EntryLines(today.entries)
         if (action != null) PlainButton("+ " + stringResource(action), onClick = { actions.add(today.widget.id) })
     }

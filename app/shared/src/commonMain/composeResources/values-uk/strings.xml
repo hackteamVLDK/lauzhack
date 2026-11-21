@@ -266,4 +266,9 @@
     <string name="open_failed">Цим кодом звіт не відкривається.</string>
     <string name="open_offline">Сервер недоступний.</string>
     <string name="entry_photo">Фото від пацієнта</string>
+    <!-- Patient photos (task 4 step 2) -->
+    <string name="take_photo">Зробити фото</string>
+    <string name="choose_photo">Вибрати фото</string>
+    <string name="remove_photo">Прибрати фото</string>
+    <string name="photo_optional">Фото — за бажанням.</string>
 </resources>

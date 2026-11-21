@@ -93,6 +93,7 @@ fun DoctorApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> U
     val navigator = remember { Navigator<DoctorScreen>(DoctorScreen.Home) }
     LaunchedEffect(state) { state.refreshAiStatus() }
     NavigatorBackHandler(navigator)
+    val appScope = rememberCoroutineScope()
     val openDeveloper = { navigator.presentSheet(DoctorScreen.Developer) }
     val select = { screen: DoctorScreen ->
         if (screen is DoctorScreen.Visit) state.selectedReportId = screen.reportId
@@ -134,6 +135,7 @@ fun DoctorApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> U
                 onOpenCatalog = { navigator.push(DoctorScreen.DesignCatalog) },
                 onSwitchRole = onSwitchRole,
                 onDone = navigator::dismissSheet,
+                scope = appScope,
             )
         }
     }

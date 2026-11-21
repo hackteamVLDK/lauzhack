@@ -1,5 +1,9 @@
 package org.easypaper.ui.patient
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -66,6 +70,14 @@ import org.easypaper.ui.components.SegmentedControl
 import org.easypaper.ui.components.TextAreaRow
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.decodeToImageBitmap
+import org.easypaper.ui.components.GrayButton
+import org.easypaper.ui.capture.rememberPhotoSource
+import easypaper.app.shared.generated.resources.take_photo
+import easypaper.app.shared.generated.resources.remove_photo
+import easypaper.app.shared.generated.resources.photo_optional
+import easypaper.app.shared.generated.resources.photo
+import easypaper.app.shared.generated.resources.choose_photo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -74,13 +86,23 @@ import org.jetbrains.compose.resources.stringResource
  * [onSave]; the patient sees each one as a sentence that says what to change.
  */
 @Composable
-fun ColumnScope.EntryForm(widget: WidgetSpec, problems: List<EntryProblem>, saving: Boolean, onSave: (EntryPayload) -> Unit) {
+fun ColumnScope.EntryForm(
+    widget: WidgetSpec,
+    problems: List<EntryProblem>,
+    saving: Boolean,
+    onSave: (payload: EntryPayload, photo: ByteArray?) -> Unit,
+) {
     when (widget) {
-        is BloodPressureWidget -> PressureForm(problems, saving, onSave)
-        is QuestionnaireWidget -> QuestionnaireForm(widget, problems, saving, onSave)
-        is FoodWidget -> TextForm(Res.string.meal_placeholder, problems, saving) { onSave(Food(text = it)) }
-        is DiaryWidget -> TextForm(Res.string.feeling_placeholder, problems, saving) { onSave(DiaryNote(it)) }
-        is DoctorQuestionsWidget -> TextForm(Res.string.question_placeholder, problems, saving) { onSave(DoctorQuestion(it)) }
+        is BloodPressureWidget -> PressureForm(problems, saving) { onSave(it, null) }
+        is QuestionnaireWidget -> QuestionnaireForm(widget, problems, saving) { onSave(it, null) }
+        // Food and how you feel take a photo if the patient wants one; the text may then stay empty.
+        is FoodWidget -> TextForm(Res.string.meal_placeholder, problems, saving, withPhoto = true) { text, photo ->
+            onSave(Food(text = text.ifBlank { null }), photo)
+        }
+        is DiaryWidget -> TextForm(Res.string.feeling_placeholder, problems, saving, withPhoto = true) { text, photo ->
+            onSave(DiaryNote(text), photo)
+        }
+        is DoctorQuestionsWidget -> TextForm(Res.string.question_placeholder, problems, saving) { text, _ -> onSave(DoctorQuestion(text), null) }
         else -> Unit // water has no form (stepper), medicines have their own screen (task 31)
     }
 }
@@ -148,13 +170,52 @@ private fun ColumnScope.QuestionnaireForm(widget: QuestionnaireWidget, problems:
 }
 
 @Composable
-private fun ColumnScope.TextForm(placeholder: StringResource, problems: List<EntryProblem>, saving: Boolean, onSave: (String) -> Unit) {
+private fun ColumnScope.TextForm(
+    placeholder: StringResource,
+    problems: List<EntryProblem>,
+    saving: Boolean,
+    withPhoto: Boolean = false,
+    onSave: (text: String, photo: ByteArray?) -> Unit,
+) {
     var text by remember { mutableStateOf("") }
+    var photo by remember { mutableStateOf<ByteArray?>(null) }
     GroupedSection {
         TextAreaRow(text, { text = it }, placeholder = stringResource(placeholder))
     }
+    if (withPhoto) PhotoPicker(photo, onPhoto = { photo = it })
     Problems(problems.map { it.message() })
-    SaveButton(saving, enabled = text.isNotBlank()) { onSave(text.trim()) }
+    SaveButton(saving, enabled = text.isNotBlank() || photo != null) { onSave(text.trim(), photo) }
+}
+
+/**
+ * "Take photo" / "Choose photo" where the platform has them (task 28: already shrunk, no metadata), a preview of
+ * the chosen photo and "Remove photo". A photo is always optional.
+ */
+@Composable
+private fun PhotoPicker(photo: ByteArray?, onPhoto: (ByteArray?) -> Unit) {
+    val spacing = EasyPaperTheme.spacing
+    val source = rememberPhotoSource { onPhoto(it) }
+    if (source.takePhoto == null && source.pickPhoto == null) return
+    Column(Modifier.padding(top = spacing.s), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+        val preview = remember(photo) { photo?.let { runCatching { it.decodeToImageBitmap() }.getOrNull() } }
+        if (preview != null) {
+            Image(
+                preview,
+                contentDescription = stringResource(Res.string.photo),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(spacing.xxl * 4, spacing.xxl * 3).clip(EasyPaperTheme.shapes.small),
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(spacing.xs)) {
+            if (photo != null) {
+                GrayButton(stringResource(Res.string.remove_photo), onClick = { onPhoto(null) })
+            } else {
+                source.takePhoto?.let { GrayButton(stringResource(Res.string.take_photo), onClick = it) }
+                source.pickPhoto?.let { GrayButton(stringResource(Res.string.choose_photo), onClick = it) }
+            }
+        }
+        Text(stringResource(Res.string.photo_optional), style = EasyPaperTheme.typography.footnote, color = EasyPaperTheme.colors.secondaryLabel)
+    }
 }
 
 @Composable

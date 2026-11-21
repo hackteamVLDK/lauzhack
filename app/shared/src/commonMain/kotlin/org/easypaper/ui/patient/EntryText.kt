@@ -33,8 +33,8 @@ fun entryText(entry: Entry, request: CareRequest?): String = when (val p = entry
         p.pulse?.let { append(", ").append(stringResource(Res.string.pulse, it.toString())) }
     }
     is Water -> stringResource(Res.string.unit_ml, p.ml)
-    is Food -> p.text?.takeIf { it.isNotBlank() } ?: stringResource(Res.string.photo)
-    is DiaryNote -> p.text.ifBlank { stringResource(Res.string.photo) }
+    is Food -> withPhoto(p.text, p.photoRef)
+    is DiaryNote -> withPhoto(p.text, p.photoRef)
     is DoctorQuestion -> p.text
     // The scanned package name often contains the strength already ("… 20 mg 15 Stk"): show the dose once.
     is Medication -> listOfNotNull(p.name, p.dose?.takeIf { it !in p.name }).joinToString(", ") +
@@ -48,6 +48,14 @@ fun entryText(entry: Entry, request: CareRequest?): String = when (val p = entry
             questions[id]?.let { "${it.text} $shown" } ?: shown
         }
     }
+}
+
+/** The patient's words, "(Photo)" after them when a photo is attached, or just "Photo". */
+@Composable
+private fun withPhoto(text: String?, photoRef: String?): String {
+    val photo = stringResource(Res.string.photo)
+    val words = text?.takeIf { it.isNotBlank() } ?: return photo
+    return if (photoRef != null) "$words ($photo)" else words
 }
 
 /** The decimal separator of the app language. */

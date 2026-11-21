@@ -70,6 +70,7 @@ kotlin {
         }
         jvmTest.dependencies {
             implementation(compose.desktop.currentOs) // Skia natives for shape and text tests
+            implementation(libs.compose.uiTest) // screen tests: tap through the real screens (tasks 4, 5, 10)
         }
         jsMain.dependencies {
             implementation(libs.ktor.clientJs)

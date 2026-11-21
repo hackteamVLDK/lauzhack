@@ -264,4 +264,9 @@
     <string name="open_failed">The report could not be opened with this code.</string>
     <string name="open_offline">The server could not be reached.</string>
     <string name="entry_photo">Photo from the patient</string>
+    <!-- Patient photos (task 4 step 2) -->
+    <string name="take_photo">Take photo</string>
+    <string name="choose_photo">Choose photo</string>
+    <string name="remove_photo">Remove photo</string>
+    <string name="photo_optional">A photo is optional.</string>
 </resources>

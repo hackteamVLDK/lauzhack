@@ -40,6 +40,7 @@ import kotlinx.datetime.TimeZone
 import org.easypaper.diary.EntryProblem
 import org.easypaper.model.CareRequest
 import org.easypaper.model.Entry
+import org.easypaper.model.MedicationsWidget
 import org.easypaper.model.PatientRecord
 import org.easypaper.model.Water
 import org.easypaper.model.WidgetSpec
@@ -61,6 +62,7 @@ import org.easypaper.ui.patient.DayScreen
 import org.easypaper.ui.patient.EntryForm
 import org.easypaper.ui.patient.HistoryScreen
 import org.easypaper.ui.patient.TodayActions
+import org.easypaper.ui.patient.medications.MedicationsScreen
 import org.easypaper.ui.patient.TodayScreen
 import org.easypaper.ui.patient.WATER_STEP_ML
 import org.easypaper.ui.patient.newEntryId
@@ -79,6 +81,7 @@ sealed interface PatientScreen {
     data object Developer : PatientScreen
     data class AddEntry(val widgetId: String) : PatientScreen
     data class Day(val date: LocalDate) : PatientScreen
+    data class Medicines(val widgetId: String) : PatientScreen
 }
 
 private val TAB_ROOTS = listOf(PatientScreen.Today, PatientScreen.History, PatientScreen.Share)
@@ -109,6 +112,7 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
             record?.let { r -> scope.launch { state.repository.add(r.request.id, Entry(newEntryId(), widgetId, now(), Water(WATER_STEP_ML))) } }
         },
         removeEntry = { entryId -> record?.let { r -> scope.launch { state.repository.removeEntry(r.request.id, entryId) } } },
+        openMedicines = { widgetId -> navigator.push(PatientScreen.Medicines(widgetId)) },
     )
 
     Box(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background)) {
@@ -130,6 +134,12 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
                         is PatientScreen.Day -> record?.let { r ->
                             DayScreen(r, screen.date, timeZone, BackAction(tabTitle(tab), navigator::back),
                                 onDelete = { entryId -> scope.launch { state.repository.removeEntry(r.request.id, entryId) } })
+                        }
+                        is PatientScreen.Medicines -> {
+                            val widget = record?.request?.widgets?.filterIsInstance<MedicationsWidget>()?.firstOrNull { it.id == screen.widgetId }
+                            if (record != null && widget != null) {
+                                MedicationsScreen(state.repository, record, widget, BackAction(tabTitle(tab), navigator::back))
+                            }
                         }
                         PatientScreen.Share -> ShareScreen(state.repository, relayUrl(settings.serverUrl, defaultServerUrl()), openDeveloper)
                         PatientScreen.DesignCatalog -> CatalogScreen(settings, BackAction(tabTitle(tab), navigator::back))
@@ -160,6 +170,7 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
                 onOpenCatalog = { navigator.push(PatientScreen.DesignCatalog) },
                 onSwitchRole = onSwitchRole,
                 onDone = navigator::dismissSheet,
+                scope = scope,
             )
         }
     }
@@ -183,12 +194,12 @@ private fun EntrySheet(state: ShellState, record: PatientRecord?, navigator: Nav
     ) {
         val form = shown ?: return@Sheet
         key(open) {
-            EntryForm(form, problems, saving) { payload ->
+            EntryForm(form, problems, saving) { payload, photo ->
                 val requestId = record?.request?.id ?: return@EntryForm
                 saving = true
                 scope.launch {
                     val result = try {
-                        state.repository.add(requestId, Entry(newEntryId(), form.id, now(), payload))
+                        state.repository.add(requestId, Entry(newEntryId(), form.id, now(), payload), photo)
                     } catch (e: IllegalArgumentException) {
                         listOf(EntryProblem.UNKNOWN_WIDGET) // shown as "not saved, try again"
                     }

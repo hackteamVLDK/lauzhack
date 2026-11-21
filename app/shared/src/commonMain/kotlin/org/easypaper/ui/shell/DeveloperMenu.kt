@@ -3,7 +3,6 @@ package org.easypaper.ui.shell
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.appearance_dark
 import easypaper.app.shared.generated.resources.clear_data
@@ -14,6 +13,7 @@ import easypaper.app.shared.generated.resources.fill_demo
 import easypaper.app.shared.generated.resources.large_text
 import easypaper.app.shared.generated.resources.switch_to_doctor
 import easypaper.app.shared.generated.resources.switch_to_patient
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.IosSwitch
@@ -33,9 +33,10 @@ fun ColumnScope.DeveloperMenuContent(
     onOpenCatalog: () -> Unit,
     onSwitchRole: (() -> Unit)?,
     onDone: () -> Unit,
+    /** Outlives this sheet: demo data and clearing keep running after the menu closes (disk storage is slow). */
+    scope: CoroutineScope,
 ) {
     val systemDark = isSystemInDarkTheme()
-    val scope = rememberCoroutineScope()
     val inset = EasyPaperTheme.spacing.m
     GroupedSection(footer = stringResource(Res.string.dev_footer)) {
         ListRow(stringResource(Res.string.design_catalog), onClick = { onOpenCatalog(); onDone() })
