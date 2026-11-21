@@ -26,7 +26,7 @@ Phase: build; build 0; submitter: -; branch: attempt/vlad/task-2-1.
 Status: running; assignee: vlad; owner: vlad; client: BelarusLord-chat.
 Lease expires: 2026-11-21T15:12:00+00:00.
 Acceptance: тесты commonTest
-Checkpoint SHA: 4871df134c5d272ae4381581e22a0eae06b48dbe
+Checkpoint SHA: f09b5613854ebd5d0e07cba296f44b0b27dda4d2
 Review notes: -
 
 ## Task 3: Дизайн-система: docs/design.md по навыкам frontend-design + easy-paper-design (палитра light/dark, шрифты, шкала, формы, принципы, ASCII-вайрфреймы «Сегодня» пациента и сводки врача) → показать mykhailo → EasyPaperTheme в commonMain [JB]
