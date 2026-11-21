@@ -83,3 +83,4 @@
 - Event 180 · 2026-11-21T15:28:27+00:00 · mykhailo/MyPc-chat · start: fix по ревью vlad: test.py без Android SDK
 - Event 181 · 2026-11-21T15:28:28+00:00 · mykhailo/MyPc-chat · plan: Попытка 2 по ревью vlad: test.py требует Android SDK только с --all; без SDK быстрые задачи (:core:jvmTest :app:shared:jvmTest :server:test :app:desktopApp:compileKotlin) идут без local.properties, с предупреждением. Файл: test.py. Ветка attempt/mykhailo/task-1-2 от main 7b0491c. Проверка: python test.py на Windows; в WSL Ubuntu без ANDROID_HOME и без local.properties (как у vlad); --all без SDK -> понятная ошибка, код 2.
 - Event 182 · 2026-11-21T15:28:28+00:00 · mykhailo/MyPc-chat · heartbeat: Lease renewed
+- Event 183 · 2026-11-21T15:28:58+00:00 · mykhailo/MyPc-chat · heartbeat: Lease renewed
