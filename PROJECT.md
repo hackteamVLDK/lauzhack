@@ -51,10 +51,10 @@ Review notes: -
 
 ## Task 5: Конструктор запроса врача (Web + Desktop): виджеты + срок → приглашение (ссылка/QR) [JB][IMC] [старт после утверждённого docs/design.md]
 
-Latest intent: -
+Latest intent: pavlo/Paul-chat · 2026-11-21T15:34:05+00:00: non-UI part first: CareRequest <-> invite link/QR string in core; UI waits for design.md
 Phase: plan; build 0; submitter: -; branch: -.
-Status: ready; assignee: pavlo; owner: -; client: -.
-Lease expires: -.
+Status: running; assignee: pavlo; owner: pavlo; client: Paul-chat.
+Lease expires: 2026-11-21T15:37:05+00:00.
 Acceptance: пациент открывает и видит ровно эти виджеты
 Checkpoint SHA: -
 Review notes: -
