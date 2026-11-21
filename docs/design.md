@@ -37,7 +37,8 @@ for small text we take Apple's own "Increase Contrast" value.
 | `secondaryLabel` | `#6C6C70` | `#98989F` | Dates, units, footers (Apple default `#8A8A8E` is 3.4:1, too low) |
 | `separator` | `#C6C6C8` | `#38383A` | Hairlines between rows (opaqueSeparator), decoration only |
 | `fill` | `#E5E5EA` | `#2C2C2E` | Gray buttons, badges, steppers (systemGray5) |
-| `tint` | `#0066CC` | `#0A84FF` | The one accent: prominent buttons, links, selection |
+| `tint` | `#0066CC` | `#0A84FF` | The one accent as a fill: prominent buttons, selection |
+| `link` | `#0066CC` | `#409CFF` | The accent as text: plain and tinted buttons, source links |
 | `confirmed` | `#1F7A35` | `#30DB5B` | "Confirmed" text next to a check icon |
 | `destructive` | `#D70015` | `#FF6961` | Delete, errors (with an icon and a sentence) |
 | `review` | `#FFF4CC` | `#3A3000` | Background of a field the doctor still has to confirm |

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="today">Today</string>
+    <string name="catalog_date">Saturday, 21 November</string>
+    <string name="catalog_day">Day 3 of 7 for Dr. Weber</string>
+    <string name="appearance_dark">Dark appearance</string>
+    <string name="cat_blood_pressure">Blood pressure</string>
+    <string name="cat_water">Water</string>
+    <string name="cat_food">Food</string>
+    <string name="cat_medicines">Medicines</string>
+    <string name="cat_questionnaire">Questionnaire</string>
+    <string name="cat_diary">How you feel</string>
+    <string name="cat_question">Question for the doctor</string>
+    <string name="evening_reading">Evening reading</string>
+    <string name="unit_mmhg">mmHg</string>
+    <string name="pulse">pulse %1$s</string>
+    <string name="water_amount">%1$s of %2$s l</string>
+    <string name="sample_food">Oatmeal with banana, tea</string>
+    <string name="sample_medicine">Ramipril 5 mg, 1 in the morning</string>
+    <string name="taken_at">Taken %1$s</string>
+    <string name="add">Add</string>
+    <string name="write_feeling">Write how you feel</string>
+    <string name="ask_question">Ask a question</string>
+    <string name="footer_privacy">Saved on this phone. Shared only when you show the QR at your visit.</string>
+    <string name="section_doctor">For the doctor</string>
+    <string name="summary">Summary</string>
+    <string name="draft">Draft</string>
+    <string name="written_from">Written from %1$s entries</string>
+    <string name="sample_summary">Morning blood pressure 128–142/82–90 mmHg.</string>
+    <string name="confirm">Confirm</string>
+    <string name="confirmed_at">Confirmed %1$s</string>
+    <string name="edit">Edit</string>
+    <string name="show_qr">Show QR to the doctor</string>
+    <string name="sample_sources">Mon 08:10   Thu 07:55</string>
+    <string name="sample_med_form">Ramipril 5 mg 1-0-0</string>
+</resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="today">Сьогодні</string>
+    <string name="catalog_date">Субота, 21 листопада</string>
+    <string name="catalog_day">День 3 із 7 для лікаря Вебер</string>
+    <string name="appearance_dark">Темне оформлення</string>
+    <string name="cat_blood_pressure">Тиск</string>
+    <string name="cat_water">Вода</string>
+    <string name="cat_food">Їжа</string>
+    <string name="cat_medicines">Ліки</string>
+    <string name="cat_questionnaire">Опитувальник</string>
+    <string name="cat_diary">Як почуваєтеся</string>
+    <string name="cat_question">Запитання лікарю</string>
+    <string name="evening_reading">Вечірнє вимірювання</string>
+    <string name="unit_mmhg">мм рт. ст.</string>
+    <string name="pulse">пульс %1$s</string>
+    <string name="water_amount">%1$s з %2$s л</string>
+    <string name="sample_food">Вівсянка з бананом, чай</string>
+    <string name="sample_medicine">Раміприл 5 мг, 1 вранці</string>
+    <string name="taken_at">Прийнято %1$s</string>
+    <string name="add">Додати</string>
+    <string name="write_feeling">Написати, як почуваєтеся</string>
+    <string name="ask_question">Поставити запитання</string>
+    <string name="footer_privacy">Збережено на цьому телефоні. Передається лише тоді, коли ви покажете QR на прийомі.</string>
+    <string name="section_doctor">Для лікаря</string>
+    <string name="summary">Підсумок</string>
+    <string name="draft">Чернетка</string>
+    <string name="written_from">Складено з %1$s записів</string>
+    <string name="sample_summary">Ранковий тиск 128–142/82–90 мм рт. ст.</string>
+    <string name="confirm">Підтвердити</string>
+    <string name="confirmed_at">Підтверджено %1$s</string>
+    <string name="edit">Редагувати</string>
+    <string name="show_qr">Показати QR лікарю</string>
+    <string name="sample_sources">Пн 08:10   Чт 07:55</string>
+    <string name="sample_med_form">Раміприл 5 мг 1-0-0</string>
+</resources>
