@@ -318,4 +318,7 @@
     </plurals>
     <string name="less">Weniger</string>
     <string name="more">Mehr</string>
+    <string name="invite_start">Erfassung beginnen</string>
+    <string name="invite_summary">%1$s, %2$s ab %3$s</string>
+    <string name="invite_preview_footer">Was Sie erfassen, bleibt auf diesem Telefon, bis Sie beim Termin den QR-Code zeigen.</string>
 </resources>

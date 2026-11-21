@@ -62,7 +62,8 @@ class InviteFlowUiTest {
             onNodeWithText("Open invite").performClick()
             waitForText("Paste the link or code from your doctor")
             type("Paste the link or code from your doctor", inviteLink(request))
-            onNodeWithText("Open").performClick()
+            waitForText("Start recording") // a valid invite shows what it asks for
+            onNodeWithText("Start recording").performClick()
             waitUntil(timeoutMillis = 10_000) { state.repository.records.value.isNotEmpty() }
             assertEquals(request, state.repository.records.value.single().request)
             for (widget in request.widgets) {
