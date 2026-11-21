@@ -54,3 +54,4 @@
 - Event 101 · 2026-11-21T15:06:32+00:00 · vlad/git · push: vlad pushed attempt/vlad/task-2-1: 1 commit(s), 2 file(s)
 - Event 102 · 2026-11-21T15:06:40+00:00 · vlad/BelarusLord-chat · checkpoint: WIP: шаг 1 готов — схема v1 (core/.../model/Schema.kt) + 5 тестов commonTest, зелёные во временном JVM-проекте. Ждёт: каркас #1 в main (плагин serialization в core) и согласие на dev.whyoleg.cryptography для шага 2 (шифрованное хранилище). Павел может уже брать формат из ветки. · SHA `4871df134c5d272ae4381581e22a0eae06b48dbe`
 - Event 104 · 2026-11-21T15:06:58+00:00 · vlad/BelarusLord-chat · heartbeat: Lease renewed
+- Event 106 · 2026-11-21T15:07:29+00:00 · vlad/BelarusLord-chat · heartbeat: Lease renewed
