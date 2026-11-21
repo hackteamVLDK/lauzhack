@@ -59,4 +59,47 @@ class InputParseTest {
             assertNull(parseWaterMl(bad), "parsed '$bad'")
         }
     }
+
+    @Test
+    fun reviewCasesAreNullNotGuessed() {
+        // 1) values before the labels, a clock at the end: the clock must not become the pulse
+        assertEquals(BloodPressure(128, 84, 72), parseBloodPressure("128 SYS 84 DIA 72 PUL 21:15"))
+        // 2) a missing value is not borrowed from the next label
+        assertNull(parseBloodPressure("SYS 120\nDIA --\nPULSE 72"))
+        // 3) two readings
+        assertNull(parseBloodPressure("120/80 or 150/90"))
+        assertNull(parseBloodPressure("SYS 128 DIA 84 SYS 131 DIA 86"))
+        // 4) a leftover number that cannot be placed
+        assertNull(parseBloodPressure("120/80 4000"))
+        assertNull(parseBloodPressure("120/80 72 65"))
+        // 5) signs, fractions, ranges
+        assertNull(parseBloodPressure("120 80 -72"))
+        assertNull(parseBloodPressure("120/-80"))
+        assertNull(parseWaterMl("-500 ml"))
+        assertNull(parseWaterMl("1/2 l"))
+        assertNull(parseWaterMl("1-2 l"))
+        // 6) a fractional number of glasses
+        assertNull(parseWaterMl("1.5 glasses"))
+        assertNull(parseWaterMl("1,5 стакана"))
+        // 7) absurd counts: no crash, no overflow
+        assertNull(parseWaterMl("2147483648x250 ml"))
+        assertNull(parseWaterMl("4294968x1000 ml"))
+        assertNull(parseWaterMl("99999999999999999999 ml"))
+        assertNull(parseWaterMl("30 стаканов"))
+    }
+
+    @Test
+    fun conflictingLayoutsAreNull() {
+        // reading values after the labels gives 84/72/66, before gives 128/84/72: both complete and different
+        assertNull(parseBloodPressure("128 SYS 84 DIA 72 PUL 66"))
+    }
+
+    @Test
+    fun ukrainianLabelsAndUnits() {
+        assertEquals(BloodPressure(133, 86, 71), parseBloodPressure("СИСТ 133 ДІА 86 ПУЛЬС 71"))
+        assertEquals(BloodPressure(140, 90), parseBloodPressure("Систолічний 140 Діастолічний 90"))
+        assertEquals(500, parseWaterMl("2 склянки води"))
+        assertEquals(1500, parseWaterMl("1,5 літра"))
+        assertEquals(250, parseWaterMl("250 мл"))
+    }
 }
