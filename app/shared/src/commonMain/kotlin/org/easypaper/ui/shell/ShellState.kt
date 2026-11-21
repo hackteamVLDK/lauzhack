@@ -17,6 +17,7 @@ import org.easypaper.model.DiaryNote
 import org.easypaper.model.Entry
 import org.easypaper.model.Food
 import org.easypaper.model.PatientRecord
+import org.easypaper.ai.DocumentFact
 import org.easypaper.report.ReceivedReport
 import org.easypaper.report.Report
 import org.easypaper.storage.PatientRepository
@@ -103,6 +104,9 @@ class ShellState(
     var selectedReportId: String? by mutableStateOf(null)
 
     val selectedReport: Report? get() = reports.firstOrNull { it.id == selectedReportId }
+
+    /** Facts read from paper documents at the visit, by report id (task 41). */
+    val documents = mutableStateMapOf<String, List<DocumentFact>>()
 
     /** Photos of the reports the doctor received, by report id and photo ref (task 30). */
     val reportPhotos = mutableStateMapOf<String, Map<String, ByteArray>>()

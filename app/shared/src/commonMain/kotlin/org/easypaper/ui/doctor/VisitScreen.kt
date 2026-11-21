@@ -145,6 +145,8 @@ fun VisitScreen(
     photos: Map<String, ByteArray> = emptyMap(),
     /** Keeps the doctor's decisions per report while they look at other screens (ShellState.visits). */
     store: MutableMap<String, VisitState>? = null,
+    /** Paper documents at the visit (task 41), shown below the form; null hides the section. */
+    documents: (@Composable (VisitState) -> Unit)? = null,
 ) {
     val wording = rememberFormWording()
     val offset = remember { currentUtcOffsetMinutes() }
@@ -175,6 +177,7 @@ fun VisitScreen(
                 }
             }
             item(key = "form") { ClinicFormSection(state, onEdit = { editing = it }) }
+            if (documents != null) item(key = "documents") { documents(state) }
             item(key = "entries") { EntriesSection(report, timeZone, onOpen = { original = it }) }
         }
         OriginalSheet(report, original, timeZone, photos, onDismiss = { original = null })

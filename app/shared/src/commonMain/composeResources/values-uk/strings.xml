@@ -330,4 +330,24 @@
     <string name="edited_by_you">Відредаговано вами</string>
     <string name="open_scan">Зчитати QR-код</string>
     <string name="open_scan_failed">Код не зчитано. Дозвольте камеру або вставте код.</string>
+    <!-- documents at the visit (task 41) -->
+    <string name="doc_title">Документи</string>
+    <string name="doc_hint">Вставте текст виписки чи аналізів або додайте фото. Факти переносяться дослівно з документа; у форму нічого не потрапляє, доки ви не підтвердите поле.</string>
+    <string name="doc_paste">Текст документа</string>
+    <string name="doc_read">Прочитати документ</string>
+    <string name="doc_reading">Читаю документ…</string>
+    <string name="doc_to_form">У форму</string>
+    <string name="doc_in_form">У формі</string>
+    <string name="doc_quote_checked">Цитату знайдено в документі</string>
+    <string name="doc_quote_unchecked">Цитату не перевірено (фото)</string>
+    <string name="doc_from">З документа</string>
+    <string name="doc_clinic_only">Документи читає лише модуль клініки. Цей сервер працює в хмарі, тому документи туди не надсилаються.</string>
+    <string name="doc_no_server">Підключіть модуль клініки, щоб читати документи.</string>
+    <string name="doc_failed">Не вдалося прочитати документ.</string>
+    <string name="doc_none">У цьому документі фактів не знайдено.</string>
+    <string name="doc_field_medication">Ліки</string>
+    <string name="doc_field_allergy">Алергія</string>
+    <string name="doc_field_diagnosis">Діагноз у документі</string>
+    <string name="doc_field_procedure">Процедура</string>
+    <string name="doc_field_lab">Аналіз</string>
 </resources>

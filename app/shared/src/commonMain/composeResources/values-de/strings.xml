@@ -326,4 +326,24 @@
     <string name="edited_by_you">Von Ihnen bearbeitet</string>
     <string name="open_scan">QR-Code lesen</string>
     <string name="open_scan_failed">Kein Code erkannt. Erlauben Sie die Kamera oder fügen Sie den Code ein.</string>
+    <!-- documents at the visit (task 41) -->
+    <string name="doc_title">Dokumente</string>
+    <string name="doc_hint">Fügen Sie den Text eines Arztbriefs oder Laborbefunds ein oder fügen Sie ein Foto hinzu. Fakten werden mit dem Wortlaut des Dokuments übernommen; nichts kommt ins Formular, bevor Sie das Feld bestätigen.</string>
+    <string name="doc_paste">Text des Dokuments</string>
+    <string name="doc_read">Dokument lesen</string>
+    <string name="doc_reading">Dokument wird gelesen…</string>
+    <string name="doc_to_form">Ins Formular</string>
+    <string name="doc_in_form">Im Formular</string>
+    <string name="doc_quote_checked">Zitat im Dokument gefunden</string>
+    <string name="doc_quote_unchecked">Zitat nicht geprüft (Foto)</string>
+    <string name="doc_from">Aus Dokument</string>
+    <string name="doc_clinic_only">Dokumente liest nur das Praxismodul. Dieser Server läuft in der Cloud, daher werden Dokumente nicht dorthin gesendet.</string>
+    <string name="doc_no_server">Verbinden Sie das Praxismodul, um Dokumente zu lesen.</string>
+    <string name="doc_failed">Das Dokument konnte nicht gelesen werden.</string>
+    <string name="doc_none">In diesem Dokument wurden keine Fakten gefunden.</string>
+    <string name="doc_field_medication">Medikament</string>
+    <string name="doc_field_allergy">Allergie</string>
+    <string name="doc_field_diagnosis">Diagnose im Dokument</string>
+    <string name="doc_field_procedure">Eingriff</string>
+    <string name="doc_field_lab">Laborwert</string>
 </resources>

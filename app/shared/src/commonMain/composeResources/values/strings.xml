@@ -326,4 +326,24 @@
     <string name="edited_by_you">Edited by you</string>
     <string name="open_scan">Read QR code</string>
     <string name="open_scan_failed">No code could be read. Allow the camera or paste the code.</string>
+    <!-- documents at the visit (task 41) -->
+    <string name="doc_title">Documents</string>
+    <string name="doc_hint">Paste the text of a discharge letter or lab report, or add a photo of it. Facts are copied with the document’s own words; nothing goes into the form until you confirm the field.</string>
+    <string name="doc_paste">Text of the document</string>
+    <string name="doc_read">Read document</string>
+    <string name="doc_reading">Reading the document…</string>
+    <string name="doc_to_form">Add to form</string>
+    <string name="doc_in_form">In the form</string>
+    <string name="doc_quote_checked">Quote found in the document</string>
+    <string name="doc_quote_unchecked">Quote not checked (photo)</string>
+    <string name="doc_from">From document</string>
+    <string name="doc_clinic_only">Documents are read only by the clinic module. This server runs in the cloud, so documents are not sent to it.</string>
+    <string name="doc_no_server">Connect to the clinic module to read documents.</string>
+    <string name="doc_failed">The document could not be read.</string>
+    <string name="doc_none">No facts found in this document.</string>
+    <string name="doc_field_medication">Medication</string>
+    <string name="doc_field_allergy">Allergy</string>
+    <string name="doc_field_diagnosis">Diagnosis in the document</string>
+    <string name="doc_field_procedure">Procedure</string>
+    <string name="doc_field_lab">Lab value</string>
 </resources>

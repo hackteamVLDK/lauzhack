@@ -65,6 +65,7 @@ import org.easypaper.ui.components.SidebarRow
 import org.easypaper.ui.components.TintedButton
 import org.easypaper.ui.components.category
 import org.easypaper.ui.cost.AiCostScreen
+import org.easypaper.ui.doctor.DocumentsSection
 import org.easypaper.ui.handover.OpenReportScreen
 import org.easypaper.ui.handover.relayUrl
 import org.easypaper.ui.format.dateRange
@@ -232,7 +233,8 @@ private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDev
 @Composable
 private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: ShellSettings, back: BackAction?, select: (DoctorScreen) -> Unit, emptyActions: @Composable () -> Unit) {
     when (screen) {
-        is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { report -> key(report.id) { VisitScreen(report, back, visitAi(state, report), state.reportPhotos[report.id].orEmpty(), store = state.visits) } }
+        is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { report -> key(report.id) { VisitScreen(report, back, visitAi(state, report), state.reportPhotos[report.id].orEmpty(), store = state.visits,
+                documents = { visit -> DocumentsSection(visit, state.server?.let { server -> { server.ai } }, state.documents[report.id].orEmpty()) { state.documents[report.id] = it } }) } }
             ?: NothingOpen(emptyActions)
         DoctorScreen.NewRequest -> RequestBuilderScreen(back)
         // the patient's QR opens the report once (task 30); it joins the list and opens right away
