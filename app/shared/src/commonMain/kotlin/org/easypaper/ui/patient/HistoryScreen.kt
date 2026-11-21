@@ -1,5 +1,6 @@
 package org.easypaper.ui.patient
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -137,7 +138,7 @@ private fun DestructiveButton(text: String, onClick: () -> Unit) {
     Box(
         Modifier.minimumInteractiveComponentSize().clickable(
             interactionSource = remember { MutableInteractionSource() },
-            indication = null,
+            indication = LocalIndication.current,
             role = Role.Button,
             onClick = onClick,
         ),

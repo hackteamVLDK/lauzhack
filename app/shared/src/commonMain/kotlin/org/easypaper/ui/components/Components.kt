@@ -1,11 +1,12 @@
 package org.easypaper.ui.components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -150,14 +151,13 @@ fun CategoryRow(
     }
 }
 
-/** Press feedback like UIKit: the control dims while pressed, no ripple. */
+/** Shared background press feedback, with only disabled controls dimmed. */
 @Composable
 private fun Modifier.pressable(onClick: () -> Unit, enabled: Boolean): Modifier {
     val source = remember { MutableInteractionSource() }
-    val pressed by source.collectIsPressedAsState()
     return this
-        .alpha(if (!enabled) 0.4f else if (pressed) 0.6f else 1f)
-        .clickable(interactionSource = source, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
+        .alpha(if (enabled) 1f else 0.4f)
+        .clickable(interactionSource = source, indication = LocalIndication.current, enabled = enabled, role = Role.Button, onClick = onClick)
 }
 
 /** The one prominent action of a view: filled tint, 50 dp, rounded rectangle (stacked) or full width. */
@@ -235,20 +235,40 @@ fun DraftBadge(text: String, modifier: Modifier = Modifier) {
 @Composable
 fun IosSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
     val colors = EasyPaperTheme.colors
+    val motion = EasyPaperTheme.motion
     // Off track: systemGray5-like in light, a separator-gray in dark so it stays visible on `cell`.
-    val track by animateColorAsState(if (checked) colors.switchOn else if (colors.isDark) colors.separator else colors.fill)
-    val thumbOffset by animateDpAsState(if (checked) SWITCH_TRAVEL else 0.dp)
+    val track by animateColorAsState(
+        if (checked) colors.switchOn else if (colors.isDark) colors.separator else colors.fill,
+        animationSpec = motion.smooth.spec(),
+        label = "switch track",
+    )
     Box(
         modifier.minimumInteractiveComponentSize()
             .toggleable(value = checked, enabled = enabled, role = Role.Switch, onValueChange = onCheckedChange,
-                interactionSource = remember { MutableInteractionSource() }, indication = null)
+                interactionSource = remember { MutableInteractionSource() }, indication = LocalIndication.current)
             .alpha(if (enabled) 1f else 0.4f),
         contentAlignment = Alignment.Center,
     ) {
         Box(Modifier.size(SWITCH_WIDTH, SWITCH_HEIGHT).clip(EasyPaperTheme.shapes.capsule).background(track).padding(SWITCH_INSET)) {
-            Box(Modifier.offset(x = thumbOffset).size(SWITCH_THUMB).shadow(SWITCH_INSET, CircleShape).background(Color.White, CircleShape))
+            if (motion.reduceMotion) {
+                Crossfade(checked, animationSpec = motion.fade(), label = "switch thumb fade") { on ->
+                    SwitchThumb(if (on) SWITCH_TRAVEL else 0.dp)
+                }
+            } else {
+                val thumbOffset by animateDpAsState(
+                    if (checked) SWITCH_TRAVEL else 0.dp,
+                    animationSpec = motion.snappy.spec(),
+                    label = "switch thumb",
+                )
+                SwitchThumb(thumbOffset)
+            }
         }
     }
+}
+
+@Composable
+private fun SwitchThumb(offset: Dp) {
+    Box(Modifier.offset(x = offset).size(SWITCH_THUMB).shadow(SWITCH_INSET, CircleShape).background(Color.White, CircleShape))
 }
 
 private val SWITCH_WIDTH = 51.dp

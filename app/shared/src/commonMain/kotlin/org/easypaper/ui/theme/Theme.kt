@@ -1,7 +1,10 @@
 package org.easypaper.ui.theme
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -13,6 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.easypaper.ui.components.PressIndication
+import org.easypaper.ui.components.reducedMotion
 
 /** Spacing and sizes from docs/design.md. Screens use these instead of dp literals. */
 @Immutable
@@ -40,29 +45,42 @@ private val LocalColors = staticCompositionLocalOf { LightColors }
 private val LocalTypography = staticCompositionLocalOf<EasyPaperTypography> { error("EasyPaperTheme is missing") }
 private val LocalSpacing = staticCompositionLocalOf { EasyPaperSpacing() }
 private val LocalShapes = staticCompositionLocalOf { EasyPaperShapes() }
+private val LocalMotion = staticCompositionLocalOf { EasyPaperMotion() }
 
 /**
  * The Easy Paper look (Apple HIG, docs/design.md). Wrap every screen; read tokens through
- * [EasyPaperTheme.colors], [EasyPaperTheme.typography], [EasyPaperTheme.spacing], [EasyPaperTheme.shapes].
+ * [EasyPaperTheme.colors], [EasyPaperTheme.typography], [EasyPaperTheme.spacing], [EasyPaperTheme.shapes],
+ * [EasyPaperTheme.motion].
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EasyPaperTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val colors = if (darkTheme) DarkColors else LightColors
     val text = interText()
     val display = interDisplay()
     val typography = remember(text, display) { easyPaperTypography(text, display) }
+    val reduceMotion = reducedMotion()
+    val motion = remember(reduceMotion) { EasyPaperMotion(reduceMotion) }
+    val indication = remember(colors.fill, motion) { PressIndication(colors.fill, motion.pressFadeDurationMillis) }
     CompositionLocalProvider(
         LocalColors provides colors,
         LocalTypography provides typography,
         LocalSpacing provides EasyPaperSpacing(),
         LocalShapes provides EasyPaperShapes(),
+        LocalMotion provides motion,
     ) {
         MaterialTheme(
             colorScheme = colors.toMaterial(),
             typography = typography.toMaterial(),
             shapes = materialShapes(),
-            content = content,
-        )
+        ) {
+            // MaterialTheme installs its own LocalIndication, so override it inside the theme.
+            CompositionLocalProvider(
+                LocalRippleConfiguration provides null,
+                LocalIndication provides indication,
+                content = content,
+            )
+        }
     }
 }
 
@@ -75,6 +93,8 @@ object EasyPaperTheme {
         @Composable @ReadOnlyComposable get() = LocalSpacing.current
     val shapes: EasyPaperShapes
         @Composable @ReadOnlyComposable get() = LocalShapes.current
+    val motion: EasyPaperMotion
+        @Composable @ReadOnlyComposable get() = LocalMotion.current
 }
 
 /** Material roles for stock components; no baseline purple, no tonal elevation tint. */

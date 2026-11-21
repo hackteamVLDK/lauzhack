@@ -2,12 +2,10 @@ package org.easypaper.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -94,7 +92,7 @@ fun TabBar(items: List<TabItem>, selected: Int, onSelect: (Int) -> Unit, modifie
                         .selectable(
                             selected = isSelected,
                             interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
+                            indication = LocalIndication.current,
                             role = Role.Tab,
                             onClick = { onSelect(index) },
                         )
@@ -141,14 +139,18 @@ fun LargeTitleScaffold(
     val spacing = EasyPaperTheme.spacing
     val type = EasyPaperTheme.typography
     var titleHeight by remember { mutableIntStateOf(1) }
-    val collapsed by remember {
-        derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > titleHeight }
+    val collapsed by remember(listState) {
+        derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset >= titleHeight }
     }
-    val inlineAlpha by animateFloatAsState(if (collapsed) 1f else 0f)
+    val inlineAlpha by animateFloatAsState(
+        if (collapsed) 1f else 0f,
+        animationSpec = EasyPaperTheme.motion.fade(),
+        label = "inline title",
+    )
 
     Column(modifier.fillMaxSize().background(colors.background)) {
         // Navigation bar: back on the start, inline title in the middle once collapsed, actions on the end.
-        Box(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBars)) {
+        Box(Modifier.fillMaxWidth().background(colors.cell.copy(alpha = inlineAlpha)).windowInsetsPadding(WindowInsets.statusBars)) {
             Box(
                 Modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight).padding(horizontal = spacing.xs),
                 contentAlignment = Alignment.Center,
@@ -178,7 +180,7 @@ fun LargeTitleScaffold(
                 contentPadding = PaddingValues(start = spacing.screenMargin, end = spacing.screenMargin, bottom = spacing.xxl),
             ) {
                 item(key = "large-title") {
-                    Column(Modifier.fillMaxWidth().onSizeChanged { titleHeight = it.height }.padding(bottom = spacing.l)) {
+                    Column(Modifier.fillMaxWidth().padding(bottom = spacing.l)) {
                         val longPress = if (onTitleLongPress != null) {
                             Modifier.combinedClickable(
                                 interactionSource = remember { MutableInteractionSource() },
@@ -191,7 +193,7 @@ fun LargeTitleScaffold(
                             title,
                             style = type.largeTitle,
                             color = colors.label,
-                            modifier = longPress.semantics { heading() },
+                            modifier = longPress.onSizeChanged { titleHeight = it.height }.semantics { heading() },
                         )
                         header?.invoke(this)
                     }
@@ -227,7 +229,7 @@ private fun BackButton(back: BackAction, modifier: Modifier = Modifier) {
     Row(
         modifier.minimumInteractiveComponentSize().clickable(
             interactionSource = remember { MutableInteractionSource() },
-            indication = null,
+            indication = LocalIndication.current,
             role = Role.Button,
             onClick = back.onClick,
         ),
@@ -257,10 +259,10 @@ fun Sheet(
 ) {
     val colors = EasyPaperTheme.colors
     val spacing = EasyPaperTheme.spacing
-    val reduced = reducedMotion()
+    val motion = EasyPaperTheme.motion
     BoxWithConstraints(modifier.fillMaxSize()) {
         val maxSheetHeight = maxHeight * SHEET_MAX_FRACTION
-        AnimatedVisibility(visible, enter = fadeIn(), exit = fadeOut()) {
+        AnimatedVisibility(visible, enter = fadeIn(motion.fade()), exit = fadeOut(motion.fade())) {
             Box(
                 Modifier.fillMaxSize().background(MaterialTheme.colorScheme.scrim)
                     .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = onDismiss),
@@ -269,8 +271,8 @@ fun Sheet(
         AnimatedVisibility(
             visible,
             modifier = Modifier.align(Alignment.BottomCenter),
-            enter = if (reduced) fadeIn() else slideInVertically(spring(dampingRatio = SPRING_DAMPING)) { it },
-            exit = if (reduced) fadeOut() else slideOutVertically(spring(dampingRatio = SPRING_DAMPING)) { it },
+            enter = motion.sheetEnter(),
+            exit = motion.sheetExit(),
         ) {
             Column(
                 Modifier.widthIn(max = spacing.contentMaxWidth).fillMaxWidth().heightIn(max = maxSheetHeight)
@@ -355,7 +357,7 @@ fun SidebarRow(title: String, subtitle: String?, selected: Boolean, onClick: () 
             .selectable(
                 selected = selected,
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null,
+                indication = LocalIndication.current,
                 role = Role.Tab,
                 onClick = onClick,
             )
@@ -426,6 +428,3 @@ fun EmptyState(title: String, message: String, modifier: Modifier = Modifier, ac
 }
 
 private const val SHEET_MAX_FRACTION = 0.92f
-
-/** Apple-like spring from docs/design.md (Motion). */
-private const val SPRING_DAMPING = 0.85f

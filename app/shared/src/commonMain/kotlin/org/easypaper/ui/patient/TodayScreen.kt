@@ -43,6 +43,7 @@ import org.easypaper.model.Entry
 import org.easypaper.model.FoodWidget
 import org.easypaper.model.PatientRecord
 import org.easypaper.ui.components.CategoryRow
+import org.easypaper.ui.components.AnimatedNumber
 import org.easypaper.ui.components.EmptyState
 import org.easypaper.ui.components.GrayButton
 import org.easypaper.ui.components.GroupedSection
@@ -123,7 +124,7 @@ private fun PressureRow(today: WidgetToday.Pressure, timeZone: TimeZone, actions
     CategoryRow(today.widget.category, today.widget.title, trailing = time?.let { { Footnote(it) } }) {
         today.latest?.let { bp ->
             Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(EasyPaperTheme.spacing.xs)) {
-                Text("${bp.systolic}/${bp.diastolic}", style = type.title1.tabular(), color = colors.label)
+                AnimatedNumber(bp.systolic, text = "${bp.systolic}/${bp.diastolic}", style = type.title1, color = colors.label)
                 Text(stringResource(Res.string.unit_mmhg), style = type.subheadline, color = colors.secondaryLabel,
                     modifier = Modifier.padding(bottom = EasyPaperTheme.spacing.xxs))
                 bp.pulse?.let {
@@ -145,7 +146,7 @@ private fun DrinkRow(today: WidgetToday.Drink, actions: TodayActions) {
     val label = today.targetMl?.let { stringResource(Res.string.water_amount, amount, litres(it, sep)) }
         ?: stringResource(Res.string.water_today, amount)
     CategoryRow(today.widget.category, today.widget.title) {
-        Text(label, style = EasyPaperTheme.typography.title3.tabular(), color = EasyPaperTheme.colors.label)
+        AnimatedNumber(today.totalMl, text = label, style = EasyPaperTheme.typography.title3)
         Spacer(Modifier.height(EasyPaperTheme.spacing.xs))
         Row(horizontalArrangement = Arrangement.spacedBy(EasyPaperTheme.spacing.xs)) {
             GrayButton(stringResource(Res.string.add_water), onClick = { actions.addWater(today.widget.id) }, icon = Res.drawable.ic_add)

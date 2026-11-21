@@ -48,6 +48,7 @@ import org.easypaper.ui.components.BackAction
 import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.LargeTitleScaffold
 import org.easypaper.ui.components.NavigationBar
+import org.easypaper.ui.components.PushNavigation
 import org.easypaper.ui.components.Sheet
 import org.easypaper.ui.components.TabBar
 import org.easypaper.ui.components.TabItem
@@ -110,26 +111,28 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
 
     Box(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background)) {
         Column(Modifier.fillMaxSize()) {
-            Box(Modifier.weight(1f).fillMaxWidth()) {
-                when (val screen = navigator.current) {
-                    PatientScreen.Today -> TodayScreen(
-                        record, today, timeZone,
-                        title = stringResource(Res.string.today),
-                        header = { TodayHeader(record, today) },
-                        onDeveloper = openDeveloper,
-                        actions = actions,
-                    )
-                    PatientScreen.History -> HistoryScreen(
-                        record, timeZone, stringResource(Res.string.tab_history), openDeveloper,
-                        onOpenDay = { navigator.push(PatientScreen.Day(it)) },
-                    )
-                    is PatientScreen.Day -> record?.let { r ->
-                        DayScreen(r, screen.date, timeZone, BackAction(tabTitle(tab), navigator::back),
-                            onDelete = { entryId -> scope.launch { state.repository.removeEntry(r.request.id, entryId) } })
+            key(tab) {
+                PushNavigation(navigator.stack, Modifier.weight(1f).fillMaxWidth()) { screen ->
+                    when (screen) {
+                        PatientScreen.Today -> TodayScreen(
+                            record, today, timeZone,
+                            title = stringResource(Res.string.today),
+                            header = { TodayHeader(record, today) },
+                            onDeveloper = openDeveloper,
+                            actions = actions,
+                        )
+                        PatientScreen.History -> HistoryScreen(
+                            record, timeZone, stringResource(Res.string.tab_history), openDeveloper,
+                            onOpenDay = { navigator.push(PatientScreen.Day(it)) },
+                        )
+                        is PatientScreen.Day -> record?.let { r ->
+                            DayScreen(r, screen.date, timeZone, BackAction(tabTitle(tab), navigator::back),
+                                onDelete = { entryId -> scope.launch { state.repository.removeEntry(r.request.id, entryId) } })
+                        }
+                        PatientScreen.Share -> ShareScreen(openDeveloper)
+                        PatientScreen.DesignCatalog -> CatalogScreen(settings, BackAction(tabTitle(tab), navigator::back))
+                        PatientScreen.Developer, is PatientScreen.AddEntry -> Unit // shown as sheets
                     }
-                    PatientScreen.Share -> ShareScreen(openDeveloper)
-                    PatientScreen.DesignCatalog -> CatalogScreen(settings, BackAction(tabTitle(tab), navigator::back))
-                    PatientScreen.Developer, is PatientScreen.AddEntry -> Unit // shown as sheets
                 }
             }
             TabBar(

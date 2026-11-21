@@ -52,6 +52,7 @@ import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.LargeTitleScaffold
 import org.easypaper.ui.components.ListRow
 import org.easypaper.ui.components.RowSeparator
+import org.easypaper.ui.components.PushNavigation
 import org.easypaper.ui.components.Sheet
 import org.easypaper.ui.components.Sidebar
 import org.easypaper.ui.components.SidebarRow
@@ -96,7 +97,7 @@ fun DoctorApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> U
     BoxWithConstraints(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background)) {
         val wide = maxWidth >= WIDE_LAYOUT
         val current = navigator.current
-        if (current == DoctorScreen.DesignCatalog) {
+        if (wide && current == DoctorScreen.DesignCatalog) {
             CatalogScreen(settings, BackAction(backLabel(), navigator::back))
         } else if (wide) {
             // Side by side the selected report stays open even at the root of the stack.
@@ -107,10 +108,14 @@ fun DoctorApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> U
                     DoctorDetail(state, detail, settings, back = null)
                 }
             }
-        } else if (current == DoctorScreen.Home) {
-            RequestList(state, select, openDeveloper)
         } else {
-            DoctorDetail(state, current, settings, back = BackAction(stringResource(Res.string.requests), navigator::back))
+            PushNavigation(navigator.stack, Modifier.fillMaxSize()) { screen ->
+                when (screen) {
+                    DoctorScreen.Home -> RequestList(state, select, openDeveloper)
+                    DoctorScreen.DesignCatalog -> CatalogScreen(settings, BackAction(backLabel(), navigator::back))
+                    else -> DoctorDetail(state, screen, settings, back = BackAction(stringResource(Res.string.requests), navigator::back))
+                }
+            }
         }
         Sheet(
             visible = navigator.sheet == DoctorScreen.Developer,

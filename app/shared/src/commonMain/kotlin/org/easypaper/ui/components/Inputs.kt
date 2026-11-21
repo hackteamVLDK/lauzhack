@@ -1,5 +1,6 @@
 package org.easypaper.ui.components
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -119,7 +120,7 @@ fun SegmentedControl(options: List<String>, selected: Int?, onSelect: (Int) -> U
                     .selectable(
                         selected = isSelected,
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
+                        indication = LocalIndication.current,
                         role = Role.RadioButton,
                         onClick = { onSelect(index) },
                     )
