@@ -14,7 +14,7 @@ Phases: accepted 2, build 1, plan 8
 Latest intent: mykhailo/MyPc-chat · 2026-11-21T15:28:27+00:00: fix по ревью vlad: test.py без Android SDK
 Phase: build; build 1; submitter: mykhailo; branch: attempt/mykhailo/task-1-1.
 Status: running; assignee: mykhailo; owner: mykhailo; client: MyPc-chat.
-Lease expires: 2026-11-21T15:31:58+00:00.
+Lease expires: 2026-11-21T15:32:28+00:00.
 Acceptance: python test.py зелёный на Windows и Linux, Desktop и Android запускаются
 Checkpoint SHA: 616b398c1dbd3b80d75aca5d95d9336cbac2ac12
 Review notes: Проверено на Linux (без Android SDK), sha 616b398: gradlew :core:jvmTest :app:shared:jvmTest :server:test :app:desktopApp:compileKotlin — BUILD SUCCESSFUL; :app:desktopApp:run — окно стартует, 20 с без исключений; .claude/skills, teamhub.json, .gitattributes на месте. ПРОБЛЕМА (критерий 'python test.py зелёный на Linux'): test.py:66-68 — при отсутствии Android SDK возвращает 2 ещё до Gradle, хотя QUICK-задачам SDK не нужен (проверено: они проходят без local.properties). Т.к. teamhub.json запуска
