@@ -203,6 +203,7 @@ INSERT INTO "events" VALUES(181,1,'mykhailo','MyPc-chat','plan','Попытка 
 INSERT INTO "events" VALUES(182,1,'mykhailo','MyPc-chat','heartbeat','Lease renewed','{"task_id":1}','2026-11-21T15:28:28+00:00');
 INSERT INTO "events" VALUES(183,1,'mykhailo','MyPc-chat','heartbeat','Lease renewed','{"task_id":1}','2026-11-21T15:28:58+00:00');
 INSERT INTO "events" VALUES(184,1,'mykhailo','MyPc-chat','heartbeat','Lease renewed','{"task_id":1}','2026-11-21T15:29:28+00:00');
+INSERT INTO "events" VALUES(185,NULL,'mykhailo','git','push','mykhailo pushed attempt/mykhailo/task-1-2: 1 commit(s), 2 file(s)','{"commits":1,"file_count":2,"files":["M README.md","M test.py"],"log":["81198aa Mykhailo Titov: test.py: require the Android SDK only for --all (review of task 1 by vlad)"],"new":"81198aa71f84701fbcb36f08746d2689edfeae44","old":"0000000000000000000000000000000000000000","ref":"refs/heads/attempt/mykhailo/task-1-2"}','2026-11-21T15:29:47+00:00');
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 INSERT INTO "meta" VALUES('goal','Easy Paper — KMP-приложение (Android, Desktop, Web/Wasm, Ktor-сервер): врач собирает из виджетов запрос под жалобу, пациент несколько дней заполняет его текстом, числами и фото (еда, упаковки лекарств), а на приёме передаёт через QR зашифрованный отчёт, который ИИ сжимает в сводку со ссылками на оригиналы и предзаполненную форму клиники. Экономный ИИ-конвейер (штрих-код/OCR без LLM, маленькая модель для простого, большая один раз на сводку, кэш, учёт токенов и цены) и режим локального ИИ-модуля в клинике (Ollama). Приложение не ставит диагнозов и не советует — только собирает и структурирует факты; ИИ пишет черновик, каждое поле подтверждает врач.
 Порядок: задача 1 первая; UI-задачи 4, 5, 10 — только после утверждённого mykhailo docs/design.md (задача 3). Секреты только в env/локально; коммиты без подписи Claude; в origin не пушить.');
@@ -393,7 +394,8 @@ INSERT INTO "outbox" VALUES(180,1);
 INSERT INTO "outbox" VALUES(181,1);
 INSERT INTO "outbox" VALUES(182,1);
 INSERT INTO "outbox" VALUES(183,1);
-INSERT INTO "outbox" VALUES(184,0);
+INSERT INTO "outbox" VALUES(184,1);
+INSERT INTO "outbox" VALUES(185,0);
 CREATE TABLE problems (
  id INTEGER PRIMARY KEY, task_id INTEGER NOT NULL REFERENCES tasks(id),
  member TEXT NOT NULL, description TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open',
@@ -608,7 +610,7 @@ CREATE TABLE workers (
  member TEXT NOT NULL, client TEXT NOT NULL, data TEXT NOT NULL, updated REAL NOT NULL,
  PRIMARY KEY (member, client)
 );
-INSERT INTO "workers" VALUES('mykhailo','MyPc-worker','{"executor":"claude","five_hour":{"resets_at":1795119000.0,"status":"allowed","utilization":0.0},"job_cost":0.08,"measured_at":1795117014.4137092,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","seven_day":{"resets_at":1795658400.0,"status":"allowed","utilization":0.08},"task":null,"wake_at":null}',1.79527495405525255e+09);
-INSERT INTO "workers" VALUES('pavlo','Paul-worker','{"executor":"claude","job_cost":0.08,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","task":null,"wake_at":null}',1795274961.4446);
+INSERT INTO "workers" VALUES('mykhailo','MyPc-worker','{"executor":"claude","five_hour":{"resets_at":1795119000.0,"status":"allowed","utilization":0.0},"job_cost":0.08,"measured_at":1795117014.4137092,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","seven_day":{"resets_at":1795658400.0,"status":"allowed","utilization":0.08},"task":null,"wake_at":null}',1.79527497490146708e+09);
+INSERT INTO "workers" VALUES('pavlo','Paul-worker','{"executor":"claude","job_cost":0.08,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","task":null,"wake_at":null}',1.79527498213982605e+09);
 INSERT INTO "workers" VALUES('vlad','BelarusLord-worker','{"executor":"claude","five_hour":{"resets_at":1795290000.0,"status":"allowed","utilization":0.09},"job_cost":0.08,"measured_at":1795274692.7150788,"mode":"chat","reason":"chat mode: jobs are taken in the chat; the background takes jobs only at night","seven_day":{"resets_at":1795824000.0,"status":"allowed","utilization":0.04},"task":null,"wake_at":null}',1.79527496912992739e+09);
 COMMIT;

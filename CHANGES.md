@@ -2,6 +2,16 @@
 
 Every push to the hub: who, which branch, which files. Newest first.
 
+## Push 185 · 2026-11-21T15:29:47+00:00 · mykhailo · attempt/mykhailo/task-1-2
+
+mykhailo pushed attempt/mykhailo/task-1-2: 1 commit(s), 2 file(s)
+`0000000000` → `81198aa71f`
+
+- 81198aa Mykhailo Titov: test.py: require the Android SDK only for --all (review of task 1 by vlad)
+
+    M README.md
+    M test.py
+
 ## Push 179 · 2026-11-21T15:28:03+00:00 · mykhailo · main
 
 mykhailo pushed main: 6 commit(s), 10 file(s)
