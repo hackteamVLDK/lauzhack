@@ -2,6 +2,23 @@
 
 Every push to the hub: who, which branch, which files. Newest first.
 
+## Push 160 · 2026-11-21T15:21:45+00:00 · vlad · attempt/vlad/task-2-2
+
+vlad pushed attempt/vlad/task-2-2: 3 commit(s), 7 file(s)
+`0000000000` → `4610fac459`
+
+- 79648c2 UladzislauHrynevich: core: data schema v1 for requests, widgets and patient entries
+- 50ed1dd UladzislauHrynevich: core: encrypted record store (AES-256-GCM via cryptography-kotlin)
+- 4610fac UladzislauHrynevich: core: add kotlinx-serialization, cryptography-kotlin and coroutines-test
+
+    M build.gradle.kts
+    M core/build.gradle.kts
+    A core/src/commonMain/kotlin/org/easypaper/model/Schema.kt
+    A core/src/commonMain/kotlin/org/easypaper/storage/RecordStore.kt
+    A core/src/commonTest/kotlin/org/easypaper/model/SchemaTest.kt
+    A core/src/commonTest/kotlin/org/easypaper/storage/RecordStoreTest.kt
+    M gradle/libs.versions.toml
+
 ## Push 149 · 2026-11-21T15:19:21+00:00 · mykhailo · main
 
 mykhailo pushed main: 4 commit(s), 7 file(s)
