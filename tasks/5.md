@@ -13,3 +13,4 @@
 РИСКИ: в ссылке жалоба и имя врача открытым текстом (фрагмент не уходит на сервер, но виден тому, у кого ссылка) — шифрование приглашения можно добавить позже через #8; большой опросник может не влезть в QR — тогда TOO_LARGE и UI предложит ссылку; сжатия в common stdlib нет.
 ВЕТКА: attempt/pavlo/task-5-1 от hub/main; после шага 1 — deliver + checkpoint, на ревью НЕ сдаю до UI.
 - Event 201 · 2026-11-21T15:35:00+00:00 · pavlo/Paul-chat · heartbeat: Lease renewed
+- Event 204 · 2026-11-21T15:35:30+00:00 · pavlo/Paul-chat · heartbeat: Lease renewed

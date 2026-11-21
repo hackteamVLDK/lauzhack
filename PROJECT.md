@@ -34,7 +34,7 @@ Review notes: PASS на 4610fac: python test.py зелёный (Windows), 11 т�
 Latest intent: mykhailo/MyPc-chat · 2026-11-21T15:34:33+00:00: docs/design.md, затем EasyPaperTheme
 Phase: build; build 0; submitter: -; branch: -.
 Status: running; assignee: mykhailo; owner: mykhailo; client: MyPc-chat.
-Lease expires: 2026-11-21T15:37:59+00:00.
+Lease expires: 2026-11-21T15:38:29+00:00.
 Acceptance: mykhailo утвердил docs/design.md, тема работает в light/dark
 Checkpoint SHA: -
 Review notes: -
@@ -54,7 +54,7 @@ Review notes: -
 Latest intent: pavlo/Paul-chat · 2026-11-21T15:34:05+00:00: non-UI part first: CareRequest <-> invite link/QR string in core; UI waits for design.md
 Phase: build; build 0; submitter: -; branch: -.
 Status: running; assignee: pavlo; owner: pavlo; client: Paul-chat.
-Lease expires: 2026-11-21T15:38:00+00:00.
+Lease expires: 2026-11-21T15:38:30+00:00.
 Acceptance: пациент открывает и видит ровно эти виджеты
 Checkpoint SHA: -
 Review notes: -
