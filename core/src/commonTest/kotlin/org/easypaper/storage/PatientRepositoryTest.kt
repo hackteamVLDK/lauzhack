@@ -77,6 +77,20 @@ class PatientRepositoryTest {
         repo.start(request)
         repo.add("req-1", Entry("e1", "f", 1, Food("soup")), photo = tinyJpeg(ByteArray(10)))
         assertFails { PhotoStore(blobs, generateRecordKey()).get("photo/e1") }
-        assertFailsWith<IllegalArgumentException> { PhotoStore(blobs, generateRecordKey()).get("record/req-1") }
+        assertNull(PhotoStore(blobs, generateRecordKey()).get("record/req-1"), "a record is never read as a photo")
+    }
+
+    @Test
+    fun foreignPhotoRefIsNoPhotoHereAndCannotTouchRecords() = runTest {
+        val blobs = MemoryBlobs()
+        val repo = repo(blobs)
+        repo.start(request)
+        // the demo's ref (pavlo, problem 16) and a crafted one that points at the record itself
+        repo.add("req-1", Entry("e1", "f", 1, Food("soup", photoRef = "demo-photo-1")))
+        repo.add("req-1", Entry("e2", "d", 2, DiaryNote("x", photoRef = "record/req-1")))
+        assertNull(repo.photo("demo-photo-1"))
+        repo.removeEntry("req-1", "e2")
+        repo.removeEntry("req-1", "e1")
+        assertEquals(emptyList(), repo.records.value.single().entries, "both removed, the record itself kept")
     }
 }
