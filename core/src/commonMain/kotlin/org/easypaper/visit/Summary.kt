@@ -40,7 +40,8 @@ private val WHITESPACE = Regex("\\s+")
 private val SPACE_BEFORE_PUNCTUATION = Regex("\\s+([.,;:!?])")
 
 /** "[e12]" or "[e1, e2]": a bracket group whose every part looks like an entry id. */
-private val CITATION = Regex("\\[([A-Za-z0-9_.-]+(?:\\s*,\\s*[A-Za-z0-9_.-]+)*)]")
+// The closing bracket is escaped: JavaScript reads the pattern in unicode mode, where a lone "]" is a syntax error.
+private val CITATION = Regex("\\[([A-Za-z0-9_.-]+(?:\\s*,\\s*[A-Za-z0-9_.-]+)*)\\]")
 
 /**
  * Splits [Report.summary] (written by the AI pipeline, #7) into lines with links to the originals.

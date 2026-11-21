@@ -38,7 +38,8 @@ data class VisitSummary(val lines: List<VisitLine>, val source: SummarySource) {
     val sourceIds: List<String> get() = lines.flatMap { line -> line.sources.map { it.id } }.distinct()
 }
 
-private val TRAILING_REFS = Regex("""\s*\[[^\[\]]*]\s*$""")
+// "]" escaped: JavaScript reads the pattern in unicode mode, where a lone "]" is a syntax error.
+private val TRAILING_REFS = Regex("""\s*\[[^\[\]]*\]\s*$""")
 
 /**
  * The summary for [report]: the AI result when there is one, else the report's own summary, else the
