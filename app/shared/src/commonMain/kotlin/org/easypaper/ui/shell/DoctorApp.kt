@@ -16,9 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -42,6 +45,7 @@ import org.easypaper.ai.AiStatus
 import org.easypaper.demo.DemoAi
 import org.easypaper.report.Report
 import org.easypaper.ui.components.BackAction
+import org.easypaper.ui.doctor.VisitAi
 import org.easypaper.ui.doctor.VisitScreen
 import org.easypaper.ui.components.CategoryRow
 import org.easypaper.ui.components.EmptyState
@@ -82,6 +86,7 @@ private val WIDE_LAYOUT = 700.dp
 @Composable
 fun DoctorApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> Unit)? = null) {
     val navigator = remember { Navigator<DoctorScreen>(DoctorScreen.Home) }
+    LaunchedEffect(state) { state.refreshAiStatus() }
     NavigatorBackHandler(navigator)
     val openDeveloper = { navigator.presentSheet(DoctorScreen.Developer) }
     val select = { screen: DoctorScreen ->
@@ -190,10 +195,15 @@ private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDev
 @Composable
 private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: ShellSettings, back: BackAction?) {
     when (screen) {
-        is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { key(it.id) { VisitScreen(it, back) } }
+        is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { report -> key(report.id) { VisitScreen(report, back, visitAi(state, report)) } }
             ?: NothingOpen()
         DoctorScreen.NewRequest -> NewRequestScreen(back)
-        DoctorScreen.Cost -> DoctorCostScreen(settings.serverUrl, back)
+        // Live data from the opened report when there is any, otherwise the recorded demo run and server status.
+        DoctorScreen.Cost -> if (state.aiUsage.isNotEmpty() || state.aiStatus != null) {
+            AiCostScreen(status = state.aiStatus, usage = state.aiUsage.toList(), back = back)
+        } else {
+            DoctorCostScreen(settings.serverUrl, back)
+        }
         else -> NothingOpen()
     }
 }
@@ -263,4 +273,17 @@ private fun reportPeriod(report: Report): String? {
     val request = report.record.request
     val start = runCatching { LocalDate.parse(request.startDate) }.getOrNull() ?: return null
     return dateRange(start, lastDay(start, request.days))
+}
+
+/** What the visit screen needs from the server: the AI summary of [report], its progress, and how to ask for it. */
+@Composable
+private fun visitAi(state: ShellState, report: Report): VisitAi? {
+    if (state.server == null) return null
+    val scope = rememberCoroutineScope()
+    return VisitAi(
+        result = state.aiResults[report.id],
+        busy = state.aiBusy[report.id] == true,
+        failed = state.aiFailed[report.id] == true,
+        onWrite = { scope.launch { state.summarize(report) } },
+    )
 }

@@ -59,6 +59,13 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.datetime)
             implementation(libs.navigationevent.compose)
+            implementation(libs.ktor.clientCore) // doctor app -> Easy Paper server (AI summary, task 10)
+        }
+        jvmMain.dependencies {
+            implementation(libs.ktor.clientCio)
+        }
+        webMain.dependencies {
+            implementation(libs.ktor.clientJs)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

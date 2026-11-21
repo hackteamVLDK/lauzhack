@@ -53,7 +53,8 @@ fun visitSummary(report: Report, ai: SummaryResult?, utcOffsetMinutes: Int = 0):
                 val sources = line.refs.mapNotNull { byId[it] }
                 VisitLine(line.text.replace(TRAILING_REFS, "").trim(), sources, line.supported && sources.isNotEmpty())
             },
-            SummarySource.Ai,
+            // The server may answer without AI (off, budget, provider down): then these are the facts.
+            if (ai.usedAi) SummarySource.Ai else SummarySource.Facts,
         )
     }
     val (text, source) = report.summary?.takeIf { it.isNotBlank() }?.let { it to SummarySource.Report }

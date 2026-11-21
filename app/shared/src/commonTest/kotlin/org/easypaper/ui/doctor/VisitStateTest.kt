@@ -116,4 +116,20 @@ class VisitStateTest {
         assertTrue("PANTOPRAZOL Streuli Filmtabl 20 mg 15 Stk (not confirmed by the patient)" in form.field(FormFieldKey.MEDICATIONS).value)
         assertEquals("Tag 5 von 7", "Tag %1\$d von %2\$d".fill(5, 7))
     }
+
+    @Test
+    fun pressureChartSeriesIsInTimeOrderWithARoundedRange() {
+        val series = assertNotNull(pressureSeries(Demo.record.entries.shuffled(kotlin.random.Random(3))))
+        assertEquals(10, series.readings.size)
+        assertEquals(series.readings.sortedBy { it.first }, series.readings)
+        assertEquals(80, series.yMin) // lowest diastolic 81
+        assertEquals(150, series.yMax) // highest systolic 142
+        assertNull(pressureSeries(Demo.record.entries.filter { it.widgetId != "bp" }))
+    }
+
+    @Test
+    fun anAnswerWithoutAiIsShownAsFacts() {
+        val summary = visitSummary(Demo.report, aiResult.copy(usedAi = false, note = "AI is off on this server"))
+        assertEquals(SummarySource.Facts, summary.source)
+    }
 }

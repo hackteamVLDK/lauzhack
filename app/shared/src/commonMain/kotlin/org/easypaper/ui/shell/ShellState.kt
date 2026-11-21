@@ -2,8 +2,14 @@ package org.easypaper.ui.shell
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CancellationException
+import org.easypaper.ai.AiStatus
+import org.easypaper.ai.AiUsage
+import org.easypaper.ai.SummaryResult
 import org.easypaper.demo.Demo
 import org.easypaper.model.DiaryNote
 import org.easypaper.model.Entry
@@ -32,7 +38,51 @@ class ShellSettings(dark: Boolean? = null, largeText: Boolean = false, serverUrl
  * device storage is wired in) and the reports the doctor opened (in memory until the transfer, task 30).
  */
 @Stable
-class ShellState(role: Role? = null, val repository: PatientRepository = inMemoryPatientRepository()) {
+class ShellState(
+    role: Role? = null,
+    val repository: PatientRepository = inMemoryPatientRepository(),
+    serverUrl: String? = null,
+) {
+    /** The Easy Paper server for the AI summary (doctor app); null when there is none. */
+    val server: ServerConnection? = serverUrl?.let { ServerConnection(it) }
+
+    /** Server AI mode, models and spending (#8), for the cost screen (#32); null until asked or unreachable. */
+    var aiStatus: AiStatus? by mutableStateOf(null)
+        private set
+
+    /** Every AI call made from this app, for the cost screen (#32). */
+    val aiUsage = mutableStateListOf<AiUsage>()
+
+    /** AI summaries by report id. */
+    val aiResults = mutableStateMapOf<String, SummaryResult>()
+
+    /** Report ids with a summary being written, and ids whose last try failed. */
+    val aiBusy = mutableStateMapOf<String, Boolean>()
+    val aiFailed = mutableStateMapOf<String, Boolean>()
+
+    suspend fun refreshAiStatus() {
+        aiStatus = server?.let { runCatching { it.ai.status() }.getOrNull() }
+    }
+
+    /** Asks the server for the summary of [report]; on failure the facts-based summary stays. */
+    suspend fun summarize(report: Report) {
+        val ai = server?.ai ?: return
+        aiBusy[report.id] = true
+        aiFailed.remove(report.id)
+        try {
+            val result = ai.summarize(report.record)
+            aiResults[report.id] = result
+            aiUsage += result.usage
+            refreshAiStatus()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            aiFailed[report.id] = true // server down, AI off, timeout: said on screen, nothing else changes
+        } finally {
+            aiBusy.remove(report.id)
+        }
+    }
+
     /** null on Desktop until the person chooses. */
     var role: Role? by mutableStateOf(role)
 
