@@ -1,20 +1,14 @@
 package org.easypaper.visit
 
 import kotlinx.serialization.Serializable
-import org.easypaper.model.BloodPressure
 import org.easypaper.model.BloodPressureWidget
-import org.easypaper.model.DoctorQuestion
 import org.easypaper.model.DoctorQuestionsWidget
-import org.easypaper.model.Entry
-import org.easypaper.model.Medication
-import org.easypaper.model.MedicationSource
 import org.easypaper.model.MedicationsWidget
-import org.easypaper.model.Water
 import org.easypaper.model.WaterWidget
-import org.easypaper.model.WidgetSpec
+import org.easypaper.report.FactDigest
+import org.easypaper.report.MedicationFact
 import org.easypaper.report.Report
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
+import org.easypaper.report.factDigest
 
 /** Fields of the clinic intake form. The UI shows a localized label per key. */
 enum class FormFieldKey { COMPLAINT, HISTORY, BLOOD_PRESSURE, MEDICATIONS, FLUID_INTAKE, PATIENT_QUESTIONS }
@@ -86,25 +80,27 @@ data class SavedClinicForm(val reportId: String, val savedAt: Long, val fields: 
 @Serializable
 data class SavedField(val key: FormFieldKey, val value: String, val sourceIds: List<String>, val editedByDoctor: Boolean)
 
-// --- Pre-fill: facts from the record, no AI. The wording comes from the UI (localized). ---
+// --- Pre-fill: facts from FactDigest (#13), no AI. The wording comes from the UI (localized). ---
 
+/** Blood pressure over the whole period; dates are the patient's local days. */
 data class BloodPressureStats(
     val readings: Int,
-    val firstAt: Long,
-    val lastAt: Long,
+    val firstDate: String,
+    val lastDate: String,
     val systolic: IntRange,
     val diastolic: IntRange,
     val pulse: IntRange?,
 )
 
-data class MedicationLine(val name: String, val dose: String?, val unconfirmedScan: Boolean)
+/** [unconfirmed]: the patient never confirmed this medicine (e.g. a scan they did not check). */
+data class MedicationLine(val name: String, val dose: String?, val unconfirmed: Boolean)
 
 /** Average over the days that have at least one entry. */
 data class FluidStats(val mlPerDay: Int, val days: Int, val entries: Int)
 
 /** Turns facts into the field text in the doctor's language. */
 interface FormWording {
-    fun bloodPressure(stats: BloodPressureStats, utcOffsetMinutes: Int): String
+    fun bloodPressure(stats: BloodPressureStats): String
     fun medications(items: List<MedicationLine>): String
     fun fluidIntake(stats: FluidStats): String
     fun patientQuestions(items: List<String>): String
@@ -113,14 +109,14 @@ interface FormWording {
 
 /** Default wording (English, compact clinical register); the doctor screen passes a localized one. */
 object EnglishFormWording : FormWording {
-    override fun bloodPressure(stats: BloodPressureStats, utcOffsetMinutes: Int) = buildString {
-        append("${stats.readings} readings, ${localDate(stats.firstAt, utcOffsetMinutes)} – ${localDate(stats.lastAt, utcOffsetMinutes)}: ")
+    override fun bloodPressure(stats: BloodPressureStats) = buildString {
+        append("${stats.readings} readings, ${stats.firstDate} – ${stats.lastDate}: ")
         append("${stats.systolic.range()}/${stats.diastolic.range()} mmHg")
         stats.pulse?.let { append(", pulse ${it.range()}/min") }
     }
 
     override fun medications(items: List<MedicationLine>) = items.joinToString("\n") { item ->
-        listOfNotNull(item.name, item.dose).joinToString(", ") + if (item.unconfirmedScan) " (scan not confirmed by patient)" else ""
+        listOfNotNull(item.name, item.dose).joinToString(", ") + if (item.unconfirmed) " (not confirmed by patient)" else ""
     }
 
     override fun fluidIntake(stats: FluidStats) = "${stats.mlPerDay} mL/day on average (${stats.days} days, ${stats.entries} entries)"
@@ -132,76 +128,58 @@ object EnglishFormWording : FormWording {
     private fun IntRange.range() = if (first == last) "$first" else "$first–$last"
 }
 
-/** "YYYY-MM-DD" of an instant in the patient's time zone, given as an offset from UTC. */
-@OptIn(ExperimentalTime::class)
-fun localDate(epochMillis: Long, utcOffsetMinutes: Int): String =
-    Instant.fromEpochMilliseconds(epochMillis + utcOffsetMinutes * 60_000L).toString().take(10)
-
 /**
  * Builds the form from the report. Fields exist only for widgets the doctor requested; complaint and
  * history are always there (history = the AI summary without link markers, sourced by its links).
  */
 fun prefillClinicForm(report: Report, wording: FormWording = EnglishFormWording, utcOffsetMinutes: Int = 0): ClinicForm {
-    val record = report.record
-    val widgets = record.request.widgets
-    fun entriesOf(widgetType: (WidgetSpec) -> Boolean): List<Entry> {
-        val ids = widgets.filter(widgetType).map { it.id }.toSet()
-        return record.entries.filter { it.widgetId in ids }.sortedBy { it.at }
-    }
-    fun field(key: FormFieldKey, entries: List<Entry>, text: (List<Entry>) -> String) =
-        if (entries.isEmpty()) FormField(key, wording.noEntries(), emptyList())
-        else FormField(key, text(entries), entries.map { it.id })
-
+    val widgets = report.record.request.widgets
+    val digest = report.record.factDigest(utcOffsetMinutes)
     val summary = parseSummary(report)
+    fun field(key: FormFieldKey, refs: List<String>, text: () -> String) =
+        if (refs.isEmpty()) FormField(key, wording.noEntries(), emptyList()) else FormField(key, text(), refs)
+
     val fields = buildList {
-        add(FormField(FormFieldKey.COMPLAINT, record.request.complaint, emptyList()))
+        add(FormField(FormFieldKey.COMPLAINT, report.record.request.complaint, emptyList()))
         add(FormField(FormFieldKey.HISTORY, summary.lines.joinToString("\n") { it.text }, summary.citedIds))
         if (widgets.any { it is BloodPressureWidget }) {
-            val bp = entriesOf { it is BloodPressureWidget }.filter { it.payload is BloodPressure }
-            add(field(FormFieldKey.BLOOD_PRESSURE, bp) { wording.bloodPressure(bloodPressureStats(it), utcOffsetMinutes) })
+            add(field(FormFieldKey.BLOOD_PRESSURE, digest.bloodPressure.flatMap { it.refs }) { wording.bloodPressure(digest.bloodPressureStats()!!) })
         }
         if (widgets.any { it is MedicationsWidget }) {
-            val meds = entriesOf { it is MedicationsWidget }.filter { it.payload is Medication }
-            add(field(FormFieldKey.MEDICATIONS, meds) { wording.medications(medicationLines(it)) })
+            add(field(FormFieldKey.MEDICATIONS, digest.medications.flatMap { it.refs }) { wording.medications(medicationLines(digest.medications)) })
         }
         if (widgets.any { it is WaterWidget }) {
-            val water = entriesOf { it is WaterWidget }.filter { it.payload is Water }
-            add(field(FormFieldKey.FLUID_INTAKE, water) { wording.fluidIntake(fluidStats(it, utcOffsetMinutes)) })
+            add(field(FormFieldKey.FLUID_INTAKE, digest.water.flatMap { it.refs }) { wording.fluidIntake(digest.fluidStats()!!) })
         }
         if (widgets.any { it is DoctorQuestionsWidget }) {
-            val questions = entriesOf { it is DoctorQuestionsWidget }.filter { it.payload is DoctorQuestion }
-            add(field(FormFieldKey.PATIENT_QUESTIONS, questions) { list -> wording.patientQuestions(list.map { (it.payload as DoctorQuestion).text }) })
+            val questions = digest.notes.filter { it.kind == "doctor_question" && !it.text.isNullOrBlank() }
+            add(field(FormFieldKey.PATIENT_QUESTIONS, questions.map { it.ref }) { wording.patientQuestions(questions.map { it.text!! }) })
         }
     }
     return ClinicForm(report.id, fields)
 }
 
-internal fun bloodPressureStats(entries: List<Entry>): BloodPressureStats {
-    val values = entries.map { it.payload as BloodPressure }
-    val pulses = values.mapNotNull { it.pulse }
+internal fun FactDigest.bloodPressureStats(): BloodPressureStats? {
+    if (bloodPressure.isEmpty()) return null
+    val pulses = bloodPressure.mapNotNull { it.pulse }
     return BloodPressureStats(
-        readings = values.size,
-        firstAt = entries.minOf { it.at },
-        lastAt = entries.maxOf { it.at },
-        systolic = values.minOf { it.systolic }..values.maxOf { it.systolic },
-        diastolic = values.minOf { it.diastolic }..values.maxOf { it.diastolic },
-        pulse = if (pulses.isEmpty()) null else pulses.min()..pulses.max(),
+        readings = bloodPressure.sumOf { it.count },
+        firstDate = bloodPressure.first().date,
+        lastDate = bloodPressure.last().date,
+        systolic = bloodPressure.minOf { it.systolic.min }..bloodPressure.maxOf { it.systolic.max },
+        diastolic = bloodPressure.minOf { it.diastolic.min }..bloodPressure.maxOf { it.diastolic.max },
+        pulse = if (pulses.isEmpty()) null else pulses.minOf { it.min }..pulses.maxOf { it.max },
     )
 }
 
-/** One line per medicine (by name and dose), in order of first entry. */
-internal fun medicationLines(entries: List<Entry>): List<MedicationLine> =
-    entries.map { it.payload as Medication }
-        .groupBy { it.name.trim().lowercase() to it.dose?.trim()?.lowercase() }
-        .values.map { same ->
-            val first = same.first()
-            // Unconfirmed only when no entry of this medicine was confirmed or typed in by the patient.
-            val unconfirmed = same.all { it.source == MedicationSource.SCAN && !it.confirmed }
-            MedicationLine(first.name.trim(), first.dose?.trim(), unconfirmed)
-        }
+internal fun FactDigest.fluidStats(): FluidStats? =
+    if (water.isEmpty()) null
+    else FluidStats(mlPerDay = water.sumOf { it.totalMl } / water.size, days = water.size, entries = water.sumOf { it.refs.size })
 
-internal fun fluidStats(entries: List<Entry>, utcOffsetMinutes: Int): FluidStats {
-    val byDay = entries.groupBy { localDate(it.at, utcOffsetMinutes) }
-    val total = entries.sumOf { (it.payload as Water).ml }
-    return FluidStats(mlPerDay = total / byDay.size, days = byDay.size, entries = entries.size)
-}
+/**
+ * One line per medicine (by name and dose). The digest keeps confirmed and unconfirmed apart; here a medicine is
+ * flagged only when the patient confirmed it nowhere.
+ */
+internal fun medicationLines(facts: List<MedicationFact>): List<MedicationLine> =
+    facts.groupBy { it.name.trim().lowercase() to it.dose?.trim()?.lowercase() }
+        .values.map { same -> MedicationLine(same.first().name.trim(), same.first().dose?.trim(), same.none { it.confirmed }) }
