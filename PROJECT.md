@@ -94,7 +94,7 @@ Review notes: -
 Latest intent: vlad/BelarusLord-chat · 2026-11-21T15:22:40+00:00: формат отчёта + шифрование + QR-строка в core
 Phase: build; build 0; submitter: -; branch: -.
 Status: running; assignee: vlad; owner: vlad; client: BelarusLord-chat.
-Lease expires: 2026-11-21T15:25:43+00:00.
+Lease expires: 2026-11-21T15:26:13+00:00.
 Acceptance: без ключа не расшифровать
 Checkpoint SHA: -
 Review notes: -
