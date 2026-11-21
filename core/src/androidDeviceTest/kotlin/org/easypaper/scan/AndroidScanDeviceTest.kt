@@ -23,16 +23,30 @@ import kotlin.time.Duration.Companion.minutes
  * names, three packages of the local list; and a blood pressure monitor display. Photos go through shrinkPhoto
  * first, as in the app. No network, no LLM.
  */
+private val ORIENTATION_6 = byteArrayOf( // APP1 "Exif", big-endian IFD0 with Orientation = 6
+    0xFF.toByte(), 0xE1.toByte(), 0x00, 0x22, 0x45, 0x78, 0x69, 0x66, 0, 0, 0x4D, 0x4D, 0, 0x2A, 0, 0, 0, 8,
+    0, 1, 0x01, 0x12, 0, 3, 0, 0, 0, 1, 0, 6, 0, 0, 0, 0, 0, 0,
+)
+
 class AndroidScanDeviceTest {
     private val db = MedicationDb()
 
-    private fun photo(draw: Canvas.(Paint) -> Unit): ByteArray {
-        val bmp = Bitmap.createBitmap(1600, 1200, Bitmap.Config.ARGB_8888)
+    /** A 1600x1200 photo drawn upright; [sideways]: stored turned 90° left with EXIF Orientation 6, as phones do. */
+    private fun photo(sideways: Boolean = false, draw: Canvas.(Paint) -> Unit): ByteArray {
+        val bmp = if (sideways) Bitmap.createBitmap(1200, 1600, Bitmap.Config.ARGB_8888) else Bitmap.createBitmap(1600, 1200, Bitmap.Config.ARGB_8888)
         Canvas(bmp).apply {
             drawColor(Color.WHITE)
+            if (sideways) { translate(0f, 1600f); rotate(-90f) }
             draw(Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.BLACK; typeface = Typeface.DEFAULT_BOLD })
         }
-        return shrinkPhoto(ByteArrayOutputStream().also { bmp.compress(Bitmap.CompressFormat.JPEG, 92, it); bmp.recycle() }.toByteArray())
+        val jpeg = ByteArrayOutputStream().also { bmp.compress(Bitmap.CompressFormat.JPEG, 92, it); bmp.recycle() }.toByteArray()
+        return shrinkPhoto(if (sideways) jpeg.copyOfRange(0, 2) + ORIENTATION_6 + jpeg.copyOfRange(2, jpeg.size) else jpeg)
+    }
+
+    @Test
+    fun sidewaysPhotoIsReadUpright() = runTest(timeout = 3.minutes) {
+        val reading = readPhoto(photo(sideways = true) { p -> lines(p, 90f, "SPEDIFEN", "400 mg", "30 Filmtabletten") })
+        assertEquals("7680556770041", db.recognize(reading).candidates.firstOrNull()?.gtin, "text read: ${reading.text}")
     }
 
     private fun Canvas.symbol(format: BarcodeFormat, contents: String, left: Float, top: Float, w: Int, h: Int) {

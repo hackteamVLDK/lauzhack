@@ -63,6 +63,7 @@ kotlin {
             implementation(libs.koog.ollamaClient)
             implementation(libs.koog.httpClientKtor)
             implementation(libs.ktor.clientCio)
+            implementation(libs.zxing.core) // package codes from photo files on Desktop (task 28)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

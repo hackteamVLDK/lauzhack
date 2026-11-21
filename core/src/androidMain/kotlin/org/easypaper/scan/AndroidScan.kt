@@ -9,17 +9,20 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.easypaper.report.jpegOrientation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /**
  * Reads barcodes (DataMatrix, EAN, UPC, Code 128) and printed text from a photo on the phone with ML Kit's
  * bundled models: no network, no Google Play services, no LLM. Feed the result to [MedicationDb.recognize]
- * (package) or parseBloodPressure (monitor display). [rotationDegrees]: how the photo must be turned upright.
+ * (package) or parseBloodPressure (monitor display). The photo is turned upright by its EXIF orientation first:
+ * shrinkPhoto keeps the tag instead of rotating pixels, and text recognition needs upright text.
  */
-suspend fun readPhoto(photo: ByteArray, rotationDegrees: Int = 0): PhotoReading {
+actual suspend fun readPhoto(photo: ByteArray): PhotoReading {
     val bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.size) ?: throw IllegalArgumentException("Not an image")
-    val image = InputImage.fromBitmap(bitmap, rotationDegrees)
+    val rotation = when (jpegOrientation(photo)) { 3 -> 180; 6 -> 90; 8 -> 270; else -> 0 } // mirrored 2/4/5/7: not from cameras
+    val image = InputImage.fromBitmap(bitmap, rotation)
     val formats = BarcodeScannerOptions.Builder().setBarcodeFormats(
         Barcode.FORMAT_DATA_MATRIX, Barcode.FORMAT_EAN_13, Barcode.FORMAT_EAN_8, Barcode.FORMAT_UPC_A, Barcode.FORMAT_CODE_128,
     ).build()

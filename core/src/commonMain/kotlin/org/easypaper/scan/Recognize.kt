@@ -4,6 +4,12 @@ package org.easypaper.scan
 data class PhotoReading(val codes: List<String>, val text: String)
 
 /**
+ * Reads a photo (after shrinkPhoto) on this device, without network or LLM. Android: ML Kit, codes and text;
+ * Desktop: ZXing, codes only (text is typed by the patient); Web: nothing yet.
+ */
+expect suspend fun readPhoto(photo: ByteArray): PhotoReading
+
+/**
  * A package photo matched against the local list. [byCode]: the GTIN from the barcode/DataMatrix is in the list,
  * so [candidates] holds exactly that package; otherwise up to 3 candidates by the printed name. The patient
  * always confirms (#31); [code] keeps expiry and batch from a DataMatrix even when the GTIN is unknown.
