@@ -47,7 +47,7 @@
     <string name="today_empty_message">Öffnen Sie den Einladungslink Ihrer Praxis auf diesem Telefon. Was Sie erfassen sollen, erscheint dann hier.</string>
     <string name="history_empty_title">Noch keine Einträge</string>
     <string name="history_empty_message">Ihre Einträge erscheinen hier, Tag für Tag.</string>
-    <string name="share_explain">Beim Termin zeigen Sie einen QR-Code, und der Computer in der Praxis öffnet Ihre Einträge. Bis dahin bleiben sie auf diesem Telefon.</string>
+    <string name="share_explain">Beim Erstellen des Codes wird eine verschlüsselte Kopie hochgeladen. Ihre Ärztin oder Ihr Arzt scannt den Code und öffnet Ihre Einträge.</string>
     <string name="requests">Anfragen</string>
     <string name="new_request">Neue Anfrage</string>
     <string name="new_request_message">Wählen Sie, was die Person erfasst und wie viele Tage lang. Sie senden die Anfrage als Link oder QR-Code.</string>
@@ -257,15 +257,15 @@
     <string name="share_none">Noch nichts zu teilen</string>
     <string name="share_none_message">Hier erscheinen die Anfrage Ihrer Praxis und Ihre Einträge.</string>
     <string name="share_offline">Der Server ist nicht erreichbar. Prüfen Sie die Internetverbindung und versuchen Sie es erneut.</string>
-    <string name="share_failed">Der Code konnte nicht erstellt werden. Bitte erneut versuchen.</string>
+    <string name="share_failed">Der Code konnte nicht erstellt werden. Prüfen Sie die Internetverbindung und versuchen Sie es erneut.</string>
     <string name="share_qr">QR-Code für die Praxis</string>
     <string name="open_report">Patientenbericht öffnen</string>
     <string name="open_report_hint">QR-Code der Patientin / des Patienten scannen oder den Text ab ep1: einfügen</string>
     <string name="open_report_button">Öffnen</string>
     <string name="open_used">Dieser Code wurde schon benutzt oder ist abgelaufen. Bitten Sie um einen neuen.</string>
-    <string name="open_not_ours">Das ist kein Easy-Paper-Code.</string>
-    <string name="open_failed">Mit diesem Code lässt sich der Bericht nicht öffnen.</string>
-    <string name="open_offline">Der Server ist nicht erreichbar.</string>
+    <string name="open_not_ours">Das ist kein Easy-Paper-Code. Scannen Sie den QR-Code erneut oder fügen Sie den ganzen Code ab ep1: ein.</string>
+    <string name="open_failed">Mit diesem Code lässt sich der Bericht nicht öffnen. Prüfen Sie, ob der ganze Code eingefügt ist, oder bitten Sie um einen neuen.</string>
+    <string name="open_offline">Der Server ist nicht erreichbar. Prüfen Sie das Netz und versuchen Sie es erneut; der Code bleibt im Feld.</string>
     <string name="entry_photo">Foto der Patientin / des Patienten</string>
     <!-- Patient photos (task 4 step 2) -->
     <string name="take_photo">Foto aufnehmen</string>
@@ -340,7 +340,7 @@
     <string name="doc_from">Aus Dokument</string>
     <string name="doc_clinic_only">Dokumente liest nur das Praxismodul. Dieser Server läuft in der Cloud, daher werden Dokumente nicht dorthin gesendet.</string>
     <string name="doc_no_server">Verbinden Sie das Praxismodul, um Dokumente zu lesen.</string>
-    <string name="doc_failed">Das Dokument konnte nicht gelesen werden.</string>
+    <string name="doc_failed">Das Dokument konnte nicht gelesen werden. Machen Sie ein schärferes Foto oder fügen Sie den Text ein.</string>
     <string name="doc_none">In diesem Dokument wurden keine Fakten gefunden.</string>
     <string name="doc_field_medication">Medikament</string>
     <string name="doc_field_allergy">Allergie</string>
@@ -384,4 +384,7 @@
     <string name="v2_qr_selected">Freigabe per QR-Code ausgewählt.</string>
     <string name="v2_sample_initials">MT</string>
     <string name="med_not_in_list">Diese Packung ist nicht in der Medikamentenliste. Wir haben den Namen von der Packung eingetragen — bitte prüfen.</string>
+    <string name="share_creating">Code wird erstellt…</string>
+    <string name="open_opening">Bericht wird geöffnet…</string>
+    <string name="busy">Beschäftigt</string>
 </resources>

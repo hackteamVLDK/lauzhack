@@ -47,7 +47,7 @@
     <string name="today_empty_message">Open the invite link from your doctor on this phone. What to record then appears here.</string>
     <string name="history_empty_title">No entries yet</string>
     <string name="history_empty_message">Your entries appear here, day by day.</string>
-    <string name="share_explain">At your visit you show a QR code, and your doctor’s computer opens your entries. Until then they stay on this phone.</string>
+    <string name="share_explain">Creating a code uploads an encrypted copy. Your doctor scans the code to open your entries.</string>
     <string name="requests">Requests</string>
     <string name="new_request">New request</string>
     <string name="new_request_message">Choose what the patient records and for how many days. You send the request as a link or QR code.</string>
@@ -257,15 +257,15 @@
     <string name="share_none">Nothing to share yet</string>
     <string name="share_none_message">Your doctor’s request and your entries appear here.</string>
     <string name="share_offline">The server could not be reached. Check the internet connection and try again.</string>
-    <string name="share_failed">The code could not be created. Try again.</string>
+    <string name="share_failed">The code could not be created. Check the internet connection and try again.</string>
     <string name="share_qr">QR code for the doctor</string>
     <string name="open_report">Open patient report</string>
     <string name="open_report_hint">Scan the patient’s QR code or paste the text starting with ep1:</string>
     <string name="open_report_button">Open</string>
     <string name="open_used">This code was already used or has expired. Ask the patient for a new one.</string>
-    <string name="open_not_ours">This is not an Easy Paper code.</string>
-    <string name="open_failed">The report could not be opened with this code.</string>
-    <string name="open_offline">The server could not be reached.</string>
+    <string name="open_not_ours">This is not an Easy Paper code. Scan the QR again or paste the whole code starting with ep1:</string>
+    <string name="open_failed">The report could not be opened with this code. Check that the whole code was pasted, or ask the patient for a new one.</string>
+    <string name="open_offline">The server could not be reached. Check the network and try again; the code stays in the field.</string>
     <string name="entry_photo">Photo from the patient</string>
     <!-- Patient photos (task 4 step 2) -->
     <string name="take_photo">Take photo</string>
@@ -340,7 +340,7 @@
     <string name="doc_from">From document</string>
     <string name="doc_clinic_only">Documents are read only by the clinic module. This server runs in the cloud, so documents are not sent to it.</string>
     <string name="doc_no_server">Connect to the clinic module to read documents.</string>
-    <string name="doc_failed">The document could not be read.</string>
+    <string name="doc_failed">The document could not be read. Take a clearer photo or paste the text.</string>
     <string name="doc_none">No facts found in this document.</string>
     <string name="doc_field_medication">Medication</string>
     <string name="doc_field_allergy">Allergy</string>
@@ -384,4 +384,7 @@
     <string name="v2_qr_selected">QR sharing option selected.</string>
     <string name="v2_sample_initials">MT</string>
     <string name="med_not_in_list">This package is not in the medicine list. We filled in the name we read on the box — please check it.</string>
+    <string name="share_creating">Creating code…</string>
+    <string name="open_opening">Opening report…</string>
+    <string name="busy">Busy</string>
 </resources>

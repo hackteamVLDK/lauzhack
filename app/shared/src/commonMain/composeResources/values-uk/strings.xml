@@ -47,7 +47,7 @@
     <string name="today_empty_message">Відкрийте посилання-запрошення від лікаря на цьому телефоні. Тут з’явиться, що потрібно записувати.</string>
     <string name="history_empty_title">Записів ще немає</string>
     <string name="history_empty_message">Тут з’являтимуться ваші записи, день за днем.</string>
-    <string name="share_explain">На прийомі ви показуєте QR-код, і комп’ютер лікаря відкриває ваші записи. До того вони залишаються на цьому телефоні.</string>
+    <string name="share_explain">Під час створення коду завантажується зашифрована копія. Лікар сканує код і відкриває ваші записи.</string>
     <string name="requests">Запити</string>
     <string name="new_request">Новий запит</string>
     <string name="new_request_message">Оберіть, що й скільки днів записує пацієнт. Запит надсилається посиланням або QR-кодом.</string>
@@ -259,15 +259,15 @@
     <string name="share_none">Поки нічого передавати</string>
     <string name="share_none_message">Тут з’являться запит вашого лікаря та ваші записи.</string>
     <string name="share_offline">Сервер недоступний. Перевірте підключення до інтернету й спробуйте ще раз.</string>
-    <string name="share_failed">Не вдалося створити код. Спробуйте ще раз.</string>
+    <string name="share_failed">Не вдалося створити код. Перевірте підключення до інтернету й спробуйте ще раз.</string>
     <string name="share_qr">QR-код для лікаря</string>
     <string name="open_report">Відкрити звіт пацієнта</string>
     <string name="open_report_hint">Скануйте QR-код пацієнта або вставте текст, що починається з ep1:</string>
     <string name="open_report_button">Відкрити</string>
     <string name="open_used">Цей код уже використано або термін минув. Попросіть новий.</string>
-    <string name="open_not_ours">Це не код Easy Paper.</string>
-    <string name="open_failed">Цим кодом звіт не відкривається.</string>
-    <string name="open_offline">Сервер недоступний.</string>
+    <string name="open_not_ours">Це не код Easy Paper. Скануйте QR ще раз або вставте весь код, що починається з ep1:</string>
+    <string name="open_failed">Цим кодом звіт не відкривається. Перевірте, чи вставлено весь код, або попросіть у пацієнта новий.</string>
+    <string name="open_offline">Сервер недоступний. Перевірте мережу й спробуйте ще раз; код залишається в полі.</string>
     <string name="entry_photo">Фото від пацієнта</string>
     <!-- Patient photos (task 4 step 2) -->
     <string name="take_photo">Зробити фото</string>
@@ -344,7 +344,7 @@
     <string name="doc_from">З документа</string>
     <string name="doc_clinic_only">Документи читає лише модуль клініки. Цей сервер працює в хмарі, тому документи туди не надсилаються.</string>
     <string name="doc_no_server">Підключіть модуль клініки, щоб читати документи.</string>
-    <string name="doc_failed">Не вдалося прочитати документ.</string>
+    <string name="doc_failed">Не вдалося прочитати документ. Зробіть чіткіше фото або вставте текст.</string>
     <string name="doc_none">У цьому документі фактів не знайдено.</string>
     <string name="doc_field_medication">Ліки</string>
     <string name="doc_field_allergy">Алергія</string>
@@ -388,4 +388,7 @@
     <string name="v2_qr_selected">Вибрано поширення через QR-код.</string>
     <string name="v2_sample_initials">МТ</string>
     <string name="med_not_in_list">Цієї упаковки немає в списку ліків. Ми вписали назву, прочитану з коробки, — перевірте її.</string>
+    <string name="share_creating">Створюю код…</string>
+    <string name="open_opening">Відкриваю звіт…</string>
+    <string name="busy">Зайнято</string>
 </resources>

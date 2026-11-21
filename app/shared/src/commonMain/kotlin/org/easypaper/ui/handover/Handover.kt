@@ -1,5 +1,9 @@
 package org.easypaper.ui.handover
 
+import easypaper.app.shared.generated.resources.open_opening
+import easypaper.app.shared.generated.resources.share_creating
+import easypaper.app.shared.generated.resources.busy
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -112,7 +116,8 @@ fun ShareScreen(repository: PatientRepository, relayUrl: String, onDeveloper: ((
                             color = EasyPaperTheme.colors.label, modifier = Modifier.padding(spacing.m))
                     }
                     Spacer(Modifier.height(spacing.xl))
-                    ProminentButton(stringResource(Res.string.share_create), enabled = !busy, modifier = Modifier.fillMaxWidth(), onClick = {
+                    ProminentButton(stringResource(if (busy) Res.string.share_creating else Res.string.share_create), enabled = !busy,
+                        modifier = Modifier.fillMaxWidth().busy(busy), onClick = {
                         busy = true
                         error = null
                         scope.launch {
@@ -191,12 +196,20 @@ fun OpenReportScreen(relayUrl: String, onOpened: (ReceivedReport) -> Unit, back:
                     TextAreaRow(code, { code = it; error = null }, placeholder = "ep1:…")
                 }
                 Spacer(Modifier.height(spacing.xl))
-                ProminentButton(stringResource(Res.string.open_report_button), enabled = !busy && code.isNotBlank(),
-                    modifier = Modifier.fillMaxWidth(), onClick = { open(code) })
+                ProminentButton(stringResource(if (busy) Res.string.open_opening else Res.string.open_report_button), enabled = !busy && code.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth().busy(busy), onClick = { open(code) })
                 Problem(error)
             }
         }
     }
+}
+
+/** While a transfer runs: the screen reader hears that the button is busy (its label already says what happens). */
+@Composable
+private fun Modifier.busy(busy: Boolean): Modifier {
+    if (!busy) return this
+    val label = stringResource(Res.string.busy)
+    return semantics { stateDescription = label; liveRegion = LiveRegionMode.Polite }
 }
 
 /** An error as a sentence with an icon, announced to screen readers. */
