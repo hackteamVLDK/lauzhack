@@ -19,6 +19,13 @@ fun shrinkPhoto(photo: ByteArray, encode: (maxSide: Int, quality: Int) -> ByteAr
     throw IllegalArgumentException("Photo stays above $PHOTO_MAX_BYTES bytes even at 512 px")
 }
 
+/**
+ * Clockwise turn that shows a stored photo upright (0, 90, 180, 270): shrinkPhoto keeps the EXIF orientation
+ * tag instead of rotating pixels, so viewers and recognisers turn the picture themselves. Mirrored orientations
+ * (2, 4, 5, 7) do not come from cameras and are shown unturned.
+ */
+fun jpegRotationDegrees(jpeg: ByteArray): Int = when (jpegOrientation(jpeg)) { 3 -> 180; 6 -> 90; 8 -> 270; else -> 0 }
+
 /** EXIF orientation (1..8) of a JPEG, read from the segments before the image data; null for none or not a JPEG. */
 internal fun jpegOrientation(jpeg: ByteArray): Int? {
     fun u8(i: Int) = jpeg[i].toInt() and 0xFF

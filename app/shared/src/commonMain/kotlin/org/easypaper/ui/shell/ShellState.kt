@@ -74,7 +74,7 @@ class ShellState(
         aiBusy[report.id] = true
         aiFailed.remove(report.id)
         try {
-            val result = ai.summarize(report.record)
+            val result = ai.summarize(report.record, reportPhotos[report.id].orEmpty()) // food photos without text get described (#36)
             aiResults[report.id] = result
             aiUsage += result.usage
             refreshAiStatus()

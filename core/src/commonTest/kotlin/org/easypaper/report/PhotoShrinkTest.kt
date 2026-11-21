@@ -42,4 +42,12 @@ class PhotoShrinkTest {
     fun tooBigEvenAtTheSmallestSizeFails() {
         assertFailsWith<IllegalArgumentException> { shrinkPhoto(tinyJpeg(ByteArray(1))) { _, _ -> tinyJpeg(ByteArray(PHOTO_MAX_BYTES) { 4 }) } }
     }
+
+    @Test
+    fun rotationFollowsTheCameraOrientation() {
+        val plain = tinyJpeg(ByteArray(4) { 5 })
+        assertEquals(mapOf(1 to 0, 3 to 180, 6 to 90, 8 to 270, 5 to 0), listOf(1, 3, 6, 8, 5).associateWith { jpegRotationDegrees(withExif(plain, it)) })
+        assertEquals(0, jpegRotationDegrees(plain))
+        assertEquals(0, jpegRotationDegrees("not a jpeg".encodeToByteArray()))
+    }
 }

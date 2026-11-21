@@ -1,5 +1,17 @@
 package org.easypaper.ui.doctor
 
+import org.jetbrains.compose.resources.decodeToImageBitmap
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.easypaper.report.jpegRotationDegrees
+import org.easypaper.model.Food
+import org.easypaper.model.DiaryNote
+import easypaper.app.shared.generated.resources.entry_photo
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
@@ -124,7 +136,7 @@ class VisitAi(val result: SummaryResult?, val busy: Boolean, val failed: Boolean
  * clinic form confirmed field by field, and every entry. Nothing is saved until each field is decided.
  */
 @Composable
-fun VisitScreen(report: Report, back: BackAction?, ai: VisitAi? = null) {
+fun VisitScreen(report: Report, back: BackAction?, ai: VisitAi? = null, photos: Map<String, ByteArray> = emptyMap()) {
     val wording = rememberFormWording()
     val state = remember(report.id, wording) { VisitState(report, wording) }
     val timeZone = remember { TimeZone.currentSystemDefault() }
@@ -150,7 +162,7 @@ fun VisitScreen(report: Report, back: BackAction?, ai: VisitAi? = null) {
             item(key = "form") { ClinicFormSection(state, onEdit = { editing = it }) }
             item(key = "entries") { EntriesSection(report, timeZone, onOpen = { original = it }) }
         }
-        OriginalSheet(report, original, timeZone, onDismiss = { original = null })
+        OriginalSheet(report, original, timeZone, photos, onDismiss = { original = null })
         EditSheet(state, editing, onDismiss = { editing = null })
     }
 }
@@ -406,7 +418,7 @@ private fun EntriesSection(report: Report, timeZone: TimeZone, onOpen: (Entry) -
 }
 
 @Composable
-private fun OriginalSheet(report: Report, entry: Entry?, timeZone: TimeZone, onDismiss: () -> Unit) {
+private fun OriginalSheet(report: Report, entry: Entry?, timeZone: TimeZone, photos: Map<String, ByteArray>, onDismiss: () -> Unit) {
     var shown by remember { mutableStateOf<Entry?>(null) }
     if (entry != null) shown = entry
     Sheet(visible = entry != null, title = stringResource(Res.string.original_entry), doneLabel = stringResource(Res.string.done), onDismiss = onDismiss) {
@@ -420,6 +432,26 @@ private fun OriginalSheet(report: Report, entry: Entry?, timeZone: TimeZone, onD
                 Text(longDate(e.localDate(timeZone)), style = EasyPaperTheme.typography.footnote, color = EasyPaperTheme.colors.secondaryLabel)
             }
         }
+        // the patient's photo of this entry, as received with the report (task 36)
+        val ref = when (val p = e.payload) { is Food -> p.photoRef; is DiaryNote -> p.photoRef; else -> null }
+        ref?.let { photos[it] }?.let { EntryPhoto(it, Modifier.padding(top = EasyPaperTheme.spacing.l)) }
+    }
+}
+
+/** A stored JPEG shown upright: photos keep the EXIF orientation tag instead of rotated pixels (shrinkPhoto). */
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+private fun EntryPhoto(jpeg: ByteArray, modifier: Modifier = Modifier) {
+    val bitmap = remember(jpeg) { runCatching { jpeg.decodeToImageBitmap() }.getOrNull() } ?: return
+    val turn = remember(jpeg) { if (decoderTurnsPhotosUpright) 0 else jpegRotationDegrees(jpeg) }
+    val sideways = turn == 90 || turn == 270
+    val ratio = if (sideways) bitmap.height.toFloat() / bitmap.width else bitmap.width.toFloat() / bitmap.height
+    BoxWithConstraints(modifier.fillMaxWidth().aspectRatio(ratio).clip(EasyPaperTheme.shapes.group), contentAlignment = Alignment.Center) {
+        Image(
+            bitmap, contentDescription = stringResource(Res.string.entry_photo), contentScale = ContentScale.FillBounds,
+            modifier = Modifier.requiredSize(if (sideways) maxHeight else maxWidth, if (sideways) maxWidth else maxHeight)
+                .graphicsLayer { rotationZ = turn.toFloat() },
+        )
     }
 }
 

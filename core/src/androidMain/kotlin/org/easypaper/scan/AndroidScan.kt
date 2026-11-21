@@ -9,7 +9,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.easypaper.report.jpegOrientation
+import org.easypaper.report.jpegRotationDegrees
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -21,8 +21,7 @@ import kotlin.coroutines.resumeWithException
  */
 actual suspend fun readPhoto(photo: ByteArray): PhotoReading {
     val bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.size) ?: throw IllegalArgumentException("Not an image")
-    val rotation = when (jpegOrientation(photo)) { 3 -> 180; 6 -> 90; 8 -> 270; else -> 0 } // mirrored 2/4/5/7: not from cameras
-    val image = InputImage.fromBitmap(bitmap, rotation)
+    val image = InputImage.fromBitmap(bitmap, jpegRotationDegrees(photo))
     val formats = BarcodeScannerOptions.Builder().setBarcodeFormats(
         Barcode.FORMAT_DATA_MATRIX, Barcode.FORMAT_EAN_13, Barcode.FORMAT_EAN_8, Barcode.FORMAT_UPC_A, Barcode.FORMAT_CODE_128,
     ).build()

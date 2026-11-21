@@ -263,4 +263,5 @@
     <string name="open_not_ours">This is not an Easy Paper code.</string>
     <string name="open_failed">The report could not be opened with this code.</string>
     <string name="open_offline">The server could not be reached.</string>
+    <string name="entry_photo">Photo from the patient</string>
 </resources>

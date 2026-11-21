@@ -263,4 +263,5 @@
     <string name="open_not_ours">Das ist kein Easy-Paper-Code.</string>
     <string name="open_failed">Mit diesem Code lässt sich der Bericht nicht öffnen.</string>
     <string name="open_offline">Der Server ist nicht erreichbar.</string>
+    <string name="entry_photo">Foto der Patientin / des Patienten</string>
 </resources>
