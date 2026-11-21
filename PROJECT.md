@@ -24,7 +24,7 @@ Review notes: -
 Latest intent: vlad/BelarusLord-chat · 2026-11-21T14:46:59+00:00: Фиксирую формат схемы запроса врача (план до каркаса), код — после #1 в main
 Phase: build; build 0; submitter: -; branch: attempt/vlad/task-2-1.
 Status: running; assignee: vlad; owner: vlad; client: BelarusLord-chat.
-Lease expires: 2026-11-21T15:13:31+00:00.
+Lease expires: 2026-11-21T15:14:01+00:00.
 Acceptance: тесты commonTest
 Checkpoint SHA: f09b5613854ebd5d0e07cba296f44b0b27dda4d2
 Review notes: -
