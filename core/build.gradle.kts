@@ -68,8 +68,13 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutinesTest)
         }
+        androidMain.dependencies {
+            implementation(libs.mlkit.barcode)
+            implementation(libs.mlkit.text)
+        }
         getByName("androidDeviceTest").dependencies {
             implementation(libs.androidx.testRunner)
+            implementation(libs.zxing.core) // draws real DataMatrix / EAN-13 for ML Kit to read
         }
     }
 }
