@@ -15,6 +15,7 @@ import org.easypaper.model.DiaryNote
 import org.easypaper.model.Entry
 import org.easypaper.model.Food
 import org.easypaper.model.PatientRecord
+import org.easypaper.report.ReceivedReport
 import org.easypaper.report.Report
 import org.easypaper.storage.PatientRepository
 import org.easypaper.visit.demoVisitReport
@@ -94,6 +95,16 @@ class ShellState(
     var selectedReportId: String? by mutableStateOf(null)
 
     val selectedReport: Report? get() = reports.firstOrNull { it.id == selectedReportId }
+
+    /** Photos of the reports the doctor received, by report id and photo ref (task 30). */
+    val reportPhotos = mutableStateMapOf<String, Map<String, ByteArray>>()
+
+    /** A report the doctor received by the patient's QR (task 30), with its photos; it becomes the selected one. */
+    fun receive(received: ReceivedReport) {
+        reports = reports.filterNot { it.id == received.report.id } + received.report
+        reportPhotos[received.report.id] = received.photos
+        selectedReportId = received.report.id
+    }
     val hasData: Boolean get() = repository.records.value.isNotEmpty() || reports.isNotEmpty()
 
     /** The shared demo (#13): the five-day headache record for the patient and its report (with summary) for the doctor. */

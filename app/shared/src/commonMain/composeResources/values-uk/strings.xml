@@ -249,4 +249,20 @@
     <!-- device storage could not be opened (task 27) -->
     <string name="storage_error_title">Не вдалося відкрити щоденник</string>
     <string name="storage_error_message">На цьому пристрої нічого не змінено й не видалено. Закрийте застосунок і відкрийте знову; якщо це повторюється, повідомте вашу клініку.</string>
+    <!-- visit handover (task 30) -->
+    <string name="share_create">Створити код для лікаря</string>
+    <string name="share_show">Покажіть цей код лікарю. Він відкривається один раз, протягом 72 годин, лише на екрані лікаря.</string>
+    <string name="share_new">Створити новий код</string>
+    <string name="share_none">Поки нічого передавати</string>
+    <string name="share_none_message">Тут з’являться запит вашого лікаря та ваші записи.</string>
+    <string name="share_offline">Сервер недоступний. Перевірте підключення до інтернету й спробуйте ще раз.</string>
+    <string name="share_failed">Не вдалося створити код. Спробуйте ще раз.</string>
+    <string name="share_qr">QR-код для лікаря</string>
+    <string name="open_report">Відкрити звіт пацієнта</string>
+    <string name="open_report_hint">Скануйте QR-код пацієнта або вставте текст, що починається з ep1:</string>
+    <string name="open_report_button">Відкрити</string>
+    <string name="open_used">Цей код уже використано або термін минув. Попросіть новий.</string>
+    <string name="open_not_ours">Це не код Easy Paper.</string>
+    <string name="open_failed">Цим кодом звіт не відкривається.</string>
+    <string name="open_offline">Сервер недоступний.</string>
 </resources>

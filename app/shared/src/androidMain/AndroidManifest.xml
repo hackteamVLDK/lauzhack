@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
-    <application>
+    <!-- shortcut: plain HTTP to the demo server (10.0.2.2 / LAN). Reports are end-to-end encrypted, but an observer
+         sees and could fetch (burn) a report id; use HTTPS and drop this for a real deployment. -->
+    <application android:usesCleartextTraffic="true">
         <!-- the system camera writes the photo into the app's cache (task 28, PhotoSource) -->
         <provider
             android:name="androidx.core.content.FileProvider"

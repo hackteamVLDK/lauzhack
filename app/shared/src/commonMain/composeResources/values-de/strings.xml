@@ -247,4 +247,20 @@
     <!-- device storage could not be opened (task 27) -->
     <string name="storage_error_title">Ihr Tagebuch konnte nicht geöffnet werden</string>
     <string name="storage_error_message">Auf diesem Gerät wurde nichts geändert oder gelöscht. Schließen Sie die App und öffnen Sie sie erneut; wenn das wieder passiert, sagen Sie es Ihrer Praxis.</string>
+    <!-- visit handover (task 30) -->
+    <string name="share_create">Code für die Ärztin / den Arzt erstellen</string>
+    <string name="share_show">Zeigen Sie diesen Code Ihrer Ärztin oder Ihrem Arzt. Er öffnet sich einmal, innerhalb von 72 Stunden, nur auf deren Bildschirm.</string>
+    <string name="share_new">Neuen Code erstellen</string>
+    <string name="share_none">Noch nichts zu teilen</string>
+    <string name="share_none_message">Hier erscheinen die Anfrage Ihrer Praxis und Ihre Einträge.</string>
+    <string name="share_offline">Der Server ist nicht erreichbar. Prüfen Sie die Internetverbindung und versuchen Sie es erneut.</string>
+    <string name="share_failed">Der Code konnte nicht erstellt werden. Bitte erneut versuchen.</string>
+    <string name="share_qr">QR-Code für die Praxis</string>
+    <string name="open_report">Patientenbericht öffnen</string>
+    <string name="open_report_hint">QR-Code der Patientin / des Patienten scannen oder den Text ab ep1: einfügen</string>
+    <string name="open_report_button">Öffnen</string>
+    <string name="open_used">Dieser Code wurde schon benutzt oder ist abgelaufen. Bitten Sie um einen neuen.</string>
+    <string name="open_not_ours">Das ist kein Easy-Paper-Code.</string>
+    <string name="open_failed">Mit diesem Code lässt sich der Bericht nicht öffnen.</string>
+    <string name="open_offline">Der Server ist nicht erreichbar.</string>
 </resources>

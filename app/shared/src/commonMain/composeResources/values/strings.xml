@@ -247,4 +247,20 @@
     <!-- device storage could not be opened (task 27) -->
     <string name="storage_error_title">Your diary could not be opened</string>
     <string name="storage_error_message">Nothing on this device was changed or deleted. Close the app and open it again; if this keeps happening, tell your clinic.</string>
+    <!-- visit handover (task 30) -->
+    <string name="share_create">Create code for the doctor</string>
+    <string name="share_show">Show this code to your doctor. It opens once, within 72 hours, and only on the doctor’s screen.</string>
+    <string name="share_new">Create a new code</string>
+    <string name="share_none">Nothing to share yet</string>
+    <string name="share_none_message">Your doctor’s request and your entries appear here.</string>
+    <string name="share_offline">The server could not be reached. Check the internet connection and try again.</string>
+    <string name="share_failed">The code could not be created. Try again.</string>
+    <string name="share_qr">QR code for the doctor</string>
+    <string name="open_report">Open patient report</string>
+    <string name="open_report_hint">Scan the patient’s QR code or paste the text starting with ep1:</string>
+    <string name="open_report_button">Open</string>
+    <string name="open_used">This code was already used or has expired. Ask the patient for a new one.</string>
+    <string name="open_not_ours">This is not an Easy Paper code.</string>
+    <string name="open_failed">The report could not be opened with this code.</string>
+    <string name="open_offline">The server could not be reached.</string>
 </resources>

@@ -33,7 +33,9 @@ import easypaper.app.shared.generated.resources.done
 import easypaper.app.shared.generated.resources.entries
 import easypaper.app.shared.generated.resources.ic_add
 import easypaper.app.shared.generated.resources.ic_checklist
+import easypaper.app.shared.generated.resources.ic_qr_code_2
 import easypaper.app.shared.generated.resources.new_request
+import easypaper.app.shared.generated.resources.open_report
 import easypaper.app.shared.generated.resources.new_request_message
 import easypaper.app.shared.generated.resources.requests
 import easypaper.app.shared.generated.resources.section_entries
@@ -59,6 +61,8 @@ import org.easypaper.ui.components.SidebarRow
 import org.easypaper.ui.components.TintedButton
 import org.easypaper.ui.components.category
 import org.easypaper.ui.cost.AiCostScreen
+import org.easypaper.ui.handover.OpenReportScreen
+import org.easypaper.ui.handover.relayUrl
 import org.easypaper.ui.format.dateRange
 import org.easypaper.ui.format.lastDay
 import org.easypaper.ui.theme.EasyPaperTheme
@@ -71,6 +75,7 @@ sealed interface DoctorScreen {
     data object Home : DoctorScreen
     data class Visit(val reportId: String) : DoctorScreen
     data object NewRequest : DoctorScreen
+    data object OpenReport : DoctorScreen
     data object Cost : DoctorScreen
     data object DesignCatalog : DoctorScreen
     data object Developer : DoctorScreen
@@ -105,7 +110,7 @@ fun DoctorApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> U
             Row(Modifier.fillMaxSize()) {
                 RequestSidebar(state, detail, select, openDeveloper)
                 Box(Modifier.weight(1f)) {
-                    DoctorDetail(state, detail, settings, back = null)
+                    DoctorDetail(state, detail, settings, back = null, select = select)
                 }
             }
         } else {
@@ -113,7 +118,7 @@ fun DoctorApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> U
                 when (screen) {
                     DoctorScreen.Home -> RequestList(state, select, openDeveloper)
                     DoctorScreen.DesignCatalog -> CatalogScreen(settings, BackAction(backLabel(), navigator::back))
-                    else -> DoctorDetail(state, screen, settings, back = BackAction(stringResource(Res.string.requests), navigator::back))
+                    else -> DoctorDetail(state, screen, settings, back = BackAction(stringResource(Res.string.requests), navigator::back), select = select)
                 }
             }
         }
@@ -145,6 +150,7 @@ private fun RequestSidebar(state: ShellState, current: DoctorScreen, select: (Do
                 onClick = { select(DoctorScreen.Cost) },
                 icon = Res.drawable.ic_checklist,
             )
+            TintedButton(stringResource(Res.string.open_report), onClick = { select(DoctorScreen.OpenReport) }, icon = Res.drawable.ic_qr_code_2)
             TintedButton(stringResource(Res.string.new_request), onClick = { select(DoctorScreen.NewRequest) }, icon = Res.drawable.ic_add)
         },
     ) {
@@ -190,6 +196,11 @@ private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDev
         }
         item {
             Box(Modifier.fillMaxWidth().padding(top = EasyPaperTheme.spacing.m)) {
+                TintedButton(stringResource(Res.string.open_report), onClick = { select(DoctorScreen.OpenReport) }, icon = Res.drawable.ic_qr_code_2)
+            }
+        }
+        item {
+            Box(Modifier.fillMaxWidth().padding(top = EasyPaperTheme.spacing.m)) {
                 TintedButton(stringResource(Res.string.new_request), onClick = { select(DoctorScreen.NewRequest) }, icon = Res.drawable.ic_add)
             }
         }
@@ -197,11 +208,16 @@ private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDev
 }
 
 @Composable
-private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: ShellSettings, back: BackAction?) {
+private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: ShellSettings, back: BackAction?, select: (DoctorScreen) -> Unit) {
     when (screen) {
         is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { report -> key(report.id) { VisitScreen(report, back, visitAi(state, report)) } }
             ?: NothingOpen()
         DoctorScreen.NewRequest -> NewRequestScreen(back)
+        // the patient's QR opens the report once (task 30); it joins the list and opens right away
+        DoctorScreen.OpenReport -> OpenReportScreen(relayUrl(settings.serverUrl, defaultServerUrl()), back = back, onOpened = { received ->
+            state.receive(received)
+            select(DoctorScreen.Visit(received.report.id))
+        })
         // Live data from the opened report when there is any, otherwise the recorded demo run and server status.
         DoctorScreen.Cost -> if (state.aiUsage.isNotEmpty() || state.aiStatus != null) {
             AiCostScreen(status = state.aiStatus, usage = state.aiUsage.toList(), back = back)

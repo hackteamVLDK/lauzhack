@@ -13,6 +13,7 @@ androidx-testRunner = "1.7.0"
 mlkit-barcode = "17.3.0"
 mlkit-text = "16.0.1"
 zxing = "3.5.3"
+qrose = "1.3.1"
 composeMultiplatform = "1.12.2"
 junit = "4.13.2"
 koog = "1.3.0"
@@ -39,6 +40,7 @@ androidx-testRunner = { module = "androidx.test:runner", version.ref = "androidx
 mlkit-barcode = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkit-barcode" }
 mlkit-text = { module = "com.google.mlkit:text-recognition", version.ref = "mlkit-text" }
 zxing-core = { module = "com.google.zxing:core", version.ref = "zxing" }
+qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" } # QR for the visit handover (task 30)
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
