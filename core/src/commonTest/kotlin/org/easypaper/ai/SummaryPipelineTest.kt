@@ -377,5 +377,15 @@ class SummaryPipelineTest {
         assertEquals(null, SummaryPipeline.cleanDescription("Pizza; you should eat less of it"))
     }
 
+    @Test
+    fun factsOnOneLineAreSplitAtReferences() {
+        val (lines, _) = SummaryPipeline.checkLines(
+            "Blood pressure 128/84 mmHg [e1]. Headache after lunch [e4]. Asks: \"Can I take ibuprofen?\" [e2]",
+            setOf("e1", "e2", "e4"),
+        )
+        assertEquals(listOf(listOf("e1"), listOf("e4"), listOf("e2")), lines.map { it.refs })
+        assertTrue(lines.all { it.supported })
+    }
+
     private fun assertNear(expected: Double, actual: Double) = assertTrue(abs(expected - actual) < 1e-12, "$expected vs $actual")
 }

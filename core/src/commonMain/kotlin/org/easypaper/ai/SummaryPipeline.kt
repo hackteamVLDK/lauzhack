@@ -147,10 +147,15 @@ class SummaryPipeline(
             RegexOption.IGNORE_CASE,
         )
 
+        /** A reference group, optional punctuation, then more text on the same line: the end of one fact. */
+        private val FACT_END = Regex("""(\[[A-Za-z0-9_-]+(?:\s*,\s*[A-Za-z0-9_-]+)*\][.;,]?)[ \t]+(?=[\p{L}\p{N}"“«'])""")
+
         /** Splits the model's answer into checked lines; returns the lines and how many were dropped as advice. */
         fun checkLines(answer: String, knownIds: Set<String>): Pair<List<SummaryLine>, Int> {
             var dropped = 0
-            val lines = answer.lines().map { it.replace(BULLET, "").trim() }.filter { it.isNotEmpty() }.mapNotNull { line ->
+            // Some models put every fact on one line; a reference group followed by more text ends a fact.
+            val split = answer.replace(FACT_END, "\$1\n")
+            val lines = split.lines().map { it.replace(BULLET, "").trim() }.filter { it.isNotEmpty() }.mapNotNull { line ->
                 if (ADVICE.containsMatchIn(line.replace(QUOTES, ""))) { dropped++; return@mapNotNull null }
                 val match = REFS.find(line)
                 val refs = match?.groupValues?.get(1)?.split(',')?.map { it.trim() }.orEmpty()
