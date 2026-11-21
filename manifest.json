@@ -1,34 +1,34 @@
 {
   "schema_version": 3,
-  "last_event_id": 111,
+  "last_event_id": 112,
   "files": {
     "CHANGES.md": {
       "sha256": "48df81ba506e47a9c7a0b3a783d76baafd0e9a9e918e3ca00bc1b0d8383a078e",
       "size": 4120
     },
     "PLANS.md": {
-      "sha256": "93d44ccc7dab685c5734100feaff5e7d1fe5b70f3455033c4384e9a89bc44f80",
-      "size": 3277
+      "sha256": "484c988279057e21c8fe2e8f8fc9809f9d5aceaf03344e797836b9bbc3a7b348",
+      "size": 3278
     },
     "PROBLEMS.md": {
       "sha256": "fbdfa752fc4f25e9af99e797f07709a42ff90a3c95ab2a21b9c9cef9097786c6",
       "size": 12
     },
     "PROJECT.md": {
-      "sha256": "5756f04447c8b88cfb4326a2c044f77d1b9d06e33319ff74aabbca102e887b4c",
-      "size": 7812
+      "sha256": "c416f01bda006ed3a5cc63fa6eec3fed1e86e970e748ab37b6480df1082d8898",
+      "size": 7852
     },
     "database.sql": {
-      "sha256": "47d0734fc02f4289be8027805851285d9f66be1033fa254f8dd965e62ead65d0",
-      "size": 323116
+      "sha256": "d17aae9af78d2ff5740a7db009966c5da64dd1ee65a0d798915c9741de60843c",
+      "size": 327812
     },
     "events.jsonl": {
-      "sha256": "b01a1a5905e0ae710ef93af5c028b2a02846741452c20240ea18d296987fcf1f",
-      "size": 42277
+      "sha256": "1029c1e4b9805e83b001d594a9f42f183c81c910a56bb1a7b5d3ce47c413c383",
+      "size": 44410
     },
     "people/mykhailo.md": {
-      "sha256": "5882262031c011edd99437e22a5b1394706aa8e436d3c234de04ffa65bbc39d8",
-      "size": 11579
+      "sha256": "284c7e8feb1af23e735fa8568ff422c5e3f7dcf8f7a6db77ebdaab9d1eecd42f",
+      "size": 12640
     },
     "people/pavlo.md": {
       "sha256": "68d85038770371c82a43ca77a20ebe92fb39eaa508019f6d154a4e05260e3f70",
@@ -39,8 +39,8 @@
       "size": 8238
     },
     "tasks/1.md": {
-      "sha256": "ac3e297dd3ca06a634c19b71fbcc57eaa79dc6aa3597b69a1299b8a991ac4644",
-      "size": 6737
+      "sha256": "30c81afcd53b16dbcb8920594e69a722d7444b8615a0abed70ce940126d381d8",
+      "size": 7798
     },
     "tasks/10.md": {
       "sha256": "74dc233c175ce409cc90b3b94b5a357f2299d35c620b118338e4e6f27ed79962",

@@ -2,7 +2,7 @@
 
 Each AI publishes its plan here before it changes code.
 
-## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB] (build)
+## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB] (review)
 
 Что: каркас из официального генератора kmp.jetbrains.com (Android + Desktop + Web Compose + Server Ktor, с тестами; Kotlin 2.4.21, CMP 1.12.2, AGP 9.1.1, Ktor 3.6.1, Gradle 9.5.1, пакет org.easypaper).
 Файлы (корень репо): settings/build.gradle.kts, gradle/ (libs.versions.toml, wrapper, daemon-jvm Azul 21), app/androidApp, app/desktopApp, app/webApp, app/shared (KMP: android, jvm, js, wasmJs — общий UI и логика), core (KMP без UI — модель и логика), server (Ktor), README.md, .gitignore, .gitattributes (gradlew LF, *.bat CRLF), test.py, teamhub.json {"test": "python test.py"}, .claude/skills/{frontend-design,easy-paper-design}. GOAL.md и .claude/settings.local.json не коммитятся.
