@@ -2,7 +2,8 @@
 """Project tests for Easy Paper. Run from anywhere: `python test.py` (Team Hub calls it the same way).
 
 Default: JVM tests of the shared code (`core`, `app/shared` jvm = desktop target), Ktor server tests
-and a compile of the desktop app. `--all` also builds the Android debug APK and the Wasm web app.
+and a compile of the desktop app; no Android SDK needed. `--all` also builds the Android debug APK
+(needs the SDK) and the Wasm web app.
 Extra arguments after `--` go to Gradle unchanged, e.g. `python test.py -- --rerun-tasks`.
 """
 import argparse
@@ -62,8 +63,11 @@ def main():
 
     sdk = find_android_sdk()
     if sdk is False:
-        print("Android SDK not found: set ANDROID_HOME or add sdk.dir=<path> to local.properties", file=sys.stderr)
-        return 2
+        hint = "Android SDK not found: set ANDROID_HOME or add sdk.dir=<path> to local.properties"
+        if args.all:  # only the Android build needs the SDK; the default JVM/server checks run without it
+            print(hint, file=sys.stderr)
+            return 2
+        print(hint + " (not needed without --all, continuing)")
     if sdk:
         (ROOT / "local.properties").write_text(f"sdk.dir={sdk.as_posix()}\n", encoding="utf-8")
         print(f"local.properties: sdk.dir={sdk.as_posix()}")
