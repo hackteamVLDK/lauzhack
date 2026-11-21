@@ -57,7 +57,8 @@ as second reviewer; agents built most code; humans reviewed and merged. Show one
 
 - [ ] `git pull --ff-only hub main`; `python test.py --all` green.
 - [ ] Server: set `EASYPAPER_CLINIC_TOKEN`, the same token in the doctor app settings; cloud: `OPENROUTER_API_KEY` (or `TOGETHER_API_KEY`) only in the server environment; clinic: `EASYPAPER_AI=clinic`, Ollama running with `gemma4:12b` warmed up (daytime).
-- [ ] Phone and laptop on the same network; set the server address in the patient app (emulator uses `10.0.2.2`).
+- [ ] On mykhailo's laptop port 8080 is taken by an Apache service: run the server with `$env:PORT = "8090"` and use `http://<laptop-ip>:8090` (emulator: `http://10.0.2.2:8090`) in the apps. Checked: web app, `/ai/status` 401 without token, JSON with token.
+- [ ] Phone and laptop on the same network; set the server address in the patient app.
 - [ ] Desktop: `.\gradlew.bat :app:desktopApp:run` starts with demo data; Android: "Load demo diary" on an empty Today.
 - [ ] Prepare one food photo without text and one medicine box from the local list.
 - [ ] Offline fallback: AI off still gives the facts with links; the relay needs the network.
