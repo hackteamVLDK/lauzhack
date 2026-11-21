@@ -26,6 +26,7 @@ fun personalRequest(today: LocalDate, locale: String, now: Long, titles: Map<Cat
                 questions = listOf(Question("symptoms", title(Category.Questionnaire), QuestionKind.TEXT))),
             DiaryWidget("personal-diary", title(Category.Diary), required = false),
             DoctorQuestionsWidget("personal-questions", title(Category.DoctorQuestion), required = false),
+            MeasurementsWidget("personal-measurements", title(Category.Measurements), required = false),
         ))
 }
 

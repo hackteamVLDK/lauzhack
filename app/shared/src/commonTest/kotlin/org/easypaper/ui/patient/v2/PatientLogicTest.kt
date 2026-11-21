@@ -19,7 +19,7 @@ class PatientLogicTest {
         Entry(id, request().widgets.first { it.category == category }.id, Instant.parse(at).toEpochMilliseconds(), payload)
 
     @Test
-    fun personalRequestHasSevenOptionalWidgetsAndNoDoctor() {
+    fun personalRequestHasOneOptionalWidgetPerCategoryAndNoDoctor() {
         val r = request()
         assertEquals("personal", r.id)
         assertEquals("", r.doctorName)
@@ -30,7 +30,7 @@ class PatientLogicTest {
         assertEquals(123L, r.createdAt)
         assertEquals(Category.entries.toSet(), r.widgets.map { it.category }.toSet())
         assertTrue(r.widgets.all { !it.required })
-        assertEquals(7, r.widgets.map { it.id }.distinct().size)
+        assertEquals(Category.entries.size, r.widgets.map { it.id }.distinct().size)
     }
 
     @Test
