@@ -58,6 +58,7 @@ import org.easypaper.report.RelayException
 import org.easypaper.report.handover
 import org.easypaper.report.receive
 import org.easypaper.storage.PatientRepository
+import org.easypaper.model.PatientRecord
 import org.easypaper.ui.components.BackAction
 import org.easypaper.ui.components.EmptyState
 import org.easypaper.ui.components.GroupedSection
@@ -93,15 +94,16 @@ private fun rememberHttpClient(): HttpClient {
  * ciphertext to the relay and shows the QR with the key. Nothing leaves the phone before the patient taps.
  */
 @Composable
-fun ShareScreen(repository: PatientRepository, relayUrl: String, onDeveloper: (() -> Unit)? = null) {
+fun ShareScreen(repository: PatientRepository, relayUrl: String, onDeveloper: (() -> Unit)? = null,
+                selectedRecord: PatientRecord? = null, back: BackAction? = null, onCreated: ((PatientRecord) -> Unit)? = null) {
     val records by repository.records.collectAsState()
-    val record = records.current()
+    val record = selectedRecord ?: records.current()
     val scope = rememberCoroutineScope()
     val http = rememberHttpClient()
     var qr by remember { mutableStateOf<String?>(null) }
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<StringResource?>(null) }
-    LargeTitleScaffold(title = stringResource(Res.string.tab_share), onTitleLongPress = onDeveloper, bottomInset = false) {
+    LargeTitleScaffold(title = stringResource(Res.string.tab_share), back = back, onTitleLongPress = onDeveloper, bottomInset = false) {
         item {
             val spacing = EasyPaperTheme.spacing
             when {
@@ -118,6 +120,7 @@ fun ShareScreen(repository: PatientRepository, relayUrl: String, onDeveloper: ((
                         scope.launch {
                             try {
                                 qr = repository.handover(record, RelayClient(relayUrl, http), Clock.System.now().toEpochMilliseconds())
+                                onCreated?.invoke(record)
                             } catch (e: CancellationException) {
                                 throw e
                             } catch (e: IOException) {

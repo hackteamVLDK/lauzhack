@@ -7,12 +7,16 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.CancellationException
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 import org.easypaper.ai.AiStatus
 import org.easypaper.ai.AiUsage
 import org.easypaper.ai.SummaryResult
 import org.easypaper.demo.Demo
 import org.easypaper.ui.doctor.VisitState
 import org.easypaper.ui.format.currentUtcOffsetMinutes
+import org.easypaper.ui.format.today
 import org.easypaper.model.DiaryNote
 import org.easypaper.model.Entry
 import org.easypaper.model.Food
@@ -124,9 +128,19 @@ class ShellState(
 
     /** The shared demo (#13): the five-day headache record for the patient and its report (with summary) for the doctor. */
     suspend fun fillWithDemoData() {
-        repository.start(Demo.request)
-        val stored = repository.records.value.firstOrNull { it.request.id == Demo.request.id }?.entries?.map { it.id }.orEmpty().toSet()
-        for (entry in Demo.record.entries) if (entry.id !in stored) repository.add(Demo.request.id, entry.withoutPhotoRef())
+        // Keep the patient demo an active doctor plan even when the fixed fixture dates are past.
+        // The doctor's report stays the shared, reproducible fixture.
+        val demo = if (role == Role.Patient) {
+            val start = today().plus(DatePeriod(days = 1 - Demo.request.days))
+            val shift = (start.toEpochDays() - LocalDate.parse(Demo.request.startDate).toEpochDays()) * 86_400_000L
+            Demo.record.copy(request = Demo.request.copy(startDate = start.toString(), createdAt = Demo.request.createdAt + shift),
+                entries = Demo.record.entries.map { it.copy(at = it.at + shift) })
+        } else Demo.record
+        val previous = repository.records.value.firstOrNull { it.request.id == demo.request.id }
+        if (previous != null && previous.request.startDate != demo.request.startDate) repository.delete(previous.request.id)
+        repository.start(demo.request)
+        val stored = repository.records.value.firstOrNull { it.request.id == demo.request.id }?.entries?.map { it.id }.orEmpty().toSet()
+        for (entry in demo.entries) if (entry.id !in stored) repository.add(demo.request.id, entry.withoutPhotoRef())
         // The doctor's copy carries the demo summary with links to every entry (task 10).
         val report = demoVisitReport()
         reports = listOf(report)

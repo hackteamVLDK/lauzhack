@@ -18,6 +18,7 @@ import easypaper.app.shared.generated.resources.dev_server_footer
 import easypaper.app.shared.generated.resources.developer
 import easypaper.app.shared.generated.resources.fill_demo
 import easypaper.app.shared.generated.resources.large_text
+import easypaper.app.shared.generated.resources.p2_show_onboarding
 import easypaper.app.shared.generated.resources.switch_to_doctor
 import easypaper.app.shared.generated.resources.switch_to_patient
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +44,8 @@ fun ColumnScope.DeveloperMenuContent(
     onDone: () -> Unit,
     /** Outlives this sheet: demo data and clearing keep running after the menu closes (disk storage is slow). */
     scope: CoroutineScope,
+    onShowOnboarding: (() -> Unit)? = null,
+    onPatientClear: (() -> Unit)? = null,
 ) {
     val systemDark = isSystemInDarkTheme()
     val inset = EasyPaperTheme.spacing.m
@@ -58,10 +61,15 @@ fun ColumnScope.DeveloperMenuContent(
         RowSeparator(inset)
         if (state.hasData) {
             ListRow(stringResource(Res.string.clear_data), titleColor = EasyPaperTheme.colors.destructive, chevron = false,
-                onClick = { scope.launch { state.clear() }; onDone() })
-        } else {
-            ListRow(stringResource(Res.string.fill_demo), titleColor = EasyPaperTheme.colors.link, chevron = false,
-                onClick = { scope.launch { state.fillWithDemoData() }; onDone() })
+                onClick = { scope.launch { state.clear(); onPatientClear?.invoke() }; onDone() })
+            RowSeparator(inset)
+        }
+        ListRow(stringResource(Res.string.fill_demo), titleColor = EasyPaperTheme.colors.link, chevron = false,
+            onClick = { scope.launch { state.fillWithDemoData() }; onDone() })
+        if (onShowOnboarding != null) {
+            RowSeparator(inset)
+            ListRow(stringResource(Res.string.p2_show_onboarding), chevron = false,
+                onClick = { onShowOnboarding(); onDone() })
         }
         RowSeparator(inset)
         ListRow(stringResource(Res.string.appearance_dark), trailing = {
