@@ -82,11 +82,14 @@ class EndToEndTest {
             override suspend fun put(key: String, bytes: ByteArray) { map[key] = bytes }
             override suspend fun get(key: String) = map[key]
             override suspend fun keys() = map.keys.toList()
+            override suspend fun delete(key: String) { map.remove(key) }
         }
         val store = RecordStore(blobs, generateRecordKey())
         store.save(record)
         assertFalse("Pizza" in blobs.map.getValue("req-e2e").decodeToString())
         val loaded = store.load("req-e2e")!!
+        store.delete("req-e2e") // after the visit the patient erases the diary
+        assertEquals(emptyList(), store.list())
 
         // 6. Sealed report with the food photo; only the QR opens it
         val photo = ByteArray(3000) { (it % 251).toByte() }

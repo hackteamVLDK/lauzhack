@@ -10,6 +10,9 @@ interface BlobStore {
     suspend fun put(key: String, bytes: ByteArray)
     suspend fun get(key: String): ByteArray?
     suspend fun keys(): List<String>
+
+    /** Removes the key; no error when it is already gone. */
+    suspend fun delete(key: String)
 }
 
 /** New random AES-256 key (32 raw bytes). The platform keeps it in its keystore / secure storage. */
@@ -44,4 +47,7 @@ class RecordStore(private val blobs: BlobStore, private val key: ByteArray) {
     }
 
     suspend fun list(): List<String> = blobs.keys()
+
+    /** Erases the record, e.g. after the visit or when the patient asks; no error when it is already gone. */
+    suspend fun delete(id: String) = blobs.delete(id)
 }
