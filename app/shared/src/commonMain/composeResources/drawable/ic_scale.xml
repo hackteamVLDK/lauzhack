@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+  <!-- bathroom scale: body with a dial window and needle (own measurements, #52) -->
+  <path
+      android:fillColor="#FF000000"
+      android:fillType="evenOdd"
+      android:pathData="M200,120H760Q840,120 840,200V760Q840,840 760,840H200Q120,840 120,760V200Q120,120 200,120ZM300,420A180,180 0,0 1,660,420Z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M462,420L552,290L582,310L500,430Z"/>
+</vector>

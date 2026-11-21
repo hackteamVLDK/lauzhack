@@ -43,5 +43,7 @@ fun FactDigest.toLocalizedText(language: String): String {
             val photo = n.photoRef?.let { " (${label("Foto", "фото")} $it)" } ?: ""
             appendLine("$kind ${n.date}: ${n.text ?: ""}$photo [${n.ref}]")
         }
+        // the name is the person's own word (or the app's preset in their language); only the frame is translated
+        for (m in measurements) appendLine("${m.name} (${m.unit}): " + m.values.joinToString("; ") { "${it.date} ${it.value} [${it.ref}]" })
     }.trimEnd()
 }

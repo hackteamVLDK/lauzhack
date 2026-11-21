@@ -6,6 +6,7 @@ import org.easypaper.model.CareRequest
 import org.easypaper.model.DiaryWidget
 import org.easypaper.model.DoctorQuestionsWidget
 import org.easypaper.model.FoodWidget
+import org.easypaper.model.MeasurementsWidget
 import org.easypaper.model.MedicationsWidget
 import org.easypaper.model.QuestionnaireWidget
 import org.easypaper.model.WaterWidget
@@ -42,6 +43,7 @@ fun CareRequest.reminders(wake: String = "08:00", sleep: String = "21:00"): List
         is MedicationsWidget -> at(from, w.id)
         is WaterWidget, is FoodWidget -> at(midday, w.id)
         is QuestionnaireWidget, is DiaryWidget, is DoctorQuestionsWidget -> at(to, w.id)
+        is MeasurementsWidget -> Unit // the person's own numbers: never required, no reminder
     }
     val start = Instant.parse(startDate + "T00:00:00Z").toEpochMilliseconds()
     return (0 until days).flatMap { day ->

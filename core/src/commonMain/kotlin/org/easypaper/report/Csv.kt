@@ -6,6 +6,7 @@ import org.easypaper.model.DiaryNote
 import org.easypaper.model.DoctorQuestion
 import org.easypaper.model.Entry
 import org.easypaper.model.Food
+import org.easypaper.model.Measurement
 import org.easypaper.model.Medication
 import org.easypaper.model.PatientRecord
 import org.easypaper.model.Water
@@ -15,6 +16,7 @@ import kotlin.time.Instant
 val CSV_COLUMNS = listOf(
     "entry_id", "time_utc", "widget_id", "type", "systolic", "diastolic", "pulse", "water_ml",
     "medication", "gtin", "dose", "med_source", "confirmed", "question_id", "answer", "text", "photo_ref",
+    "measurement", "value", "unit", "loinc",
 )
 
 /**
@@ -47,6 +49,9 @@ private fun Entry.cells(): List<Map<String, String>> = when (val p = payload) {
         ),
     )
     is Answers -> p.values.map { (q, a) -> mapOf("type" to "answers", "question_id" to q, "answer" to a) }
+    is Measurement -> listOf(
+        mapOf("type" to "measurement", "measurement" to p.name, "value" to "${p.value}", "unit" to p.unit, "loinc" to (p.loinc ?: "")),
+    )
 }
 
 private fun cell(value: String, separator: Char): String {

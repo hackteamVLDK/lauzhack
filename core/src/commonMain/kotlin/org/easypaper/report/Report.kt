@@ -15,6 +15,7 @@ import org.easypaper.model.DiaryNote
 import org.easypaper.model.DoctorQuestion
 import org.easypaper.model.Entry
 import org.easypaper.model.Food
+import org.easypaper.model.Measurement
 import org.easypaper.model.Medication
 import org.easypaper.model.PatientRecord
 import org.easypaper.model.Question
@@ -133,6 +134,14 @@ private fun Entry.toFhir(questions: Map<String, Question>): JsonObject = buildJs
         is Food -> observation(time, null, "Food intake") { p.text?.let { put("valueString", it) }; photo(p.photoRef) }
         is DiaryNote -> observation(time, null, "Patient diary note") { put("valueString", p.text); photo(p.photoRef) }
         is DoctorQuestion -> observation(time, null, "Question to the doctor") { put("valueString", p.text) }
+        // the person's own measurement; a known kind (weight) carries its LOINC code and a UCUM unit
+        is Measurement -> observation(time, p.loinc, p.name) {
+            putJsonObject("valueQuantity") {
+                put("value", p.value); put("unit", p.unit)
+                if (p.loinc == Measurement.WEIGHT_LOINC) { put("system", UCUM); put("code", "kg") }
+            }
+            putJsonArray("category") { addJsonObject { put("text", "patient-reported") } }
+        }
         is Medication -> {
             put("resourceType", "MedicationStatement")
             put("status", if (p.confirmed) "recorded" else "draft") // unconfirmed scan stays a draft

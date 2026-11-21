@@ -387,4 +387,5 @@
     <string name="share_creating">Creating code…</string>
     <string name="open_opening">Opening report…</string>
     <string name="busy">Busy</string>
+    <string name="problem_measurement">This number looks like a typo. Check the value and the unit.</string>
 </resources>

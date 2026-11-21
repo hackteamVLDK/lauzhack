@@ -117,6 +117,15 @@ data class DoctorQuestionsWidget(
     override val required: Boolean = false,
 ) : WidgetSpec
 
+/** The person's own measurements (weight and anything else they track); never required (#52). */
+@Serializable
+@SerialName("measurements")
+data class MeasurementsWidget(
+    override val id: String,
+    override val title: String,
+    override val required: Boolean = false,
+) : WidgetSpec
+
 /** One thing the patient recorded. Photos are only referenced by [photoRef]; bytes live in a separate store. */
 @Serializable
 data class Entry(
@@ -169,6 +178,19 @@ data class DiaryNote(val text: String, val photoRef: String? = null) : EntryPayl
 @Serializable
 @SerialName("doctor_question")
 data class DoctorQuestion(val text: String) : EntryPayload
+
+/**
+ * A number the person measured themselves (#52): weight, waist, blood sugar from their own meter… [name] as they
+ * call it, [unit] as written; [loinc] for a known kind (weight: 29463-7), so the report can code it.
+ */
+@Serializable
+@SerialName("measurement")
+data class Measurement(val name: String, val value: Double, val unit: String, val loinc: String? = null) : EntryPayload {
+    companion object {
+        const val WEIGHT_LOINC = "29463-7"
+        fun weight(kg: Double) = Measurement("Weight", kg, "kg", WEIGHT_LOINC)
+    }
+}
 
 /** Request + everything the patient entered: the input of the report (task #9). */
 @Serializable

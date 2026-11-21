@@ -34,6 +34,7 @@ import easypaper.app.shared.generated.resources.meal_placeholder
 import easypaper.app.shared.generated.resources.no
 import easypaper.app.shared.generated.resources.problem_diastolic
 import easypaper.app.shared.generated.resources.problem_empty
+import easypaper.app.shared.generated.resources.problem_measurement
 import easypaper.app.shared.generated.resources.problem_order
 import easypaper.app.shared.generated.resources.problem_other
 import easypaper.app.shared.generated.resources.problem_pulse
@@ -247,6 +248,7 @@ private fun EntryProblem.message(): StringResource = when (this) {
     EntryProblem.PULSE_OUT_OF_RANGE -> Res.string.problem_pulse
     EntryProblem.DIASTOLIC_NOT_BELOW_SYSTOLIC -> Res.string.problem_order
     EntryProblem.WATER_OUT_OF_RANGE -> Res.string.problem_water
-    EntryProblem.EMPTY_TEXT, EntryProblem.FOOD_EMPTY, EntryProblem.EMPTY_MEDICATION_NAME -> Res.string.problem_empty
+    EntryProblem.EMPTY_TEXT, EntryProblem.FOOD_EMPTY, EntryProblem.EMPTY_MEDICATION_NAME, EntryProblem.EMPTY_MEASUREMENT_NAME -> Res.string.problem_empty
+    EntryProblem.MEASUREMENT_OUT_OF_RANGE -> Res.string.problem_measurement
     EntryProblem.UNKNOWN_WIDGET, EntryProblem.WRONG_WIDGET_TYPE, EntryProblem.UNKNOWN_QUESTION, EntryProblem.BAD_ANSWER -> Res.string.problem_other
 }

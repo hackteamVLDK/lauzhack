@@ -391,4 +391,5 @@
     <string name="share_creating">Створюю код…</string>
     <string name="open_opening">Відкриваю звіт…</string>
     <string name="busy">Зайнято</string>
+    <string name="problem_measurement">Це число схоже на помилку. Перевірте значення та одиницю.</string>
 </resources>

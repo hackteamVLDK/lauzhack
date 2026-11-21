@@ -17,6 +17,7 @@ import org.easypaper.model.DiaryNote
 import org.easypaper.model.DoctorQuestion
 import org.easypaper.model.Entry
 import org.easypaper.model.Food
+import org.easypaper.model.Measurement
 import org.easypaper.model.Medication
 import org.easypaper.model.QuestionnaireWidget
 import org.easypaper.model.Water
@@ -36,6 +37,7 @@ fun entryText(entry: Entry, request: CareRequest?): String = when (val p = entry
     is Food -> withPhoto(p.text, p.photoRef)
     is DiaryNote -> withPhoto(p.text, p.photoRef)
     is DoctorQuestion -> p.text
+    is Measurement -> "${p.name}: ${p.value.let { if (it % 1.0 == 0.0) it.toLong().toString() else it.toString() }} ${p.unit}"
     // The scanned package name often contains the strength already ("… 20 mg 15 Stk"): show the dose once.
     is Medication -> listOfNotNull(p.name, p.dose?.takeIf { it !in p.name }).joinToString(", ") +
         if (p.confirmed) "" else " (" + stringResource(Res.string.not_confirmed) + ")"

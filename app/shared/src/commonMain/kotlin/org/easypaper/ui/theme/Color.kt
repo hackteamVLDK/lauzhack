@@ -86,7 +86,8 @@ enum class Category(val tile: Color, private val textLight: Color, private val t
     Medicines(Color(0xFF00C3D0), Color(0xFF00727A), Color(0xFF40DCE6)),
     Questionnaire(Color(0xFF6155F5), Color(0xFF5E5CE6), Color(0xFF9391FF)),
     Diary(Color(0xFFFF8D28), Color(0xFFB25000), Color(0xFFFFB340)),
-    DoctorQuestion(Color(0xFF8E8E93), Color(0xFF6C6C70), Color(0xFF98989F));
+    DoctorQuestion(Color(0xFF8E8E93), Color(0xFF6C6C70), Color(0xFF98989F)),
+    Measurements(Color(0xFFAF52DE), Color(0xFF8944AB), Color(0xFFDA8FFF)); // systemPurple, as Body Measurements in Health
 
     fun text(colors: EasyPaperColors): Color = if (colors.isDark) textDark else textLight
 }

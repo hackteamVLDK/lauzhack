@@ -387,4 +387,5 @@
     <string name="share_creating">Code wird erstellt…</string>
     <string name="open_opening">Bericht wird geöffnet…</string>
     <string name="busy">Beschäftigt</string>
+    <string name="problem_measurement">Diese Zahl sieht nach einem Tippfehler aus. Prüfen Sie Wert und Einheit.</string>
 </resources>

@@ -13,6 +13,8 @@ import org.easypaper.model.Entry
 import org.easypaper.model.EntryPayload
 import org.easypaper.model.Food
 import org.easypaper.model.FoodWidget
+import org.easypaper.model.Measurement
+import org.easypaper.model.MeasurementsWidget
 import org.easypaper.model.Medication
 import org.easypaper.model.MedicationsWidget
 import org.easypaper.model.PatientRecord
@@ -25,7 +27,7 @@ import kotlin.time.Instant
 
 /** What a record is about, independent of any doctor's request (patient app v2, docs/patient-app-v2.md). */
 @Serializable
-enum class EntryCategory { BLOOD_PRESSURE, WATER, FOOD, MEDICINES, SYMPTOMS, DIARY, QUESTIONS }
+enum class EntryCategory { BLOOD_PRESSURE, WATER, FOOD, MEDICINES, SYMPTOMS, DIARY, QUESTIONS, MEASUREMENTS }
 
 fun EntryPayload.category(): EntryCategory = when (this) {
     is BloodPressure -> EntryCategory.BLOOD_PRESSURE
@@ -35,6 +37,7 @@ fun EntryPayload.category(): EntryCategory = when (this) {
     is Answers -> EntryCategory.SYMPTOMS
     is DiaryNote -> EntryCategory.DIARY
     is DoctorQuestion -> EntryCategory.QUESTIONS
+    is Measurement -> EntryCategory.MEASUREMENTS
 }
 
 fun WidgetSpec.category(): EntryCategory = when (this) {
@@ -45,6 +48,7 @@ fun WidgetSpec.category(): EntryCategory = when (this) {
     is QuestionnaireWidget -> EntryCategory.SYMPTOMS
     is DiaryWidget -> EntryCategory.DIARY
     is DoctorQuestionsWidget -> EntryCategory.QUESTIONS
+    is MeasurementsWidget -> EntryCategory.MEASUREMENTS
 }
 
 private const val OWN = "own:"
@@ -163,6 +167,7 @@ private fun Diary.summaryRequest(
             EntryCategory.MEDICINES -> listOf(MedicationsWidget("medicines", titles(c), required = false))
             EntryCategory.DIARY -> listOf(DiaryWidget("diary", titles(c), required = false))
             EntryCategory.QUESTIONS -> listOf(DoctorQuestionsWidget("questions", titles(c), required = false))
+            EntryCategory.MEASUREMENTS -> listOf(MeasurementsWidget("measurements", titles(c)))
             // the questions a doctor asked travel with the answers, one questionnaire per plan
             EntryCategory.SYMPTOMS -> plans.flatMap { p ->
                 p.widgets.filterIsInstance<QuestionnaireWidget>().map { it.copy(id = "${p.id}#${it.id}", required = false) }
