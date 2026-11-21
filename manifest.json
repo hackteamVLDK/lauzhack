@@ -1,10 +1,10 @@
 {
   "schema_version": 3,
-  "last_event_id": 65,
+  "last_event_id": 67,
   "files": {
     "CHANGES.md": {
-      "sha256": "7fee776d955926f65425c36d191521f59373627d5c579628e14dec4419887ded",
-      "size": 81
+      "sha256": "9e0448bab04ed52fba53aa1490e6eb93b293a46c87a1ba1c1354cce4858e3394",
+      "size": 261
     },
     "PLANS.md": {
       "sha256": "d53748323de1d6d7da111c4f2e91a40374e7f9781332f06d16cf1beab5c18adb",
@@ -15,28 +15,28 @@
       "size": 12
     },
     "PROJECT.md": {
-      "sha256": "7eaf11cb962cf9415fa00de768b02680451cd2207b9bf1e9683e55e2dee83c76",
+      "sha256": "61bdcfc21a8f80bd44c2e79b59c4ca22bc34ba300f947c260576f5d40498e992",
       "size": 7753
     },
     "database.sql": {
-      "sha256": "badcf112f471285affe287cfd79b68a7a760ab6a31ea6e6994fba68e679707a7",
-      "size": 189059
+      "sha256": "8a7704a9cabed80dfadb4d2170fd79508c7a140f068706af90b14d9195a1843e",
+      "size": 192994
     },
     "events.jsonl": {
-      "sha256": "6fa39392c978199eb38b7c3e0c2c8436ce268e857a568e2864d47a653348c547",
-      "size": 27580
+      "sha256": "38a65aefd393f19df65009977301ef1813af9476883e0826dcd467a74ea38191",
+      "size": 28159
     },
     "people/mykhailo.md": {
-      "sha256": "59f50390aa3b2b995e21388fb4b188172bb2ab4a01f189fec8d76712f02027bf",
-      "size": 9532
+      "sha256": "8aab009890cbe2ee7e0fafa4630de4027c8e8a8e63950f00691dd216e3f0168c",
+      "size": 9642
     },
     "people/pavlo.md": {
       "sha256": "68d85038770371c82a43ca77a20ebe92fb39eaa508019f6d154a4e05260e3f70",
       "size": 9
     },
     "people/vlad.md": {
-      "sha256": "e9e1ff5f2942f0089e0c5e330d2eefbdea0c93914708906c11e78b9c00e0c4a5",
-      "size": 4670
+      "sha256": "791263f3fd0ee57307ba209c6a881f9bbc45b3ab152fc8ea08c68defded91c44",
+      "size": 4763
     },
     "tasks/1.md": {
       "sha256": "791c6baf7959413bee09065a6de65d5c66aee75462091c4f82407ce2e11c1e12",
@@ -51,8 +51,8 @@
       "size": 550
     },
     "tasks/2.md": {
-      "sha256": "0e8df8fad2f4f3a7ddf5b860dc4b8c65ec8966d144e3074d9d9045a2e2d43bb6",
-      "size": 5607
+      "sha256": "3526574665c3e25fc3a82f2a507bdbcdaf5d8c8c0e47c28aaf933a02925e3921",
+      "size": 5700
     },
     "tasks/3.md": {
       "sha256": "03d4acf6077df23b50c020f4fd55d003fb1c301c3245bf7249e83a19198b02b2",
