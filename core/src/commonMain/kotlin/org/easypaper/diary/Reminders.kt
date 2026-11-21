@@ -24,9 +24,13 @@ data class Reminder(val date: String, val time: String, val widgetIds: List<Stri
  */
 @OptIn(ExperimentalTime::class)
 fun CareRequest.reminders(wake: String = "08:00", sleep: String = "21:00"): List<Reminder> {
-    val from = minutes(wake)
-    val to = minutes(sleep)
+    // slots sit on a 5-minute grid strictly inside the patient's window: wake rounds up, bedtime down (max 23:55)
+    val from = (minutes(wake) + 4) / 5 * 5
+    val to = minutes(sleep) / 5 * 5
     require(from < to) { "Wake-up time must be before bedtime" }
+    val readings = widgets.filter { it.required }.filterIsInstance<BloodPressureWidget>().maxOfOrNull { it.timesPerDay } ?: 1
+    // every reading needs its own slot: an alarm must never be merged away
+    require(to - from >= 5 * (readings - 1)) { "The day from $wake to $sleep is too short for $readings readings" }
     val midday = round5((from + to) / 2)
     val slots = mutableMapOf<Int, MutableList<String>>()
     fun at(minute: Int, widgetId: String) { slots.getOrPut(minute) { mutableListOf() } += widgetId }
@@ -42,7 +46,7 @@ fun CareRequest.reminders(wake: String = "08:00", sleep: String = "21:00"): List
     val start = Instant.parse(startDate + "T00:00:00Z").toEpochMilliseconds()
     return (0 until days).flatMap { day ->
         val date = Instant.fromEpochMilliseconds(start + day * 86_400_000L).toString().take(10)
-        slots.entries.sortedBy { it.key }.map { (minute, ids) -> Reminder(date, hhmm(minute), ids.distinct()) }
+        slots.entries.sortedBy { it.key }.map { (minute, ids) -> Reminder(date, hhmm(minute), ids) }
     }
 }
 
