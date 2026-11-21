@@ -148,4 +148,35 @@
     <string name="delete_entry_question">Delete this entry? It is removed from this phone and from the report.</string>
     <string name="unit_ml">%1$d ml</string>
     <string name="decimal_separator">.</string>
+    <!-- AI cost screen (task 32) -->
+    <string name="cost_title">AI cost</string>
+    <string name="cost_report">This report</string>
+    <string name="cost_step_photo">Photo description</string>
+    <string name="cost_step_summary">Summary</string>
+    <string name="cost_step_document">Document extraction</string>
+    <string name="cost_tokens">Tokens: %1$d input / %2$d output</string>
+    <string name="cost_cache_hit">From cache</string>
+    <string name="cost_total">Total</string>
+    <string name="cost_comparison">Cost comparison</string>
+    <string name="cost_cloud">Cloud (OpenRouter)</string>
+    <string name="cost_clinic">Clinic module (Ollama)</string>
+    <string name="cost_comparison_footer">Token charges for the same input and output counts. Cache hits use no tokens. Clinic hardware costs are not included.</string>
+    <string name="cost_server">Server</string>
+    <string name="cost_mode">Mode</string>
+    <string name="cost_mode_cloud">Cloud</string>
+    <string name="cost_mode_clinic">Clinic module</string>
+    <string name="cost_mode_off">Off</string>
+    <string name="cost_provider">Provider</string>
+    <string name="cost_small_model">Photo model</string>
+    <string name="cost_big_model">Summary and document model</string>
+    <string name="cost_budget">Spent from server budget</string>
+    <string name="cost_budget_amount">%1$s of %2$s</string>
+    <string name="cost_key_configured">API key configured</string>
+    <string name="cost_yes">Yes</string>
+    <string name="cost_no">No</string>
+    <string name="cost_unavailable">Not available</string>
+    <string name="cost_empty_title">No AI calls</string>
+    <string name="cost_empty_message">This report has no recorded AI usage.</string>
+    <string name="cost_usd">$%1$s</string>
+    <string name="cost_decimal_separator">.</string>
 </resources>

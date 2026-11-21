@@ -150,4 +150,35 @@
     <string name="delete_entry_question">Видалити цей запис? Його буде видалено з телефона і зі звіту.</string>
     <string name="unit_ml">%1$d мл</string>
     <string name="decimal_separator">,</string>
+    <!-- AI cost screen (task 32) -->
+    <string name="cost_title">Вартість ШІ</string>
+    <string name="cost_report">Цей звіт</string>
+    <string name="cost_step_photo">Опис фото</string>
+    <string name="cost_step_summary">Підсумок</string>
+    <string name="cost_step_document">Видобування даних із документа</string>
+    <string name="cost_tokens">Токени: %1$d вхідних / %2$d вихідних</string>
+    <string name="cost_cache_hit">Із кешу</string>
+    <string name="cost_total">Разом</string>
+    <string name="cost_comparison">Порівняння вартості</string>
+    <string name="cost_cloud">Хмара (OpenRouter)</string>
+    <string name="cost_clinic">Модуль клініки (Ollama)</string>
+    <string name="cost_comparison_footer">Вартість токенів за однакової кількості вхідних і вихідних токенів. Звернення до кешу не використовують токенів. Вартість обладнання клініки не врахована.</string>
+    <string name="cost_server">Сервер</string>
+    <string name="cost_mode">Режим</string>
+    <string name="cost_mode_cloud">Хмара</string>
+    <string name="cost_mode_clinic">Модуль клініки</string>
+    <string name="cost_mode_off">Вимкнено</string>
+    <string name="cost_provider">Провайдер</string>
+    <string name="cost_small_model">Модель для фото</string>
+    <string name="cost_big_model">Модель для підсумків і документів</string>
+    <string name="cost_budget">Витрачено з бюджету сервера</string>
+    <string name="cost_budget_amount">%1$s із %2$s</string>
+    <string name="cost_key_configured">API-ключ налаштовано</string>
+    <string name="cost_yes">Так</string>
+    <string name="cost_no">Ні</string>
+    <string name="cost_unavailable">Недоступно</string>
+    <string name="cost_empty_title">Викликів ШІ немає</string>
+    <string name="cost_empty_message">Для цього звіту немає записів про використання ШІ.</string>
+    <string name="cost_usd">%1$s $</string>
+    <string name="cost_decimal_separator">,</string>
 </resources>

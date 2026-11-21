@@ -19,11 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import easypaper.app.shared.generated.resources.Res
+import easypaper.app.shared.generated.resources.cost_title
 import easypaper.app.shared.generated.resources.doctor_empty_message
 import easypaper.app.shared.generated.resources.doctor_empty_title
 import easypaper.app.shared.generated.resources.done
 import easypaper.app.shared.generated.resources.entries
 import easypaper.app.shared.generated.resources.ic_add
+import easypaper.app.shared.generated.resources.ic_history
 import easypaper.app.shared.generated.resources.new_request
 import easypaper.app.shared.generated.resources.new_request_message
 import easypaper.app.shared.generated.resources.requests
@@ -42,6 +44,7 @@ import org.easypaper.ui.components.Sidebar
 import org.easypaper.ui.components.SidebarRow
 import org.easypaper.ui.components.TintedButton
 import org.easypaper.ui.components.category
+import org.easypaper.ui.cost.AiCostScreen
 import org.easypaper.ui.format.dateRange
 import org.easypaper.ui.format.lastDay
 import org.easypaper.ui.theme.EasyPaperTheme
@@ -53,6 +56,7 @@ sealed interface DoctorScreen {
     data object Home : DoctorScreen
     data class Visit(val reportId: String) : DoctorScreen
     data object NewRequest : DoctorScreen
+    data object Cost : DoctorScreen
     data object DesignCatalog : DoctorScreen
     data object Developer : DoctorScreen
 }
@@ -116,6 +120,11 @@ private fun RequestSidebar(state: ShellState, current: DoctorScreen, select: (Do
         title = stringResource(Res.string.requests),
         onTitleLongPress = onDeveloper,
         footer = {
+            TintedButton(
+                stringResource(Res.string.cost_title),
+                onClick = { select(DoctorScreen.Cost) },
+                icon = Res.drawable.ic_history,
+            )
             TintedButton(stringResource(Res.string.new_request), onClick = { select(DoctorScreen.NewRequest) }, icon = Res.drawable.ic_add)
         },
     ) {
@@ -152,6 +161,15 @@ private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDev
         }
         item {
             Box(Modifier.fillMaxWidth().padding(top = EasyPaperTheme.spacing.m)) {
+                TintedButton(
+                    stringResource(Res.string.cost_title),
+                    onClick = { select(DoctorScreen.Cost) },
+                    icon = Res.drawable.ic_history,
+                )
+            }
+        }
+        item {
+            Box(Modifier.fillMaxWidth().padding(top = EasyPaperTheme.spacing.m)) {
                 TintedButton(stringResource(Res.string.new_request), onClick = { select(DoctorScreen.NewRequest) }, icon = Res.drawable.ic_add)
             }
         }
@@ -164,6 +182,8 @@ private fun DoctorDetail(state: ShellState, screen: DoctorScreen, back: BackActi
         is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { VisitScreen(it, back) }
             ?: NothingOpen()
         DoctorScreen.NewRequest -> NewRequestScreen(back)
+        // Demo reports have no AI ledger or server status yet.
+        DoctorScreen.Cost -> AiCostScreen(status = null, usage = emptyList(), back = back)
         else -> NothingOpen()
     }
 }

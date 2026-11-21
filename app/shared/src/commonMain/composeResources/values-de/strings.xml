@@ -148,4 +148,35 @@
     <string name="delete_entry_question">Diesen Eintrag löschen? Er wird von diesem Telefon und aus dem Bericht entfernt.</string>
     <string name="unit_ml">%1$d ml</string>
     <string name="decimal_separator">,</string>
+    <!-- AI cost screen (task 32) -->
+    <string name="cost_title">KI-Kosten</string>
+    <string name="cost_report">Dieser Bericht</string>
+    <string name="cost_step_photo">Fotobeschreibung</string>
+    <string name="cost_step_summary">Zusammenfassung</string>
+    <string name="cost_step_document">Dokumentenauswertung</string>
+    <string name="cost_tokens">Token: %1$d Eingabe / %2$d Ausgabe</string>
+    <string name="cost_cache_hit">Aus dem Cache</string>
+    <string name="cost_total">Gesamt</string>
+    <string name="cost_comparison">Kostenvergleich</string>
+    <string name="cost_cloud">Cloud (OpenRouter)</string>
+    <string name="cost_clinic">Praxismodul (Ollama)</string>
+    <string name="cost_comparison_footer">Tokenkosten bei gleicher Anzahl an Ein- und Ausgabetoken. Cache-Treffer verbrauchen keine Token. Hardwarekosten der Praxis sind nicht enthalten.</string>
+    <string name="cost_server">Server</string>
+    <string name="cost_mode">Modus</string>
+    <string name="cost_mode_cloud">Cloud</string>
+    <string name="cost_mode_clinic">Praxismodul</string>
+    <string name="cost_mode_off">Aus</string>
+    <string name="cost_provider">Anbieter</string>
+    <string name="cost_small_model">Fotomodell</string>
+    <string name="cost_big_model">Modell für Zusammenfassungen und Dokumente</string>
+    <string name="cost_budget">Verbrauchtes Serverbudget</string>
+    <string name="cost_budget_amount">%1$s von %2$s</string>
+    <string name="cost_key_configured">API-Schlüssel eingerichtet</string>
+    <string name="cost_yes">Ja</string>
+    <string name="cost_no">Nein</string>
+    <string name="cost_unavailable">Nicht verfügbar</string>
+    <string name="cost_empty_title">Keine KI-Aufrufe</string>
+    <string name="cost_empty_message">Für diesen Bericht ist keine KI-Nutzung erfasst.</string>
+    <string name="cost_usd">%1$s $</string>
+    <string name="cost_decimal_separator">,</string>
 </resources>
