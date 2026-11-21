@@ -86,4 +86,13 @@ class ReportTest {
         assertEquals("draft", resources[3].getValue("status").jsonPrimitive.content) // unconfirmed scan
         assertTrue("04600000000000" in resources[3].toString())
     }
+
+    @Test
+    fun reportIdsAreRandomAndRelaySafe() = runTest {
+        val ids = List(1000) { newReportId() }
+        assertEquals(1000, ids.toSet().size)
+        assertTrue(ids.all { Regex("[A-Za-z0-9_-]{22}").matches(it) }, ids.first()) // 128 bits, fits the relay's id rule
+        val sealed = sealReport(report.copy(id = ids.first()))
+        assertEquals(ids.first(), reportIdFromQr(sealed.qr))
+    }
 }

@@ -15,6 +15,8 @@ interface BlobStore {
     suspend fun delete(key: String)
 }
 
+private const val RECORD_PREFIX = "record/"
+
 /** New random AES-256 key (32 raw bytes). The platform keeps it in its keystore / secure storage. */
 suspend fun generateRecordKey(): ByteArray =
     CryptographyProvider.Default.get(AES.GCM).keyGenerator(AES.Key.Size.B256).generateKey()
@@ -27,9 +29,12 @@ internal suspend fun aesGcm(key: ByteArray) =
 /**
  * Patient records encrypted at rest with AES-256-GCM (random IV per save, 128-bit tag).
  * The record id is bound as associated data, so a blob copied under another id does not decrypt.
- * Wrong key or damaged bytes throw on [load].
+ * Wrong key or damaged bytes throw on [load]. Blobs live under "record/<id>", so photos ([PhotoStore]) can share
+ * the same [BlobStore].
  */
 class RecordStore(private val blobs: BlobStore, private val key: ByteArray) {
+    private fun blobKey(id: String) = RECORD_PREFIX + id
+
     init {
         require(key.size == 32) { "AES-256 key must be 32 bytes" }
     }
@@ -37,17 +42,17 @@ class RecordStore(private val blobs: BlobStore, private val key: ByteArray) {
     suspend fun save(record: PatientRecord) {
         val id = record.request.id
         val json = EasyPaperJson.encodeToString(PatientRecord.serializer(), record)
-        blobs.put(id, aesGcm(key).encrypt(json.encodeToByteArray(), id.encodeToByteArray()))
+        blobs.put(blobKey(id), aesGcm(key).encrypt(json.encodeToByteArray(), id.encodeToByteArray()))
     }
 
     suspend fun load(id: String): PatientRecord? {
-        val sealed = blobs.get(id) ?: return null
+        val sealed = blobs.get(blobKey(id)) ?: return null
         val json = aesGcm(key).decrypt(sealed, id.encodeToByteArray()).decodeToString()
         return EasyPaperJson.decodeFromString(PatientRecord.serializer(), json)
     }
 
-    suspend fun list(): List<String> = blobs.keys()
+    suspend fun list(): List<String> = blobs.keys().filter { it.startsWith(RECORD_PREFIX) }.map { it.removePrefix(RECORD_PREFIX) }
 
     /** Erases the record, e.g. after the visit or when the patient asks; no error when it is already gone. */
-    suspend fun delete(id: String) = blobs.delete(id)
+    suspend fun delete(id: String) = blobs.delete(blobKey(id))
 }

@@ -1,5 +1,6 @@
 package org.easypaper.report
 
+import dev.whyoleg.cryptography.random.CryptographyRandom
 import org.easypaper.model.DiaryNote
 import org.easypaper.model.EasyPaperJson
 import org.easypaper.model.Food
@@ -53,6 +54,13 @@ suspend fun openPhoto(bytes: ByteArray, qr: String, ref: String): ByteArray {
 }
 
 private fun photoBinding(reportId: String, ref: String) = "$reportId/photo/$ref".encodeToByteArray()
+
+/**
+ * A fresh report id: 128 random bits, base64url (22 characters). Use it for every real report — the relay hands each
+ * report out only once, so a guessable id would let a stranger fetch ("burn") it before the doctor does.
+ */
+@OptIn(ExperimentalEncodingApi::class)
+fun newReportId(): String = base64.encode(CryptographyRandom.nextBytes(16))
 
 /** Report id from a scanned QR string, to fetch the bytes from the server. Throws on a foreign QR. */
 fun reportIdFromQr(qr: String): String = parseQr(qr).first
