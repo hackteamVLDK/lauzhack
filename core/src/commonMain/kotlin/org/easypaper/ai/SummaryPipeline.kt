@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import org.easypaper.model.Food
 import org.easypaper.model.PatientRecord
 import org.easypaper.report.factDigest
+import org.easypaper.report.toLocalizedText
 import org.easypaper.report.toText
 
 /** One line of the doctor's summary with the entries it is based on. Unsupported lines are shown as such. */
@@ -42,27 +43,38 @@ class SummaryPipeline(
 ) {
     private val caller = ModelCaller(executor, config, cache, ledger)
 
+    /** [language] selects English (en), German (de), or Ukrainian (uk) output; other values use English. */
     suspend fun summarize(
         record: PatientRecord,
         photos: Map<String, ByteArray> = emptyMap(),
         utcOffsetMinutes: Int = 0,
+        language: String = "en",
     ): SummaryResult {
         val start = ledger.items.size
         val knownIds = record.entries.map { it.id }.toSet()
-        val facts = record.factDigest(utcOffsetMinutes).toText()
+        val digest = record.factDigest(utcOffsetMinutes)
+        val facts = digest.toText()
+        val outputLanguage = when (language) { "de" -> "German"; "uk" -> "Ukrainian"; else -> "English" }
+        val photoSystem = PHOTO_SYSTEM.replace("English", outputLanguage)
+        val summarySystem = SUMMARY_SYSTEM.replace("English", outputLanguage)
         val notes = mutableListOf<String>()
         fun spent() = ledger.items.drop(start).sumOf { it.costUsd }
 
         // 2. Photos the patient did not describe; the patient's own words always win over a model's guess.
         val descriptions = linkedMapOf<String, String>()
+        var photoAttempts = 0
         val untold = record.entries.filter { (it.payload as? Food)?.let { f -> f.text.isNullOrBlank() && f.photoRef != null } == true }
         for (entry in untold) {
-            if (descriptions.size >= config.maxPhotos) { notes += "only ${config.maxPhotos} photos described"; break }
+            if (photoAttempts >= config.maxPhotos) { notes += "photo attempt limit reached (${config.maxPhotos})"; break }
             val bytes = photos[(entry.payload as Food).photoRef] ?: continue
             if (bytes.size > config.maxPhotoBytes) { notes += "photo ${entry.id} too large, skipped"; continue }
-            val estimate = caller.estimateCost(config.small, estimateTokens(PHOTO_SYSTEM) + PHOTO_IMAGE_TOKENS, config.maxPhotoOutputTokens)
+            val estimate = caller.estimateCost(config.small, estimateTokens(photoSystem) + PHOTO_IMAGE_TOKENS, config.maxPhotoOutputTokens)
             if (spent() + estimate > config.budgetUsdPerReport) { notes += "budget reached before photo ${entry.id}"; break }
-            val answer = caller.call(AiStep.PhotoDescription, config.small, PHOTO_SYSTEM, PHOTO_USER, bytes, config.maxPhotoOutputTokens)
+            photoAttempts++
+            val answer = caller.call(
+                AiStep.PhotoDescription, config.small, photoSystem, PHOTO_USER, bytes, config.maxPhotoOutputTokens,
+                reportId = record.request.id,
+            )
                 ?: continue
             cleanDescription(answer)?.let { descriptions[entry.id] = it }
         }
@@ -75,17 +87,20 @@ class SummaryPipeline(
                 for ((id, text) in descriptions) append("\n- $text [$id]")
             }
         }
-        val estimate = caller.estimateCost(config.big, estimateTokens(SUMMARY_SYSTEM + input), config.maxSummaryOutputTokens)
+        val estimate = caller.estimateCost(config.big, estimateTokens(summarySystem + input), config.maxSummaryOutputTokens)
         val answer = if (spent() + estimate > config.budgetUsdPerReport) {
             notes += "budget: summary without AI"
             null
         } else {
-            caller.call(AiStep.Summary, config.big, SUMMARY_SYSTEM, input, null, config.maxSummaryOutputTokens)
+            caller.call(
+                AiStep.Summary, config.big, summarySystem, input, null, config.maxSummaryOutputTokens,
+                reportId = record.request.id,
+            )
                 .also { if (it == null) notes += "AI not reachable (${caller.lastError ?: "empty answer"}): summary without AI" }
         }
 
         // 4. Check every line; fall back to the facts themselves.
-        val (lines, dropped) = if (answer != null) checkLines(answer, knownIds) else factLines(facts, knownIds) to 0
+        val (lines, dropped) = if (answer != null) checkLines(answer, knownIds) else factLines(digest.toLocalizedText(language), knownIds) to 0
         if (dropped > 0) notes += "$dropped line(s) with advice or diagnosis removed"
         return SummaryResult(
             summary = lines.joinToString("\n") { it.text },
@@ -117,6 +132,7 @@ class SummaryPipeline(
             - No diagnosis, no interpretation of causes, no advice, no recommendations, no reassurance.
             - Keep numbers and units exactly as given (mmHg, mL). Mention unconfirmed medications as unconfirmed.
             - Quote questions the patient asks the doctor; do not answer them.
+            - Keep quoted patient text in its original language, without translating it.
             - Plain English, no headings, no bullet symbols, no markdown.
         """.trimIndent()
 

@@ -21,6 +21,9 @@ import org.easypaper.model.Entry
 import org.easypaper.model.Food
 import org.easypaper.model.FoodWidget
 import org.easypaper.model.PatientRecord
+import org.easypaper.report.factDigest
+import org.easypaper.report.toLocalizedText
+import org.easypaper.report.toText
 import kotlin.math.abs
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -31,16 +34,16 @@ import kotlin.time.Instant
 
 /** Koog executor that answers from a function and counts calls; no network. */
 private class FakeExecutor(
-    private val inputTokens: Int = 1_000,
-    private val outputTokens: Int = 200,
+    private val inputTokens: Int? = 1_000,
+    private val outputTokens: Int? = 200,
     private val reply: (LLModel) -> String,
 ) : PromptExecutorAPI {
     val calls = mutableListOf<Pair<Prompt, LLModel>>()
     var failing = false
 
     override suspend fun execute(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>): Message.Assistant {
-        if (failing) throw IllegalStateException("provider down")
         calls += prompt to model
+        if (failing) throw IllegalStateException("provider down")
         return Message.Assistant(
             reply(model),
             ResponseMetaInfo(Instant.fromEpochMilliseconds(0), inputTokensCount = inputTokens, outputTokensCount = outputTokens),
@@ -118,6 +121,115 @@ class SummaryPipelineTest {
         assertNear((1_000 * 0.10 + 200 * 0.40) / 1e6, photo.costUsd)
         assertNear((1_000 * 1.00 + 200 * 5.00) / 1e6, summary.costUsd)
         assertEquals(2_000, result.usage.sumOf { it.inputTokens })
+        assertTrue(result.usage.all { it.reportId == record.request.id && !it.estimated })
+    }
+
+    @Test
+    fun cachedCallsAreAssignedToTheCurrentReport() = runTest {
+        val ex = executor()
+        val pipeline = SummaryPipeline(ex, config)
+        val first = pipeline.summarize(record, photos)
+        val other = record.copy(request = record.request.copy(id = "req-2"))
+        val second = pipeline.summarize(other, photos)
+
+        assertEquals(2, ex.calls.size)
+        assertTrue(first.usage.all { it.reportId == "req-1" })
+        assertEquals(2, second.usage.size)
+        assertTrue(second.usage.all { it.reportId == "req-2" && it.cached && !it.estimated })
+        assertEquals(first.usage + second.usage, pipeline.ledger.items)
+    }
+
+    @Test
+    fun missingProviderCountsAreEstimatedIndependentlyAndCacheHitsStayFree() = runTest {
+        for ((input, output) in listOf(null to null, null to 0, 0 to null, 0 to 0, 100 to 20)) {
+            val ex = FakeExecutor(inputTokens = input, outputTokens = output) { "answer" }
+            val ledger = UsageLedger()
+            val caller = ModelCaller(ex, config, InMemoryAiCache(), ledger)
+            repeat(2) {
+                caller.call(AiStep.Summary, config.big, "system", "user", null, 100, reportId = "req-1")
+            }
+            val (call, cached) = ledger.items
+            assertEquals(input ?: estimateTokens("systemuser"), call.inputTokens)
+            assertEquals(output ?: estimateTokens("answer"), call.outputTokens)
+            assertEquals(input == null || output == null, call.estimated)
+            assertEquals(config.price(config.big)!!.cost(call.inputTokens, call.outputTokens), call.costUsd)
+            assertEquals("req-1", call.reportId)
+            assertEquals("req-1", cached.reportId)
+            assertTrue(cached.cached)
+            assertFalse(cached.estimated)
+            assertEquals(0, cached.inputTokens)
+            assertEquals(0, cached.outputTokens)
+            assertEquals(0.0, cached.costUsd)
+            assertEquals(1, ex.calls.size)
+        }
+    }
+
+    @Test
+    fun photoLimitCountsAttemptsEvenForRejectedEmptyAndFailedAnswers() = runTest {
+        val entries = (1..7).map { i -> Entry("e$i", "food", i.toLong(), Food(photoRef = "photo/$i")) }
+        val input = record.copy(entries = entries)
+        val images = (1..7).associate { i -> "photo/$i" to (jpeg + i.toByte()) }
+        for (limit in listOf(0, 2, 6)) {
+            for (reply in listOf("not food", "   ", "You should eat less salt", "failure")) {
+                val ex = FakeExecutor { model -> if (model == config.small) reply else "Recorded food photo [e1]" }
+                    .apply { failing = reply == "failure" }
+                val result = SummaryPipeline(ex, config.copy(maxPhotos = limit)).summarize(input, images)
+
+                assertEquals(limit, ex.calls.count { it.second == config.small }, "$reply, limit $limit")
+                assertEquals(1, ex.calls.count { it.second == config.big })
+                assertTrue(result.photoDescriptions.isEmpty())
+            }
+        }
+    }
+
+    @Test
+    fun missingAndOversizedPhotosDoNotConsumeAttempts() = runTest {
+        val input = record.copy(entries = (1..3).map { i -> Entry("e$i", "food", i.toLong(), Food(photoRef = "photo/$i")) })
+        val ex = executor()
+        val images = mapOf("photo/2" to ByteArray(config.maxPhotoBytes + 1), "photo/3" to jpeg)
+        val result = SummaryPipeline(ex, config.copy(maxPhotos = 1)).summarize(input, images)
+
+        assertEquals(1, ex.calls.count { it.second == config.small })
+        assertEquals(setOf("e3"), result.photoDescriptions.keys)
+    }
+
+    @Test
+    fun bothPromptsUseTheRequestedLanguageAndCacheIsSeparatedByLanguage() = runTest {
+        val ex = executor()
+        val pipeline = SummaryPipeline(ex, config)
+        for ((language, name) in listOf("en" to "English", "de" to "German", "uk" to "Ukrainian")) {
+            val result = pipeline.summarize(record, photos, language = language)
+            assertTrue(result.usedAi)
+            val calls = ex.calls.takeLast(2)
+            assertTrue("in $name" in calls[0].first.messages.first().textContent())
+            val system = calls[1].first.messages.first().textContent()
+            assertTrue("Plain $name" in system)
+            assertTrue("No diagnosis" in system)
+            assertTrue("no advice" in system)
+            assertTrue(record.factDigest().toText() in calls[1].first.text(), "the facts in the prompt stay in English")
+            assertTrue("not food" in calls[0].first.messages.first().textContent())
+        }
+        assertEquals(6, ex.calls.size)
+        val cached = pipeline.summarize(record, photos, language = "de")
+        assertEquals(6, ex.calls.size)
+        assertTrue(cached.usage.all { it.cached })
+    }
+
+    @Test
+    fun germanFallbackKeepsReferencesAndPatientTextForBudgetAndProviderFailure() = runTest {
+        for (budget in listOf(true, false)) {
+            val ex = executor().apply { failing = !budget }
+            val pipeline = SummaryPipeline(ex, if (budget) config.copy(budgetUsdPerReport = 0.0) else config)
+            val result = pipeline.summarize(record, photos, language = "de")
+
+            assertFalse(result.usedAi)
+            assertEquals(record.factDigest().toLocalizedText("de"), result.summary)
+            assertTrue("Blutdruck" in result.summary)
+            assertTrue("Tagebuch" in result.summary)
+            assertTrue("Headache again after lunch [e4]" in result.summary)
+            assertTrue(result.lines.any { "Blutdruck" in it.text && it.refs == listOf("e1") && it.supported })
+            assertTrue(result.lines.any { it.refs == listOf("e4") && it.supported })
+        }
     }
 
     @Test

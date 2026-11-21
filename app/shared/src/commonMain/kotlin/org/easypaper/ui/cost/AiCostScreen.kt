@@ -16,12 +16,12 @@ import easypaper.app.shared.generated.resources.cost_budget_unlimited
 import easypaper.app.shared.generated.resources.cost_cache_hit
 import easypaper.app.shared.generated.resources.cost_clinic
 import easypaper.app.shared.generated.resources.cost_cloud
-import easypaper.app.shared.generated.resources.cost_comparison
 import easypaper.app.shared.generated.resources.cost_comparison_footer
 import easypaper.app.shared.generated.resources.cost_decimal_separator
 import easypaper.app.shared.generated.resources.cost_demo_capture
 import easypaper.app.shared.generated.resources.cost_empty_message
 import easypaper.app.shared.generated.resources.cost_empty_title
+import easypaper.app.shared.generated.resources.cost_estimated
 import easypaper.app.shared.generated.resources.cost_key_configured
 import easypaper.app.shared.generated.resources.cost_mode
 import easypaper.app.shared.generated.resources.cost_mode_clinic
@@ -31,6 +31,7 @@ import easypaper.app.shared.generated.resources.cost_no
 import easypaper.app.shared.generated.resources.cost_provider
 import easypaper.app.shared.generated.resources.cost_report
 import easypaper.app.shared.generated.resources.cost_server
+import easypaper.app.shared.generated.resources.cost_session
 import easypaper.app.shared.generated.resources.cost_small_model
 import easypaper.app.shared.generated.resources.cost_step_document
 import easypaper.app.shared.generated.resources.cost_step_photo
@@ -45,6 +46,7 @@ import org.easypaper.ai.AiStatus
 import org.easypaper.ai.AiStep
 import org.easypaper.ai.AiUsage
 import org.easypaper.ai.costComparison
+import org.easypaper.ai.latestReportUsage
 import org.easypaper.ui.components.BackAction
 import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.LargeTitleScaffold
@@ -65,41 +67,26 @@ fun AiCostScreen(
     demoCapture: Boolean = false,
 ) {
     val spacing = EasyPaperTheme.spacing
-    val comparison = costComparison(usage)
+    val reportUsage = latestReportUsage(usage)
     LargeTitleScaffold(title = stringResource(Res.string.cost_title), modifier = modifier, back = back) {
         item {
             GroupedSection(
                 header = stringResource(Res.string.cost_report),
-                footer = if (demoCapture) stringResource(Res.string.cost_demo_capture) else null,
+                footer = stringResource(Res.string.cost_comparison_footer),
             ) {
-                if (usage.isEmpty()) {
-                    ListRow(
-                        title = stringResource(Res.string.cost_empty_title),
-                        subtitle = stringResource(Res.string.cost_empty_message),
-                    )
-                } else {
-                    usage.forEachIndexed { index, call ->
-                        if (index > 0) RowSeparator(spacing.m)
-                        UsageRow(call)
-                    }
-                }
-                RowSeparator(spacing.m)
-                CostValueRow(
-                    label = stringResource(Res.string.cost_total),
-                    value = usd(comparison.actualUsd),
-                    detail = stringResource(Res.string.cost_tokens, comparison.inputTokens, comparison.outputTokens),
-                )
+                UsageRows(reportUsage)
             }
         }
         item {
             GroupedSection(
                 modifier = Modifier.padding(top = spacing.sectionGap),
-                header = stringResource(Res.string.cost_comparison),
-                footer = stringResource(Res.string.cost_comparison_footer),
+                header = stringResource(Res.string.cost_session),
+                footer = listOfNotNull(
+                    stringResource(Res.string.cost_comparison_footer),
+                    if (demoCapture) stringResource(Res.string.cost_demo_capture) else null,
+                ).joinToString("\n"),
             ) {
-                CostValueRow(stringResource(Res.string.cost_cloud), usd(comparison.cloudUsd))
-                RowSeparator(spacing.m)
-                CostValueRow(stringResource(Res.string.cost_clinic), usd(comparison.clinicUsd))
+                UsageRows(usage)
             }
         }
         item {
@@ -115,6 +102,37 @@ fun AiCostScreen(
             }
         }
     }
+}
+
+@Composable
+private fun UsageRows(usage: List<AiUsage>) {
+    val spacing = EasyPaperTheme.spacing
+    val comparison = costComparison(usage)
+    val estimated = if (comparison.hasEstimates) stringResource(Res.string.cost_estimated) else null
+    if (usage.isEmpty()) {
+        ListRow(
+            title = stringResource(Res.string.cost_empty_title),
+            subtitle = stringResource(Res.string.cost_empty_message),
+        )
+    } else {
+        usage.forEachIndexed { index, call ->
+            if (index > 0) RowSeparator(spacing.m)
+            UsageRow(call)
+        }
+    }
+    RowSeparator(spacing.m)
+    CostValueRow(
+        label = stringResource(Res.string.cost_total),
+        value = usd(comparison.actualUsd),
+        detail = listOfNotNull(
+            stringResource(Res.string.cost_tokens, comparison.inputTokens, comparison.outputTokens),
+            estimated,
+        ).joinToString("\n"),
+    )
+    RowSeparator(spacing.m)
+    CostValueRow(stringResource(Res.string.cost_cloud), usd(comparison.cloudUsd), estimated)
+    RowSeparator(spacing.m)
+    CostValueRow(stringResource(Res.string.cost_clinic), usd(comparison.clinicUsd))
 }
 
 @Composable
@@ -143,6 +161,9 @@ private fun UsageRow(call: AiUsage) {
             color = colors.secondaryLabel,
         )
         Text(usd(if (call.cached) 0.0 else call.costUsd), style = type.body.tabular(), color = colors.label)
+        if (call.estimated) {
+            Text(stringResource(Res.string.cost_estimated), style = type.footnote, color = colors.secondaryLabel)
+        }
         if (call.cached) {
             Text(stringResource(Res.string.cost_cache_hit), style = type.footnote, color = colors.secondaryLabel)
         }

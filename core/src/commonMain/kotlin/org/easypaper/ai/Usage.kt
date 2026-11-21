@@ -18,6 +18,9 @@ data class AiUsage(
     val costUsd: Double,
     val cached: Boolean,
     val millis: Long,
+    val reportId: String? = null,
+    /** At least one token count was estimated from characters rather than returned by the provider. */
+    val estimated: Boolean = false,
 )
 
 /** Every AI call of a session, in order. Never holds prompts, answers or keys — only counts and prices. */
@@ -50,5 +53,5 @@ internal suspend fun cacheKey(vararg parts: ByteArray): String {
     return digest.joinToString("") { (it.toInt() and 0xFF).toString(16).padStart(2, '0') }
 }
 
-/** Rough token estimate (≈ 4 characters per token) used only for the budget check before a call. */
+/** Rough token estimate (≈ 4 characters per token) for budgets and missing provider token counts. */
 internal fun estimateTokens(text: String) = text.length / 4 + 1

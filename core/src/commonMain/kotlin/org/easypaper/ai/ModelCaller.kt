@@ -30,10 +30,11 @@ internal class ModelCaller(
         image: ByteArray?,
         maxTokens: Int,
         imageFormat: String = "jpeg",
+        reportId: String? = null,
     ): String? {
         val key = cacheKey(model.id.encodeToByteArray(), system.encodeToByteArray(), user.encodeToByteArray(), image ?: ByteArray(0))
         cache.get(key)?.let { cached ->
-            ledger.add(AiUsage(step, config.providerName, model.id, 0, 0, 0.0, cached = true, millis = 0))
+            ledger.add(AiUsage(step, config.providerName, model.id, 0, 0, 0.0, cached = true, millis = 0, reportId = reportId))
             return cached
         }
         val params = LLMParams(temperature = 0.0, maxTokens = maxTokens, additionalProperties = config.extraParams.ifEmpty { null })
@@ -59,6 +60,8 @@ internal class ModelCaller(
             AiUsage(
                 step, config.providerName, model.id, input, output, config.price(model)?.cost(input, output) ?: 0.0,
                 cached = false, millis = mark.elapsedNow().inWholeMilliseconds,
+                reportId = reportId,
+                estimated = response.metaInfo.inputTokensCount == null || response.metaInfo.outputTokensCount == null,
             ),
         )
         if (text.isNotEmpty()) cache.put(key, text)

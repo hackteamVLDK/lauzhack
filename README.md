@@ -26,10 +26,64 @@ Kotlin Multiplatform project generated with [kmp.jetbrains.com](https://kmp.jetb
 
 - Android: `./gradlew :app:androidApp:installDebug` (emulator or device)
 - Desktop: `./gradlew :app:desktopApp:run`
-- Web (Wasm): `./gradlew :app:webApp:wasmJsBrowserDevelopmentRun`
+- Web development (Wasm): `./gradlew :app:webApp:wasmJsBrowserDevelopmentRun`
+- Web development (JS): `./gradlew :app:webApp:jsBrowserDevelopmentRun`
 - Server: `./gradlew :server:run`
 
 On Windows use `gradlew.bat`. The Android SDK is taken from `ANDROID_HOME` or `local.properties`.
+
+### Server and AI access
+
+Configure these environment variables in the server process, then run `./gradlew :server:run`
+(HTTP on `http://localhost:8080` by default):
+
+| Variable | Purpose |
+|---|---|
+| `EASYPAPER_AI` | `cloud`, `clinic` or `off`. Defaults to `cloud` when `OPENROUTER_API_KEY` is set, otherwise `off`. |
+| `OPENROUTER_API_KEY` | OpenRouter API key for cloud mode; stays on the server. Not needed for `clinic` or `off`. |
+| `EASYPAPER_CLINIC_TOKEN` | Private clinic access token. Clients send the matching value in `X-EasyPaper-Clinic-Token` for every `/ai/*` request. |
+| `EASYPAPER_BUDGET_USD` | Server AI spending cap in USD (cloud default: `9.00`). |
+
+For example, set `EASYPAPER_AI=cloud`, `OPENROUTER_API_KEY`, `EASYPAPER_CLINIC_TOKEN` and
+`EASYPAPER_BUDGET_USD=9.00` in your local environment before starting the server. Do not put real
+credentials in commands saved to Git, frontend bundles or logs. Clinic mode uses local Ollama;
+`EASYPAPER_OLLAMA_URL` defaults to `http://localhost:11434` and `EASYPAPER_OLLAMA_MODEL` to `gemma4:12b`.
+
+Without a configured clinic token (unset or empty), AI routes return `503 AI access token not configured`.
+The exception is `GET /ai/status` in `off` mode, which remains available without a configured token.
+With a configured token, a missing or incorrect header returns `401`, including in `off` mode.
+All `/ai/*` requests share a sliding limit of 30 requests per minute per connection IP, including
+failed authentication and status requests; further requests return `429`. Forwarded IP headers
+are not trusted, so clients behind the same reverse proxy share its connection IP limit.
+The clinic token and OpenRouter key are never logged or included in responses.
+
+**Cloud privacy:** de-identified facts sent for AI processing leave the clinic and are sent to
+OpenRouter in cloud mode. Easy Paper only collects and structures facts; it does not diagnose or
+give medical advice. Documents are processed only in clinic mode.
+
+For deployment, put Ktor behind a reverse proxy that terminates **HTTPS** and forwards requests
+to the server on a private interface. Preserve `X-EasyPaper-Clinic-Token` and exclude it and
+provider authorization headers from proxy access logs. Use HTTPS for the doctor's app and API.
+
+### Doctor's web app: development or served by Ktor
+
+1. **Development with live reload:** start Ktor with `./gradlew :server:run`, then in another terminal
+   run `./gradlew :app:webApp:wasmJsBrowserDevelopmentRun` (Wasm) or
+   `./gradlew :app:webApp:jsBrowserDevelopmentRun` (JS). Open `http://localhost:8081` (webpack).
+   Both development servers proxy `/ai` and `/reports` to `http://localhost:8080`, preserving paths
+   and request headers. The app uses the page's origin, so API calls use the same origin as the page.
+2. **Serve the built app from Ktor:** run `./gradlew :app:webApp:wasmJsBrowserDistribution`, then
+   `./gradlew :server:run` and open `http://localhost:8080`. Ktor serves the Wasm production build
+   from `app/webApp/build/dist/wasmJs/productionExecutable`. To serve the JS build instead, run
+   `./gradlew :app:webApp:jsBrowserDistribution` and set `EASYPAPER_WEB_DIR` to the absolute path of
+   `app/webApp/build/dist/js/productionExecutable` before starting Ktor. `EASYPAPER_WEB_DIR` also
+   supports any other directory containing the built web app.
+
+For authenticated AI, supply the private clinic token at runtime through `ShellSettings(aiToken = ...)`
+when creating `EasyPaperApp`; `serverUrl` can override the default page origin. Both the summary
+connection and the AI cost/status screen pass this token to `AiClient`. Its default is `null`,
+so an unconfigured client can only access the public off-mode status. The server environment
+variable is not automatically exposed to the browser; never embed the token in a public web build.
 
 ## Tests
 

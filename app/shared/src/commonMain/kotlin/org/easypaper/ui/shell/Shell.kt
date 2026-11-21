@@ -36,7 +36,13 @@ fun EasyPaperApp(
     demo: Boolean = false,
 ) {
     // The patient app never calls the server here (Android has no server URL; transfer is task 30).
-    val state = remember { ShellState(role, serverUrl = if (role == Role.Patient) null else defaultServerUrl()) }
+    val state = remember {
+        ShellState(
+            role,
+            serverUrl = if (role == Role.Patient) null else settings.serverUrl ?: defaultServerUrl(),
+            aiToken = { settings.aiToken },
+        )
+    }
     LaunchedEffect(state) {
         state.repository.refresh()
         if (demo) state.fillWithDemoData()

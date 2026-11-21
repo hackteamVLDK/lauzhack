@@ -2,6 +2,7 @@ package org.easypaper.ai
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -56,9 +57,12 @@ class AiException(val status: Int, message: String) : Exception(message)
  * The doctor's apps talk to the AI only through the Easy Paper server (#8): the OpenRouter key stays there,
  * the clinic module keeps documents inside the clinic. The app passes an [HttpClient] with its platform engine.
  */
-class AiClient(private val baseUrl: String, private val http: HttpClient) {
+class AiClient(private val baseUrl: String, private val http: HttpClient, private val token: String? = null) {
     suspend fun status(): AiStatus =
-        EasyPaperJson.decodeFromString(AiStatus.serializer(), checked(http.get(baseUrl) { url { appendPathSegments("ai", "status") } }))
+        EasyPaperJson.decodeFromString(AiStatus.serializer(), checked(http.get(baseUrl) {
+            url { appendPathSegments("ai", "status") }
+            token?.let { header("X-EasyPaper-Clinic-Token", it) }
+        }))
 
     suspend fun summarize(record: PatientRecord, photos: Map<String, ByteArray> = emptyMap(), utcOffsetMinutes: Int = 0): SummaryResult {
         val body = SummaryRequest(record, photos.mapValues { Base64.Default.encode(it.value) }, utcOffsetMinutes)
@@ -74,6 +78,7 @@ class AiClient(private val baseUrl: String, private val http: HttpClient) {
     private suspend fun post(path: String, json: String): String = checked(
         http.post(baseUrl) {
             url { appendPathSegments("ai", path) }
+            token?.let { header("X-EasyPaper-Clinic-Token", it) }
             contentType(ContentType.Application.Json)
             setBody(json)
         },

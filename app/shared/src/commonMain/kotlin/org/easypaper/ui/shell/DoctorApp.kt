@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -202,22 +201,22 @@ private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: Shel
         DoctorScreen.Cost -> if (state.aiUsage.isNotEmpty() || state.aiStatus != null) {
             AiCostScreen(status = state.aiStatus, usage = state.aiUsage.toList(), back = back)
         } else {
-            DoctorCostScreen(settings.serverUrl, back)
+            DoctorCostScreen(settings.serverUrl, settings.aiToken, back)
         }
         else -> NothingOpen()
     }
 }
 
 @Composable
-private fun DoctorCostScreen(serverUrl: String?, back: BackAction?) {
+private fun DoctorCostScreen(serverUrl: String?, aiToken: String?, back: BackAction?) {
     val url = serverUrl?.trim()?.takeIf { it.isNotEmpty() }
-    var status by remember(url) { mutableStateOf<AiStatus?>(null) }
-    LaunchedEffect(url) {
+    var status by remember(url, aiToken) { mutableStateOf<AiStatus?>(null) }
+    LaunchedEffect(url, aiToken) {
         if (url != null) {
             status = try {
                 val http = HttpClient()
                 try {
-                    AiClient(url, http).status()
+                    AiClient(url, http, token = aiToken).status()
                 } finally {
                     http.close()
                 }

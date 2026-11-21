@@ -153,6 +153,8 @@
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">Вартість ШІ</string>
     <string name="cost_report">Цей звіт</string>
+    <string name="cost_session">Уся сесія</string>
+    <string name="cost_estimated">оцінка</string>
     <string name="cost_demo_capture">Зафіксований демозапуск локальної моделі. Ці дані використання не оновлюються наживо.</string>
     <string name="cost_step_photo">Опис фото</string>
     <string name="cost_step_summary">Підсумок</string>
@@ -180,7 +182,7 @@
     <string name="cost_no">Ні</string>
     <string name="cost_unavailable">Недоступно</string>
     <string name="cost_empty_title">Викликів ШІ немає</string>
-    <string name="cost_empty_message">Для цього звіту немає записів про використання ШІ.</string>
+    <string name="cost_empty_message">Тут немає записів про використання ШІ.</string>
     <string name="cost_usd">%1$s $</string>
     <string name="cost_decimal_separator">,</string>
 

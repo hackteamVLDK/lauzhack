@@ -8,9 +8,12 @@ import ai.koog.prompt.llm.LLModel
 import ai.koog.prompt.message.Message
 import ai.koog.prompt.message.ResponseMetaInfo
 import ai.koog.prompt.streaming.StreamFrame
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -46,6 +49,7 @@ private class FakeExecutor(private val reply: (LLModel, Prompt) -> String) : Pro
 }
 
 class AiTest {
+    private val clinicToken = "test-clinic-token-do-not-echo"
     private val summaryReply = "Morning blood pressure 128-136/84-88 mmHg [e01, e02]\nAsks about ibuprofen with coffee [e35]"
     private val documentText = "Discharge letter. Current medication: Ramipril 5 mg once daily. Known allergy: penicillin."
 
@@ -54,12 +58,116 @@ class AiTest {
 
     private fun clinic(ex: FakeExecutor) = AiService(AiMode.CLINIC, ex, AiConfig.clinic(), Double.MAX_VALUE, keyConfigured = false)
 
-    private fun app(ai: AiService, test: suspend ApplicationTestBuilder.() -> Unit) = testApplication {
-        application { module(ai = ai) }
+    private fun app(ai: AiService, token: String? = clinicToken, test: suspend ApplicationTestBuilder.() -> Unit) = testApplication {
+        application { module(ai = ai, aiToken = token) }
+        client = createClient { defaultRequest { token?.let { header("X-EasyPaper-Clinic-Token", it) } } }
         test()
     }
 
     private val demoRequest = EasyPaperJson.encodeToString(SummaryRequest.serializer(), SummaryRequest(Demo.record))
+
+    private suspend fun assertNoToken(response: HttpResponse) {
+        val text = response.bodyAsText()
+        assertFalse(clinicToken in text || "wrong-private-token" in text)
+        assertFalse(response.headers.entries().any { (_, values) -> values.any { clinicToken in it || "wrong-private-token" in it } })
+    }
+
+    @Test
+    fun missingAndWrongTokensAreRejectedBeforeRoutingOrReadingBodies() = app(cloud()) {
+        val anonymous = createClient { }
+        for (path in listOf("/ai/status", "/ai/summary", "/ai/documents", "/ai/unknown", "/a%69/status", "/ai//status")) {
+            val missing = anonymous.get(path)
+            assertEquals(HttpStatusCode.Unauthorized, missing.status)
+            assertNoToken(missing)
+            val wrong = anonymous.post(path) {
+                header("X-EasyPaper-Clinic-Token", "wrong-private-token")
+                setBody("not json")
+            }
+            assertEquals(HttpStatusCode.Unauthorized, wrong.status)
+            assertNoToken(wrong)
+        }
+    }
+
+    @Test
+    fun correctTokenIsSentByAiClientAndNeverReturned() = app(cloud()) {
+        val status = AiClient("", createClient { }, token = clinicToken).status()
+        assertEquals("cloud", status.mode)
+        val response = client.get("/ai/status")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNoToken(response)
+    }
+
+    @Test
+    fun missingServerTokenMakesAllAiRoutesUnavailable() = app(cloud(), token = null) {
+        for (path in listOf("/ai/status", "/ai/summary", "/ai/documents", "/ai/unknown")) {
+            val response = client.post(path) { header("X-EasyPaper-Clinic-Token", clinicToken) }
+            assertEquals(HttpStatusCode.ServiceUnavailable, response.status)
+            assertEquals("AI access token not configured", response.bodyAsText())
+            assertNoToken(response)
+        }
+        assertEquals(HttpStatusCode.ServiceUnavailable, client.get("/ai/status").status)
+        assertEquals(HttpStatusCode.NotFound, client.get("/not-ai").status)
+    }
+
+    @Test
+    fun offModeExposesOnlyStatusWhenServerTokenIsMissing() = app(AiService.off(), token = null) {
+        val response = client.get("/ai/status")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("off", AiClient("", client).status().mode)
+        assertNoToken(response)
+        for (path in listOf("/ai/summary", "/ai/documents", "/ai/status")) {
+            assertEquals(HttpStatusCode.ServiceUnavailable, client.post(path).status)
+        }
+    }
+
+    @Test
+    fun offModeStillRequiresAConfiguredToken() = app(AiService.off()) {
+        assertEquals(HttpStatusCode.Unauthorized, createClient { }.get("/ai/status").status)
+        assertEquals(HttpStatusCode.OK, client.get("/ai/status").status)
+    }
+
+    @Test
+    fun emptyServerTokenIsNotConfigured() = app(cloud(), token = "") {
+        val response = client.get("/ai/status")
+        assertEquals(HttpStatusCode.ServiceUnavailable, response.status)
+        assertEquals("AI access token not configured", response.bodyAsText())
+    }
+
+    @Test
+    fun thirtyFirstRequestWithinAMinuteIsRateLimited() = app(cloud()) {
+        repeat(30) { assertEquals(HttpStatusCode.OK, client.get("/ai/status").status) }
+        val response = client.post("/ai/summary") {
+            header("X-Forwarded-For", "203.0.113.123")
+            setBody(demoRequest)
+        }
+        assertEquals(HttpStatusCode.TooManyRequests, response.status)
+        assertNoToken(response)
+    }
+
+    @Test
+    fun unauthorizedRequestsAlsoUseTheSharedAiLimit() = app(cloud()) {
+        val anonymous = createClient { }
+        repeat(30) {
+            assertEquals(HttpStatusCode.Unauthorized, anonymous.get("/ai/unknown").status)
+        }
+        assertEquals(HttpStatusCode.TooManyRequests, client.get("/ai/status").status)
+    }
+
+    @Test
+    fun limiterUsesASlidingMinuteAndKeepsIpsSeparate() {
+        var now = 0L
+        val limiter = AiRateLimiter { now }
+        repeat(15) { assertTrue(limiter.allow("first-ip")) }
+        now = 30_000_000_000L
+        repeat(15) { assertTrue(limiter.allow("first-ip")) }
+        assertFalse(limiter.allow("first-ip"))
+        assertTrue(limiter.allow("second-ip"))
+        now = 60_000_000_000L
+        repeat(15) { assertTrue(limiter.allow("first-ip")) }
+        assertFalse(limiter.allow("first-ip"))
+        now = 90_000_000_000L
+        assertTrue(limiter.allow("first-ip"))
+    }
 
     @Test
     fun statusShowsModelsAndSpendingButNeverTheKey() = app(cloud()) {
@@ -77,7 +185,7 @@ class AiTest {
         val response = client.get("/ai/status")
         assertEquals(HttpStatusCode.OK, response.status)
         val text = response.bodyAsText()
-        val status = AiClient("", client).status()
+        val status = AiClient("", createClient { }, token = clinicToken).status()
         assertEquals("clinic", status.mode)
         assertNull(status.budgetUsd)
         assertTrue("\"budgetUsd\":null" in text)
@@ -133,7 +241,7 @@ class AiTest {
             """.trimIndent()
         }
         app(clinic(ex)) {
-            val facts = AiClient("", client).extractDocument("doc-1", text = documentText)
+            val facts = AiClient("", createClient { }, token = clinicToken).extractDocument("doc-1", text = documentText)
             assertEquals(listOf("medication", "allergy"), facts.facts.map { it.field })
             assertTrue(facts.facts.all { it.verified && it.documentId == "doc-1" })
             assertTrue("2 fact(s) without a matching quote removed" in facts.note.orEmpty())

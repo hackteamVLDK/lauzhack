@@ -24,13 +24,15 @@ enum class Role { Patient, Doctor }
 
 /** Developer settings from the hidden menu; also set by Desktop system properties for screenshots. */
 @Stable
-class ShellSettings(dark: Boolean? = null, largeText: Boolean = false, serverUrl: String? = null) {
+class ShellSettings(dark: Boolean? = null, largeText: Boolean = false, serverUrl: String? = null, aiToken: String? = null) {
     /** null = follow the system. */
     var dark: Boolean? by mutableStateOf(dark)
     /** Text at 200 % to check layouts at the largest system font size. */
     var largeText: Boolean by mutableStateOf(largeText)
     /** Optional Easy Paper server for live AI status; null keeps the captured demo only. */
     var serverUrl: String? by mutableStateOf(serverUrl)
+    /** Clinic access token for AI requests; kept in memory and never displayed. */
+    var aiToken: String? by mutableStateOf(aiToken)
 }
 
 /**
@@ -42,9 +44,10 @@ class ShellState(
     role: Role? = null,
     val repository: PatientRepository = inMemoryPatientRepository(),
     serverUrl: String? = null,
+    aiToken: () -> String? = { null },
 ) {
     /** The Easy Paper server for the AI summary (doctor app); null when there is none. */
-    val server: ServerConnection? = serverUrl?.let { ServerConnection(it) }
+    val server: ServerConnection? = serverUrl?.let { ServerConnection(it, aiToken) }
 
     /** Server AI mode, models and spending (#8), for the cost screen (#32); null until asked or unreachable. */
     var aiStatus: AiStatus? by mutableStateOf(null)

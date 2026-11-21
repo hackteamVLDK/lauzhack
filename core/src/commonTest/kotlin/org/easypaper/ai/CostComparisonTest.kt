@@ -4,6 +4,9 @@ import kotlinx.serialization.encodeToString
 import org.easypaper.model.EasyPaperJson
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class CostComparisonTest {
     @Test
@@ -99,8 +102,71 @@ class CostComparisonTest {
 
     @Test
     fun comparisonIncludingStepKeysCanBeSerialized() {
-        val result = costComparison(listOf(usage(AiStep.Summary, 100, 20, 0.001)))
+        val result = costComparison(listOf(usage(AiStep.Summary, 100, 20, 0.001).copy(reportId = "req-1", estimated = true)))
         assertEquals(result, EasyPaperJson.decodeFromString(CostComparison.serializer(), EasyPaperJson.encodeToString(result)))
+    }
+
+    @Test
+    fun reportComparisonExcludesOtherReportsAndUnassignedCalls() {
+        val photo = usage(AiStep.PhotoDescription, 100, 20, 0.001).copy(reportId = "req-1", estimated = true)
+        val summary = usage(AiStep.Summary, 500, 100, 0.004).copy(reportId = "req-1")
+        val other = summary.copy(reportId = "req-2", inputTokens = 300, costUsd = 0.003)
+        val document = usage(AiStep.DocumentExtraction, 700, 50, 0.003)
+        val cached = summary.copy(cached = true)
+        val all = listOf(photo, summary, other, cached, document)
+
+        val report = costComparison(all, reportId = "req-1")
+        assertEquals(costComparison(listOf(photo, summary, cached)), report)
+        assertEquals(2, report.calls)
+        assertEquals(1, report.cacheHits)
+        assertEquals(600, report.inputTokens)
+        assertEquals(120, report.outputTokens)
+        assertEquals(0.005, report.actualUsd, 1e-12)
+        assertTrue(report.hasEstimates)
+        assertTrue(report.perStep.getValue(AiStep.PhotoDescription).hasEstimates)
+        assertFalse(report.perStep.getValue(AiStep.Summary).hasEstimates)
+        assertFalse(costComparison(all, reportId = "req-2").hasEstimates)
+        assertEquals(costComparison(emptyList()), costComparison(all, reportId = "missing"))
+
+        val session = costComparison(all)
+        assertEquals(4, session.calls)
+        assertEquals(1, session.cacheHits)
+        assertEquals(1_600, session.inputTokens)
+        assertEquals(270, session.outputTokens)
+        assertEquals(0.011, session.actualUsd, 1e-12)
+        assertTrue(session.hasEstimates)
+    }
+
+    @Test
+    fun latestReportUsesLastAssignedIdAndIncludesItsEarlierCalls() {
+        val first = usage(AiStep.Summary, 100, 20).copy(reportId = "req-1")
+        val second = first.copy(reportId = "req-2")
+        val cachedFirst = first.copy(cached = true)
+        val document = first.copy(step = AiStep.DocumentExtraction, reportId = null)
+
+        assertEquals(listOf(first, cachedFirst), latestReportUsage(listOf(first, second, cachedFirst, document)))
+        assertEquals(listOf(second), latestReportUsage(listOf(first, second, document)))
+        assertTrue(latestReportUsage(listOf(document)).isEmpty())
+        assertTrue(latestReportUsage(emptyList()).isEmpty())
+    }
+
+    @Test
+    fun cachedEstimatesDoNotMakeZeroTokenChargesEstimated() {
+        val cached = usage(AiStep.Summary, 100, 20, 0.001).copy(cached = true, estimated = true)
+        val result = costComparison(listOf(cached))
+        assertFalse(result.hasEstimates)
+        assertFalse(result.perStep.getValue(AiStep.Summary).hasEstimates)
+        assertEquals(0.0, result.actualUsd)
+    }
+
+    @Test
+    fun usageSupportsOldJsonAndRoundTripsReportAndEstimate() {
+        val oldJson = """{"step":"Summary","provider":"test","model":"test","inputTokens":1,"outputTokens":2,"costUsd":0.0,"cached":false,"millis":0}"""
+        val old = EasyPaperJson.decodeFromString(AiUsage.serializer(), oldJson)
+        assertNull(old.reportId)
+        assertFalse(old.estimated)
+        val current = old.copy(reportId = "req-1", estimated = true)
+        assertEquals(current, EasyPaperJson.decodeFromString(AiUsage.serializer(), EasyPaperJson.encodeToString(current)))
     }
 
     private fun usage(step: AiStep, input: Int, output: Int, cost: Double = 0.0) = AiUsage(

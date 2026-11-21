@@ -8,8 +8,16 @@ import ai.koog.prompt.llm.LLModel
 import ai.koog.prompt.message.Message
 import ai.koog.prompt.streaming.StreamFrame
 import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLDecodeException
+import io.ktor.http.decodeURLPart
+import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCallPipeline
+import io.ktor.server.application.call
 import io.ktor.server.request.contentLength
+import io.ktor.server.request.httpMethod
+import io.ktor.server.request.path
 import io.ktor.server.request.receiveChannel
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
@@ -36,6 +44,8 @@ import org.easypaper.ai.UsageLedger
 import org.easypaper.ai.clinicExecutor
 import org.easypaper.ai.cloudExecutor
 import org.easypaper.model.EasyPaperJson
+import java.security.MessageDigest
+import java.util.ArrayDeque
 import kotlin.io.encoding.Base64
 
 enum class AiMode { CLOUD, CLINIC, OFF }
@@ -129,6 +139,61 @@ private object NoAi : PromptExecutorAPI {
 }
 
 const val MAX_AI_BODY_BYTES = 8L * 1024 * 1024
+
+/** Sliding minute per connection IP; forwarded headers are not trusted. Shared by all AI routes. */
+internal class AiRateLimiter(private val nanoTime: () -> Long = System::nanoTime) {
+    private val requests = mutableMapOf<String, ArrayDeque<Long>>()
+
+    @Synchronized
+    fun allow(ip: String): Boolean {
+        val now = nanoTime()
+        val minute = 60_000_000_000L
+        // Drop inactive IPs so the map does not retain them indefinitely.
+        requests.entries.removeIf { now - it.value.peekLast() >= minute }
+        val times = requests.getOrPut(ip) { ArrayDeque() }
+        while (times.isNotEmpty() && now - times.peekFirst() >= minute) times.removeFirst()
+        if (times.size >= 30) return false
+        times.addLast(now)
+        return true
+    }
+}
+
+/** Runs before routing, including unknown AI paths and unsupported methods. Never logs credentials. */
+internal fun Application.protectAiRoutes(mode: AiMode, token: String?) {
+    val tokenDigest = token?.takeIf { it.isNotEmpty() }?.let(::hashAiToken)
+    val limiter = AiRateLimiter()
+    intercept(ApplicationCallPipeline.Plugins) {
+        // Match Ktor's decoded path segments so encoded letters or repeated slashes cannot bypass access checks.
+        val segments = try {
+            call.request.path().split('/').filter { it.isNotEmpty() }.map { it.decodeURLPart() }
+        } catch (_: URLDecodeException) {
+            call.respondText("Bad request path", status = HttpStatusCode.BadRequest)
+            finish()
+            return@intercept
+        }
+        if (segments.firstOrNull() == "ai") {
+            val failure = when {
+                !limiter.allow(call.request.local.remoteAddress) -> HttpStatusCode.TooManyRequests to "Too many AI requests"
+                tokenDigest == null -> {
+                    if (mode == AiMode.OFF && segments == listOf("ai", "status") && call.request.httpMethod == HttpMethod.Get) null
+                    else HttpStatusCode.ServiceUnavailable to "AI access token not configured"
+                }
+                else -> {
+                    val supplied = call.request.headers["X-EasyPaper-Clinic-Token"].orEmpty()
+                    // Both digests have the same fixed length, including for missing or wrong-length tokens.
+                    val digest = hashAiToken(supplied)
+                    if (MessageDigest.isEqual(tokenDigest, digest)) null else HttpStatusCode.Unauthorized to "Unauthorized"
+                }
+            }
+            if (failure != null) {
+                call.respondText(failure.second, status = failure.first)
+                finish()
+            }
+        }
+    }
+}
+
+private fun hashAiToken(token: String): ByteArray = MessageDigest.getInstance("SHA-256").digest(token.toByteArray(Charsets.UTF_8))
 
 fun Route.aiRoutes(ai: AiService) {
     get("/ai/status") { call.json(EasyPaperJson.encodeToString(AiStatus.serializer(), ai.status())) }

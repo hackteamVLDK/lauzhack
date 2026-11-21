@@ -33,7 +33,9 @@ fun Application.module(
     webDir: File? = null,
     purgeEvery: Duration = 10.minutes,
     ai: AiService = AiService.off(),
+    aiToken: String? = System.getenv("EASYPAPER_CLINIC_TOKEN"),
 ) {
+    protectAiRoutes(ai.mode, aiToken)
     launch {
         while (isActive) {
             delay(purgeEvery)

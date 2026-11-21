@@ -151,6 +151,8 @@
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">AI cost</string>
     <string name="cost_report">This report</string>
+    <string name="cost_session">Entire session</string>
+    <string name="cost_estimated">estimated</string>
     <string name="cost_demo_capture">Captured demo run of the local model. These usage figures are not live.</string>
     <string name="cost_step_photo">Photo description</string>
     <string name="cost_step_summary">Summary</string>
@@ -178,7 +180,7 @@
     <string name="cost_no">No</string>
     <string name="cost_unavailable">Not available</string>
     <string name="cost_empty_title">No AI calls</string>
-    <string name="cost_empty_message">This report has no recorded AI usage.</string>
+    <string name="cost_empty_message">No AI usage is recorded here.</string>
     <string name="cost_usd">$%1$s</string>
     <string name="cost_decimal_separator">.</string>
 

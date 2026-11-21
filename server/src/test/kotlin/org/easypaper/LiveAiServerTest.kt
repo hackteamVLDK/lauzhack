@@ -15,9 +15,11 @@ class LiveAiServerTest {
     fun clinicModuleEndToEnd() {
         val live = System.getenv("EASYPAPER_LIVE") ?: return println("LiveAiServerTest skipped: set EASYPAPER_LIVE")
         val ai = AiService.fromEnv { name -> if (name == "EASYPAPER_AI") (if (live == "ollama") "clinic" else "cloud") else System.getenv(name) }
+        val token = System.getenv("EASYPAPER_CLINIC_TOKEN")
+            ?: error("Set EASYPAPER_CLINIC_TOKEN for the live server test")
         testApplication {
-            application { module(ai = ai) }
-            val client = AiClient("", client)
+            application { module(ai = ai, aiToken = token) }
+            val client = AiClient("", client, token = token)
             val summary = client.summarize(Demo.record)
             println("=== ${ai.status().provider}: usedAi=${summary.usedAi} note=${summary.note}")
             summary.lines.forEach { println((if (it.supported) "  ok  " else "  ??  ") + it.text) }

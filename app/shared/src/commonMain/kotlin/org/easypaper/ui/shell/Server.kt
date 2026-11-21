@@ -14,12 +14,12 @@ expect fun defaultServerUrl(): String?
 private const val AI_TIMEOUT_MILLIS = 120_000L
 
 /** The doctor app's connection to the server; the platform's Ktor engine is found on the classpath. */
-class ServerConnection(val baseUrl: String) {
+class ServerConnection(val baseUrl: String, private val aiToken: () -> String? = { null }) {
     private val http = HttpClient {
         install(HttpTimeout) {
             requestTimeoutMillis = AI_TIMEOUT_MILLIS
             socketTimeoutMillis = AI_TIMEOUT_MILLIS
         }
     }
-    val ai = AiClient(baseUrl.trimEnd('/'), http)
+    val ai: AiClient get() = AiClient(baseUrl.trimEnd('/'), http, token = aiToken())
 }
