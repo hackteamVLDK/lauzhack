@@ -33,7 +33,7 @@ class RelayClient(private val baseUrl: String, private val http: HttpClient) {
 
     private suspend fun post(path: List<String>, bytes: ByteArray) {
         val response = http.post(baseUrl) {
-            url { appendPathSegments(path) } // a "/" inside a photo ref is encoded, it stays one segment
+            url { appendPathSegments(path, encodeSlash = true) } // "photo/e1" must stay one segment
             contentType(ContentType.Application.OctetStream)
             setBody(bytes)
         }
@@ -41,7 +41,7 @@ class RelayClient(private val baseUrl: String, private val http: HttpClient) {
     }
 
     private suspend fun get(path: List<String>): ByteArray {
-        val response = http.get(baseUrl) { url { appendPathSegments(path) } }
+        val response = http.get(baseUrl) { url { appendPathSegments(path, encodeSlash = true) } }
         if (response.status != HttpStatusCode.OK) throw failure(response, "download")
         return response.readRawBytes()
     }

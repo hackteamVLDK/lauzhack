@@ -17,3 +17,8 @@ dependencies {
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)
 }
+
+// :server:run starts in server/, so the doctor's web app (wasmJs build) is located from the repo root
+tasks.named<JavaExec>("run") {
+    systemProperty("easypaper.webDir", rootProject.file("app/webApp/build/dist/wasmJs/productionExecutable").path)
+}

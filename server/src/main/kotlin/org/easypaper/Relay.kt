@@ -51,6 +51,10 @@ class Relay(
     @Synchronized
     internal fun peek(key: String): ByteArray? = objects[key]?.bytes // tests only
 
+    /** Drops everything past its TTL; also called on every request. */
+    @Synchronized
+    fun purge() = purgeExpired()
+
     private fun purgeExpired() {
         val t = now()
         objects.entries.removeAll { it.value.expires <= t }

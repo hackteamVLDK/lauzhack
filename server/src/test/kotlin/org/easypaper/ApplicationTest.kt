@@ -5,12 +5,16 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import org.easypaper.demo.Demo
+import org.easypaper.model.*
+import org.easypaper.report.Report
+import org.easypaper.report.newReportId
 import org.easypaper.report.RelayClient
 import org.easypaper.report.RelayException
 import org.easypaper.report.openPhoto
 import org.easypaper.report.openReport
 import org.easypaper.report.sealReport
 import java.nio.file.Files
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.test.*
 
 class ApplicationTest {
@@ -96,6 +100,43 @@ class ApplicationTest {
             assertEquals(Demo.report, openReport(relayClient.downloadReport(sealed.qr), sealed.qr))
             assertContentEquals(photo, openPhoto(relayClient.downloadPhoto(sealed.qr, "demo-photo-1"), sealed.qr, "demo-photo-1"))
             assertEquals(404, assertFailsWith<RelayException> { relayClient.downloadReport(sealed.qr) }.status)
+        }
+    }
+
+    @Test
+    fun photoRefWithSlashTravelsThroughTheClient() {
+        val relay = Relay()
+        relayApp(relay) {
+            val report = Report(
+                id = newReportId(), createdAt = 0,
+                record = PatientRecord(
+                    CareRequest(id = "req", createdAt = 0, doctorName = "Dr", complaint = "c", startDate = "2026-11-21", days = 1,
+                        locale = "en", widgets = listOf(FoodWidget("f", "Food"))),
+                    listOf(Entry("e1", "f", 0, Food("soup", "photo/e1"))), // photoRef format of PhotoStore (#27)
+                ),
+            )
+            val photo = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 0xFF.toByte(), 0xDA.toByte(), 0, 8, 1, 1, 0, 0, 0x3F, 0, 9,
+                0xFF.toByte(), 0xD9.toByte())
+            val sealed = sealReport(report, mapOf("photo/e1" to photo))
+            val relayClient = RelayClient("http://localhost", client)
+            relayClient.upload(sealed)
+            assertNotNull(relay.peek("photo/${report.id}/photo/e1")) // one object, not an extra path segment
+            assertContentEquals(photo, openPhoto(relayClient.downloadPhoto(sealed.qr, "photo/e1"), sealed.qr, "photo/e1"))
+        }
+    }
+
+    @Test
+    fun expiredObjectsArePurgedWithoutAnyRequest() {
+        var clock = 0L
+        val relay = Relay(ttlMillis = 1000, now = { clock })
+        testApplication {
+            application { module(relay, purgeEvery = 50.milliseconds) }
+            startApplication()
+            assertEquals(Relay.PutResult.CREATED, relay.put("report/rep-purge-01", bytes(10)))
+            clock = 1000
+            var waited = 0
+            while (relay.peek("report/rep-purge-01") != null && waited < 3000) { Thread.sleep(50); waited += 50 }
+            assertNull(relay.peek("report/rep-purge-01"), "not purged after ${waited} ms")
         }
     }
 
