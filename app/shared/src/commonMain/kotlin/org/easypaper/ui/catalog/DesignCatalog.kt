@@ -17,13 +17,10 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.add
 import easypaper.app.shared.generated.resources.appearance_dark
@@ -64,6 +61,7 @@ import org.easypaper.ui.components.CategoryRow
 import org.easypaper.ui.components.DraftBadge
 import org.easypaper.ui.components.GrayButton
 import org.easypaper.ui.components.GroupedSection
+import org.easypaper.ui.components.IosSwitch
 import org.easypaper.ui.components.PlainButton
 import org.easypaper.ui.components.ProminentButton
 import org.easypaper.ui.components.RowSeparator
@@ -106,14 +104,7 @@ fun DesignCatalog(dark: Boolean, onDarkChange: (Boolean) -> Unit) {
                 ) {
                     Text(stringResource(Res.string.appearance_dark), style = type.body, color = colors.label,
                         modifier = Modifier.weight(1f))
-                    Switch(
-                        checked = dark, onCheckedChange = onDarkChange,
-                        colors = SwitchDefaults.colors(
-                            checkedTrackColor = colors.switchOn, checkedThumbColor = Color.White,
-                            checkedBorderColor = colors.switchOn, uncheckedTrackColor = colors.fill,
-                            uncheckedThumbColor = Color.White, uncheckedBorderColor = colors.fill,
-                        ),
-                    )
+                    IosSwitch(checked = dark, onCheckedChange = onDarkChange)
                 }
             }
 
@@ -167,12 +158,12 @@ fun DesignCatalog(dark: Boolean, onDarkChange: (Boolean) -> Unit) {
                     }
                 }
                 RowSeparator()
-                CategoryRow(Category.Diary, stringResource(Res.string.cat_diary)) {
-                    PlainButton(stringResource(Res.string.write_feeling), onClick = {})
+                CategoryRow(Category.Diary, stringResource(Res.string.cat_diary), onClick = {}) {
+                    Text(stringResource(Res.string.write_feeling), style = type.body, color = colors.link)
                 }
                 RowSeparator()
-                CategoryRow(Category.DoctorQuestion, stringResource(Res.string.cat_question)) {
-                    PlainButton(stringResource(Res.string.ask_question), onClick = {})
+                CategoryRow(Category.DoctorQuestion, stringResource(Res.string.cat_question), onClick = {}) {
+                    Text(stringResource(Res.string.ask_question), style = type.body, color = colors.link)
                 }
             }
 

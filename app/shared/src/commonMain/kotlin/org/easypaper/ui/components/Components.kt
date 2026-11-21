@@ -1,5 +1,7 @@
 package org.easypaper.ui.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -12,9 +14,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -224,3 +230,29 @@ fun DraftBadge(text: String, modifier: Modifier = Modifier) {
             .padding(horizontal = spacing.xs, vertical = 2.dp),
     )
 }
+
+/** iOS switch: 51 × 31 capsule track, white 27 dp thumb with a soft shadow; green when on. */
+@Composable
+fun IosSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
+    val colors = EasyPaperTheme.colors
+    // Off track: systemGray5-like in light, a separator-gray in dark so it stays visible on `cell`.
+    val track by animateColorAsState(if (checked) colors.switchOn else if (colors.isDark) colors.separator else colors.fill)
+    val thumbOffset by animateDpAsState(if (checked) SWITCH_TRAVEL else 0.dp)
+    Box(
+        modifier.minimumInteractiveComponentSize()
+            .toggleable(value = checked, enabled = enabled, role = Role.Switch, onValueChange = onCheckedChange,
+                interactionSource = remember { MutableInteractionSource() }, indication = null)
+            .alpha(if (enabled) 1f else 0.4f),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(Modifier.size(SWITCH_WIDTH, SWITCH_HEIGHT).clip(EasyPaperTheme.shapes.capsule).background(track).padding(SWITCH_INSET)) {
+            Box(Modifier.offset(x = thumbOffset).size(SWITCH_THUMB).shadow(SWITCH_INSET, CircleShape).background(Color.White, CircleShape))
+        }
+    }
+}
+
+private val SWITCH_WIDTH = 51.dp
+private val SWITCH_HEIGHT = 31.dp
+private val SWITCH_INSET = 2.dp
+private val SWITCH_THUMB = 27.dp
+private val SWITCH_TRAVEL = SWITCH_WIDTH - SWITCH_THUMB - SWITCH_INSET * 2
