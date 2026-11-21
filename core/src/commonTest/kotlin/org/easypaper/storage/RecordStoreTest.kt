@@ -43,7 +43,7 @@ class RecordStoreTest {
     fun bytesAtRestAreNotPlaintext() = runTest {
         val blobs = MemoryBlobs()
         RecordStore(blobs, generateRecordKey()).save(record("a"))
-        assertFalse("secret complaint" in blobs.map.getValue("a").decodeToString())
+        assertFalse("secret complaint" in blobs.map.getValue("record/a").decodeToString())
     }
 
     @Test
@@ -58,7 +58,7 @@ class RecordStoreTest {
         val blobs = MemoryBlobs()
         val store = RecordStore(blobs, generateRecordKey())
         store.save(record("a"))
-        val bytes = blobs.map.getValue("a")
+        val bytes = blobs.map.getValue("record/a")
         bytes[bytes.size / 2] = (bytes[bytes.size / 2] + 1).toByte()
         assertFails { store.load("a") }
     }
@@ -68,7 +68,7 @@ class RecordStoreTest {
         val blobs = MemoryBlobs()
         val store = RecordStore(blobs, generateRecordKey())
         store.save(record("a"))
-        blobs.map["b"] = blobs.map.getValue("a")
+        blobs.map["record/b"] = blobs.map.getValue("record/a")
         assertFails { store.load("b") }
     }
 
@@ -86,7 +86,7 @@ class RecordStoreTest {
         store.delete("a")
         assertNull(store.load("a"))
         assertEquals(listOf("b"), store.list())
-        assertFalse("a" in blobs.map)
+        assertFalse("record/a" in blobs.map)
         store.delete("a") // again
         store.delete("never-existed")
         assertEquals(record("b"), store.load("b"))

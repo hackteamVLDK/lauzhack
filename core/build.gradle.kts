@@ -1,4 +1,6 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -30,12 +32,23 @@ kotlin {
            isIncludeAndroidResources = true
        }
     }
+    // jvmAndAndroidMain: code shared by Desktop and Android only (java.io files, e.g. FileBlobStore)
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            group("jvmAndAndroid") {
+                withJvm()
+                withCompilations { it.target.platformType == KotlinPlatformType.androidJvm }
+            }
+        }
+    }
     sourceSets {
         commonMain.dependencies {
             api(libs.kotlinx.serializationJson)
             implementation(libs.cryptography.core)
             implementation(libs.cryptography.providerOptimal)
             implementation(libs.ktor.clientCore)
+            api(libs.kotlinx.coroutinesCore) // PatientRepository exposes StateFlow
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

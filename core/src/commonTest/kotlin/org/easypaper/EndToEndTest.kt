@@ -86,7 +86,7 @@ class EndToEndTest {
         }
         val store = RecordStore(blobs, generateRecordKey())
         store.save(record)
-        assertFalse("Pizza" in blobs.map.getValue("req-e2e").decodeToString())
+        assertFalse("Pizza" in blobs.map.getValue("record/req-e2e").decodeToString())
         val loaded = store.load("req-e2e")!!
         store.delete("req-e2e") // after the visit the patient erases the diary
         assertEquals(emptyList(), store.list())
