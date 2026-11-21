@@ -47,6 +47,7 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
+            implementation(libs.qrose)
             api(project(":core"))
             implementation(libs.ktor.clientCore)
             implementation(libs.compose.runtime)

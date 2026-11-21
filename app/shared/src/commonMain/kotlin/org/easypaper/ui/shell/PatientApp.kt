@@ -51,6 +51,8 @@ import org.easypaper.ui.components.NavigationBar
 import org.easypaper.ui.components.PushNavigation
 import org.easypaper.ui.components.Sheet
 import org.easypaper.ui.components.TabBar
+import org.easypaper.ui.handover.ShareScreen
+import org.easypaper.ui.handover.relayUrl
 import org.easypaper.ui.components.TabItem
 import org.easypaper.ui.format.RequestDay
 import org.easypaper.ui.format.longDate
@@ -129,7 +131,7 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
                             DayScreen(r, screen.date, timeZone, BackAction(tabTitle(tab), navigator::back),
                                 onDelete = { entryId -> scope.launch { state.repository.removeEntry(r.request.id, entryId) } })
                         }
-                        PatientScreen.Share -> ShareScreen(openDeveloper)
+                        PatientScreen.Share -> ShareScreen(state.repository, relayUrl(settings.serverUrl, defaultServerUrl()), openDeveloper)
                         PatientScreen.DesignCatalog -> CatalogScreen(settings, BackAction(tabTitle(tab), navigator::back))
                         PatientScreen.Developer, is PatientScreen.AddEntry -> Unit // shown as sheets
                     }
@@ -223,23 +225,6 @@ private fun requestLine(request: CareRequest, today: LocalDate): String? {
         is RequestDay.Running -> stringResource(Res.string.day_of, day.day, day.of, request.doctorName)
         is RequestDay.NotStarted -> stringResource(Res.string.starts_on, longDate(day.startsOn))
         is RequestDay.Finished -> stringResource(Res.string.ended_on, longDate(day.endedOn))
-    }
-}
-
-@Composable
-private fun ShareScreen(onDeveloper: () -> Unit) {
-    LargeTitleScaffold(title = stringResource(Res.string.tab_share), onTitleLongPress = onDeveloper, bottomInset = false) {
-        item {
-            // Task 30 adds the button that encrypts the report and shows the QR.
-            GroupedSection {
-                Text(
-                    stringResource(Res.string.share_explain),
-                    style = EasyPaperTheme.typography.body,
-                    color = EasyPaperTheme.colors.label,
-                    modifier = Modifier.padding(EasyPaperTheme.spacing.m),
-                )
-            }
-        }
     }
 }
 
