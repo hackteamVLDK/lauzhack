@@ -33,4 +33,84 @@
     <string name="show_qr">Показати QR лікарю</string>
     <string name="sample_sources">Пн 08:10   Чт 07:55</string>
     <string name="sample_med_form">Раміприл 5 мг 1-0-0</string>
+
+    <!-- App shell (task 26) -->
+    <string name="app_name">Easy Paper</string>
+    <string name="tab_history">Історія</string>
+    <string name="tab_share">Поділитися</string>
+    <string name="back">Назад</string>
+    <string name="done">Готово</string>
+    <string name="day_of">День %1$d з %2$d, %3$s</string>
+    <string name="starts_on">Початок: %1$s</string>
+    <string name="ended_on">Завершено: %1$s</string>
+    <string name="today_empty_title">Запиту від лікаря ще немає</string>
+    <string name="today_empty_message">Відкрийте посилання-запрошення від лікаря на цьому телефоні. Тут з’явиться, що потрібно записувати.</string>
+    <string name="history_empty_title">Записів ще немає</string>
+    <string name="history_empty_message">Тут з’являтимуться ваші записи, день за днем.</string>
+    <string name="share_explain">На прийомі ви показуєте QR-код, і комп’ютер лікаря відкриває ваші записи. До того вони залишаються на цьому телефоні.</string>
+    <string name="requests">Запити</string>
+    <string name="new_request">Новий запит</string>
+    <string name="new_request_message">Оберіть, що й скільки днів записує пацієнт. Запит надсилається посиланням або QR-кодом.</string>
+    <string name="doctor_empty_title">Звіт не відкрито</string>
+    <string name="doctor_empty_message">Відскануйте QR-код пацієнта, щоб відкрити звіт, або створіть новий запит.</string>
+    <string name="section_entries">Записи</string>
+    <string name="developer">Для розробників</string>
+    <string name="design_catalog">Каталог дизайну</string>
+    <string name="fill_demo">Заповнити демо-даними</string>
+    <string name="clear_data">Очистити дані</string>
+    <string name="large_text">Більший шрифт (200 %)</string>
+    <string name="switch_to_doctor">Перейти до застосунку лікаря</string>
+    <string name="switch_to_patient">Перейти до застосунку пацієнта</string>
+    <string name="dev_footer">Приховане меню для демо й тестів. Відкривається довгим натисканням на заголовок екрана.</string>
+    <string name="role_question">Хто користується цим комп’ютером?</string>
+    <string name="role_patient">Я пацієнт</string>
+    <string name="role_patient_detail">Записувати те, що просить лікар</string>
+    <string name="role_doctor">Я лікар</string>
+    <string name="role_doctor_detail">Створювати запити й відкривати звіти пацієнтів</string>
+    <string name="date_long">%1$s, %2$d %3$s</string>
+    <string name="date_range_one_month">%1$d–%2$d %3$s</string>
+    <string name="date_range_two_months">%1$d %2$s – %3$d %4$s</string>
+    <string-array name="weekdays">
+        <item>понеділок</item>
+        <item>вівторок</item>
+        <item>середа</item>
+        <item>четвер</item>
+        <item>пʼятниця</item>
+        <item>субота</item>
+        <item>неділя</item>
+    </string-array>
+    <string-array name="months_long">
+        <item>січня</item>
+        <item>лютого</item>
+        <item>березня</item>
+        <item>квітня</item>
+        <item>травня</item>
+        <item>червня</item>
+        <item>липня</item>
+        <item>серпня</item>
+        <item>вересня</item>
+        <item>жовтня</item>
+        <item>листопада</item>
+        <item>грудня</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>січ.</item>
+        <item>лют.</item>
+        <item>бер.</item>
+        <item>квіт.</item>
+        <item>трав.</item>
+        <item>черв.</item>
+        <item>лип.</item>
+        <item>серп.</item>
+        <item>вер.</item>
+        <item>жовт.</item>
+        <item>лист.</item>
+        <item>груд.</item>
+    </string-array>
+    <plurals name="entries">
+        <item quantity="one">%1$d запис</item>
+        <item quantity="few">%1$d записи</item>
+        <item quantity="many">%1$d записів</item>
+        <item quantity="other">%1$d запису</item>
+    </plurals>
 </resources>
