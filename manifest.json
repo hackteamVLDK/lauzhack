@@ -1,30 +1,30 @@
 {
   "schema_version": 3,
-  "last_event_id": 161,
+  "last_event_id": 163,
   "files": {
     "CHANGES.md": {
       "sha256": "ec0fec75545912fe008954995fdce1ee109480d7f1ed86fcd71dd676d8df8019",
       "size": 9688
     },
     "PLANS.md": {
-      "sha256": "cd2fc5d262f4c45b2facdc82d04d828c7264edaaec9f415e522c53b1d60f59a5",
-      "size": 3278
+      "sha256": "760b0f936725c81db5d8fe9293b15f881353c7d965174e99ab2f312bdddcba35",
+      "size": 5255
     },
     "PROBLEMS.md": {
       "sha256": "f3e0d2bcf565b280e2a8e83debde5d2f4278ff3666999b8338012fa14f92301e",
       "size": 655
     },
     "PROJECT.md": {
-      "sha256": "ce459a38c50247773834262f8bf9ec26006f066b2c15ee8ccbd90643c9a94a02",
-      "size": 8397
+      "sha256": "ae9bd3891a1720c0fb09eea2f50165bbcec3863098d29f1a70e88f8b9d79be6e",
+      "size": 8567
     },
     "database.sql": {
-      "sha256": "08ede4f9e74df0a001ded391a33a817b8b9860e00dc24567201e92ffaffe3e40",
-      "size": 452168
+      "sha256": "1e9d2d69035a4d0335aecad0b57bbbb3dbb85e3db1360512a424d52cb6bf008b",
+      "size": 461653
     },
     "events.jsonl": {
-      "sha256": "5828c94d733210e4dea36c54f4d8edca98be4b8c2900709c22edc197594bd8b4",
-      "size": 65921
+      "sha256": "165697cb47894f0cc2a033fbec9e078e25a16bd09ea355b7d1b1d4441d5f6eca",
+      "size": 69896
     },
     "people/mykhailo.md": {
       "sha256": "3b4f27b6d232b65266079094e3a9d6cc34ef0d4392d9dcd25f88301fb0be8f44",
@@ -35,8 +35,8 @@
       "size": 652
     },
     "people/vlad.md": {
-      "sha256": "5371625eedb3f19277d3e8fe830d78262d16472bd13462d864ee2226e534fe84",
-      "size": 15604
+      "sha256": "793814d6e20d1de755757abc293c35d45aa7d17d1b78dd93afb90f2d89e03d1b",
+      "size": 17576
     },
     "tasks/1.md": {
       "sha256": "9cea0b821bd55b2171a5400b9fb159b8cde3bb02a940b28a8e0077d862d6023c",
@@ -79,8 +79,8 @@
       "size": 729
     },
     "tasks/9.md": {
-      "sha256": "5a53a924482c34734bcf7bfb83bbdcb6306fe2b0a5ee62baf136a507d6e248e1",
-      "size": 554
+      "sha256": "aa84c127338309d5a5f1bd506583775915196965ff4b1f5835819d85b014ba25",
+      "size": 2526
     }
   }
 }
