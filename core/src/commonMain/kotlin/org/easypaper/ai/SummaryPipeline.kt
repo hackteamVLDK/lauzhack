@@ -1,21 +1,17 @@
 package org.easypaper.ai
 
-import ai.koog.prompt.dsl.prompt
 import ai.koog.prompt.executor.model.PromptExecutorAPI
-import ai.koog.prompt.llm.LLModel
-import ai.koog.prompt.message.AttachmentContent
-import ai.koog.prompt.message.AttachmentSource
-import ai.koog.prompt.message.MessagePart
-import ai.koog.prompt.params.LLMParams
+import kotlinx.serialization.Serializable
 import org.easypaper.model.Food
 import org.easypaper.model.PatientRecord
 import org.easypaper.report.factDigest
 import org.easypaper.report.toText
-import kotlin.time.TimeSource
 
 /** One line of the doctor's summary with the entries it is based on. Unsupported lines are shown as such. */
+@Serializable
 data class SummaryLine(val text: String, val refs: List<String>, val supported: Boolean)
 
+@Serializable
 data class SummaryResult(
     /** Goes into Report.summary: one fact per line, each ending with [e01, e02]. */
     val summary: String,
@@ -44,8 +40,7 @@ class SummaryPipeline(
     private val cache: AiCache = InMemoryAiCache(),
     val ledger: UsageLedger = UsageLedger(),
 ) {
-    /** Last provider error (class and message, never the prompt), for the note and the price screen. */
-    private var lastError: String? = null
+    private val caller = ModelCaller(executor, config, cache, ledger)
 
     suspend fun summarize(
         record: PatientRecord,
@@ -65,9 +60,9 @@ class SummaryPipeline(
             if (descriptions.size >= config.maxPhotos) { notes += "only ${config.maxPhotos} photos described"; break }
             val bytes = photos[(entry.payload as Food).photoRef] ?: continue
             if (bytes.size > config.maxPhotoBytes) { notes += "photo ${entry.id} too large, skipped"; continue }
-            val estimate = estimateCost(config.small, estimateTokens(PHOTO_SYSTEM) + PHOTO_IMAGE_TOKENS, config.maxPhotoOutputTokens)
+            val estimate = caller.estimateCost(config.small, estimateTokens(PHOTO_SYSTEM) + PHOTO_IMAGE_TOKENS, config.maxPhotoOutputTokens)
             if (spent + estimate > config.budgetUsdPerReport) { notes += "budget reached before photo ${entry.id}"; break }
-            val answer = call(AiStep.PhotoDescription, config.small, PHOTO_SYSTEM, PHOTO_USER, bytes, config.maxPhotoOutputTokens)
+            val answer = caller.call(AiStep.PhotoDescription, config.small, PHOTO_SYSTEM, PHOTO_USER, bytes, config.maxPhotoOutputTokens)
                 ?: continue
             spent += ledger.items.last().costUsd
             cleanDescription(answer)?.let { descriptions[entry.id] = it }
@@ -81,13 +76,13 @@ class SummaryPipeline(
                 for ((id, text) in descriptions) append("\n- $text [$id]")
             }
         }
-        val estimate = estimateCost(config.big, estimateTokens(SUMMARY_SYSTEM + input), config.maxSummaryOutputTokens)
+        val estimate = caller.estimateCost(config.big, estimateTokens(SUMMARY_SYSTEM + input), config.maxSummaryOutputTokens)
         val answer = if (spent + estimate > config.budgetUsdPerReport) {
             notes += "budget: summary without AI"
             null
         } else {
-            call(AiStep.Summary, config.big, SUMMARY_SYSTEM, input, null, config.maxSummaryOutputTokens)
-                .also { if (it == null) notes += "AI not reachable (${lastError ?: "empty answer"}): summary without AI" }
+            caller.call(AiStep.Summary, config.big, SUMMARY_SYSTEM, input, null, config.maxSummaryOutputTokens)
+                .also { if (it == null) notes += "AI not reachable (${caller.lastError ?: "empty answer"}): summary without AI" }
         }
 
         // 4. Check every line; fall back to the facts themselves.
@@ -102,42 +97,6 @@ class SummaryPipeline(
             note = notes.takeIf { it.isNotEmpty() }?.joinToString("; "),
         )
     }
-
-    /** One model call through the cache; records usage. null when the call fails. */
-    private suspend fun call(step: AiStep, model: LLModel, system: String, user: String, image: ByteArray?, maxTokens: Int): String? {
-        val key = cacheKey(model.id.encodeToByteArray(), system.encodeToByteArray(), user.encodeToByteArray(), image ?: ByteArray(0))
-        cache.get(key)?.let { cached ->
-            ledger.add(AiUsage(step, config.providerName, model.id, 0, 0, 0.0, cached = true, millis = 0))
-            return cached
-        }
-        val p = prompt("easypaper-${step.name.lowercase()}", LLMParams(temperature = 0.0, maxTokens = maxTokens, additionalProperties = config.extraParams.ifEmpty { null })) {
-            system(system)
-            user {
-                part(MessagePart.Text(user))
-                if (image != null) image(AttachmentSource.Image(AttachmentContent.Binary.Bytes(image), "jpeg"))
-            }
-        }
-        val mark = TimeSource.Monotonic.markNow()
-        val response = try {
-            executor.execute(p, model)
-        } catch (e: Exception) {
-            if (e is kotlin.coroutines.cancellation.CancellationException) throw e
-            lastError = (e::class.simpleName ?: "error") + ": " + (e.message ?: "").take(200)
-            return null
-        }
-        val text = response.textContent().trim()
-        val input = response.metaInfo.inputTokensCount ?: estimateTokens(system + user)
-        val output = response.metaInfo.outputTokensCount ?: estimateTokens(text)
-        ledger.add(
-            AiUsage(step, config.providerName, model.id, input, output,
-                config.price(model)?.cost(input, output) ?: 0.0, cached = false, millis = mark.elapsedNow().inWholeMilliseconds),
-        )
-        if (text.isNotEmpty()) cache.put(key, text)
-        return text.ifEmpty { null }
-    }
-
-    private fun estimateCost(model: LLModel, inputTokens: Int, outputTokens: Int) =
-        config.price(model)?.cost(inputTokens, outputTokens) ?: 0.0
 
     internal companion object {
         const val PHOTO_IMAGE_TOKENS = 1_300 // upper bound of a downscaled photo for current vision models

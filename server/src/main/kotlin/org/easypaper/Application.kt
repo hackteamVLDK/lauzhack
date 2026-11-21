@@ -14,20 +14,26 @@ import kotlin.time.Duration.Companion.minutes
 
 fun main() {
     val relay = Relay.fromEnv()
+    val ai = AiService.fromEnv() // the OpenRouter key is read here from the environment and never leaves this process
     val webDir = File(
         System.getenv("EASYPAPER_WEB_DIR") ?: System.getProperty("easypaper.webDir")
             ?: "app/webApp/build/dist/wasmJs/productionExecutable",
     )
     embeddedServer(Netty, port = System.getenv("PORT")?.toIntOrNull() ?: 8080, host = "0.0.0.0") {
-        module(relay, webDir.takeIf { it.isDirectory })
+        module(relay, webDir.takeIf { it.isDirectory }, ai = ai)
     }.start(wait = true)
 }
 
 /**
- * Blind report relay + the doctor's web app (wasmJs build) at "/" when [webDir] is given. Expired objects are
+ * Blind report relay, the AI routes (cloud, clinic module or off, see [AiService]) + the doctor's web app (wasmJs build) at "/" when [webDir] is given. Expired objects are
  * purged every [purgeEvery], so ciphertext never outlives the TTL even if nobody asks for it.
  */
-fun Application.module(relay: Relay = Relay(), webDir: File? = null, purgeEvery: Duration = 10.minutes) {
+fun Application.module(
+    relay: Relay = Relay(),
+    webDir: File? = null,
+    purgeEvery: Duration = 10.minutes,
+    ai: AiService = AiService.off(),
+) {
     launch {
         while (isActive) {
             delay(purgeEvery)
@@ -36,6 +42,7 @@ fun Application.module(relay: Relay = Relay(), webDir: File? = null, purgeEvery:
     }
     routing {
         relayRoutes(relay)
+        aiRoutes(ai)
         if (webDir != null) staticFiles("/", webDir) { default("index.html") }
     }
 }

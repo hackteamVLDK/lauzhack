@@ -1,0 +1,137 @@
+package org.easypaper
+
+import ai.koog.agents.core.tools.ToolDescriptor
+import ai.koog.prompt.Prompt
+import ai.koog.prompt.dsl.ModerationResult
+import ai.koog.prompt.executor.model.PromptExecutorAPI
+import ai.koog.prompt.llm.LLModel
+import ai.koog.prompt.message.Message
+import ai.koog.prompt.message.ResponseMetaInfo
+import ai.koog.prompt.streaming.StreamFrame
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.server.testing.ApplicationTestBuilder
+import io.ktor.server.testing.testApplication
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import org.easypaper.ai.AiClient
+import org.easypaper.ai.AiConfig
+import org.easypaper.ai.AiStatus
+import org.easypaper.ai.DocumentRequest
+import org.easypaper.ai.SummaryRequest
+import org.easypaper.ai.SummaryResult
+import org.easypaper.demo.Demo
+import org.easypaper.model.EasyPaperJson
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlin.time.Instant
+
+private class FakeExecutor(private val reply: (LLModel, Prompt) -> String) : PromptExecutorAPI {
+    var calls = 0
+    override suspend fun execute(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>): Message.Assistant {
+        calls++
+        return Message.Assistant(reply(model, prompt), ResponseMetaInfo(Instant.fromEpochMilliseconds(0), inputTokensCount = 2_000, outputTokensCount = 300))
+    }
+    override fun executeStreaming(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>): Flow<StreamFrame> = emptyFlow()
+    override suspend fun moderate(prompt: Prompt, model: LLModel): ModerationResult = error("not used")
+    override fun close() {}
+}
+
+class AiTest {
+    private val summaryReply = "Morning blood pressure 128-136/84-88 mmHg [e01, e02]\nAsks about ibuprofen with coffee [e35]"
+    private val documentText = "Discharge letter. Current medication: Ramipril 5 mg once daily. Known allergy: penicillin."
+
+    private fun cloud(budget: Double = 9.0, ex: FakeExecutor = FakeExecutor { _, _ -> summaryReply }) =
+        AiService(AiMode.CLOUD, ex, AiConfig.cloud(), budget, keyConfigured = true)
+
+    private fun clinic(ex: FakeExecutor) = AiService(AiMode.CLINIC, ex, AiConfig.clinic(), Double.MAX_VALUE, keyConfigured = false)
+
+    private fun app(ai: AiService, test: suspend ApplicationTestBuilder.() -> Unit) = testApplication {
+        application { module(ai = ai) }
+        test()
+    }
+
+    private val demoRequest = EasyPaperJson.encodeToString(SummaryRequest.serializer(), SummaryRequest(Demo.record))
+
+    @Test
+    fun statusShowsModelsAndSpendingButNeverTheKey() = app(cloud()) {
+        val text = client.get("/ai/status").bodyAsText()
+        val status = EasyPaperJson.decodeFromString(AiStatus.serializer(), text)
+        assertEquals("cloud", status.mode)
+        assertTrue(status.keyConfigured)
+        assertEquals("anthropic/claude-haiku-4.5", status.bigModel)
+        assertFalse("sk-" in text || "apiKey" in text || "OPENROUTER" in text)
+    }
+
+    @Test
+    fun summaryThroughTheServerCitesEntriesAndCountsCost() = app(cloud()) {
+        val response = client.post("/ai/summary") { contentType(ContentType.Application.Json); setBody(demoRequest) }
+        assertEquals(HttpStatusCode.OK, response.status)
+        val result = EasyPaperJson.decodeFromString(SummaryResult.serializer(), response.bodyAsText())
+        assertTrue(result.usedAi)
+        assertEquals(listOf(listOf("e01", "e02"), listOf("e35")), result.lines.map { it.refs })
+        val status = EasyPaperJson.decodeFromString(AiStatus.serializer(), client.get("/ai/status").bodyAsText())
+        assertTrue(status.spentUsd > 0 && status.calls >= 1)
+    }
+
+    @Test
+    fun spendingCapGivesFactsWithoutAi() {
+        val ex = FakeExecutor { _, _ -> summaryReply }
+        app(cloud(budget = 0.0, ex = ex)) {
+            val result = EasyPaperJson.decodeFromString(SummaryResult.serializer(),
+                client.post("/ai/summary") { contentType(ContentType.Application.Json); setBody(demoRequest) }.bodyAsText())
+            assertFalse(result.usedAi)
+            assertEquals(0, ex.calls)
+            assertTrue(result.lines.isNotEmpty() && result.lines.all { it.refs.isNotEmpty() || "Complaint" in it.text })
+        }
+    }
+
+    @Test
+    fun aiOffStillGivesTheFacts() = app(AiService.off()) {
+        val result = EasyPaperJson.decodeFromString(SummaryResult.serializer(),
+            client.post("/ai/summary") { contentType(ContentType.Application.Json); setBody(demoRequest) }.bodyAsText())
+        assertFalse(result.usedAi)
+        assertTrue("off" in result.note.orEmpty())
+    }
+
+    @Test
+    fun documentsNeverLeaveTheClinic() = app(cloud()) {
+        val body = EasyPaperJson.encodeToString(DocumentRequest.serializer(), DocumentRequest("doc-1", text = documentText))
+        val response = client.post("/ai/documents") { contentType(ContentType.Application.Json); setBody(body) }
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+    }
+
+    @Test
+    fun clinicReadsDocumentsAndKeepsOnlyQuotedFacts() {
+        val ex = FakeExecutor { _, _ ->
+            """
+            medication | Ramipril 5 mg once daily | Ramipril 5 mg once daily
+            allergy | Penicillin | allergy: penicillin
+            diagnosis_in_document | Heart failure | chronic heart failure
+            advice | Drink more | drink more water
+            """.trimIndent()
+        }
+        app(clinic(ex)) {
+            val facts = AiClient("", client).extractDocument("doc-1", text = documentText)
+            assertEquals(listOf("medication", "allergy"), facts.facts.map { it.field })
+            assertTrue(facts.facts.all { it.verified && it.documentId == "doc-1" })
+            assertTrue("2 fact(s) without a matching quote removed" in facts.note.orEmpty())
+        }
+    }
+
+    @Test
+    fun badBodiesAreRejected() = app(cloud()) {
+        assertEquals(HttpStatusCode.BadRequest, client.post("/ai/summary") { contentType(ContentType.Application.Json); setBody("{not json") }.status)
+        val badPhoto = """{"record":${EasyPaperJson.encodeToString(org.easypaper.model.PatientRecord.serializer(), Demo.record)},"photos":{"p":"%%%"}}"""
+        assertEquals(HttpStatusCode.BadRequest, client.post("/ai/summary") { contentType(ContentType.Application.Json); setBody(badPhoto) }.status)
+        val huge = ByteArray((MAX_AI_BODY_BYTES + 10).toInt()) { 'a'.code.toByte() }
+        assertEquals(HttpStatusCode.PayloadTooLarge, client.post("/ai/summary") { setBody(huge) }.status)
+    }
+}

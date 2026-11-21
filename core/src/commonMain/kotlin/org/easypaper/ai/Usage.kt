@@ -2,10 +2,13 @@ package org.easypaper.ai
 
 import dev.whyoleg.cryptography.CryptographyProvider
 import dev.whyoleg.cryptography.algorithms.SHA256
+import kotlinx.serialization.Serializable
 
-enum class AiStep { PhotoDescription, Summary }
+@Serializable
+enum class AiStep { PhotoDescription, Summary, DocumentExtraction }
 
 /** One model call (or cache hit) as the price screen (#32) shows it. */
+@Serializable
 data class AiUsage(
     val step: AiStep,
     val provider: String,

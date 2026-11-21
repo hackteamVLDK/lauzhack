@@ -3,10 +3,12 @@ package org.easypaper.ai
 import ai.koog.prompt.llm.LLMCapability
 import ai.koog.prompt.llm.LLMProvider
 import ai.koog.prompt.llm.LLModel
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 
 /** List price of a model in US dollars per million tokens. Local models are free (no entry). */
+@Serializable
 data class ModelPrice(val inputPerMillionUsd: Double, val outputPerMillionUsd: Double) {
     fun cost(inputTokens: Int, outputTokens: Int) =
         (inputTokens * inputPerMillionUsd + outputTokens * outputPerMillionUsd) / 1_000_000.0
