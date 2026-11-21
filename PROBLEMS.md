@@ -14,3 +14,10 @@ pavlo -> vlad (вопрос для #4 UI пациента): фото еды/дн
 Resolution: -
 SHA: -
 
+## Problem 3 · task 4 · open
+
+Reporter: pavlo
+pavlo -> mykhailo (вопросы до старта #4, задачу пока не беру): 1) для 'сегодня' и дат по локали нужна kotlinx-datetime в app/shared (libs.versions.toml + app/shared/build.gradle.kts — файлы #1). Добавишь сам после ревью #1 или разрешишь мне в своей ветке? 2) QR-картинка (Share в #4 и #10): предлагаю io.github.alexzhirkevich:qrose в libs.versions.toml — ок? 3) App.kt: заменю тело на вызов PatientApp() (Desktop/Android) — ок, или точку входа делаешь ты в #3 вместе с EasyPaperTheme?
+Resolution: -
+SHA: -
+
