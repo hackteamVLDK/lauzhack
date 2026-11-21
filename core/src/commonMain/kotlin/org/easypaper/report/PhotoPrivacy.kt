@@ -8,11 +8,14 @@ package org.easypaper.report
  * copied unchanged (no re-encoding); progressive JPEGs keep all their scans.
  * Throws IllegalArgumentException for anything that is not a well-formed JPEG.
  */
-fun stripJpegMetadata(jpeg: ByteArray): ByteArray {
+fun stripJpegMetadata(jpeg: ByteArray): ByteArray = stripJpegMetadata(jpeg, null)
+
+/** [orientation] wins over the photo's own EXIF: a re-encoded photo has none, the original's is passed in. */
+internal fun stripJpegMetadata(jpeg: ByteArray, orientation: Int?): ByteArray {
     fun u8(i: Int) = jpeg[i].toInt() and 0xFF
     require(jpeg.size >= 4 && u8(0) == 0xFF && u8(1) == 0xD8) { "Not a JPEG" }
     val kept = mutableListOf(jpeg.copyOfRange(0, 2))
-    var orientation: Int? = null
+    var orientation = orientation
     var i = 2
     while (true) {
         require(i + 1 < jpeg.size && u8(i) == 0xFF) { "Broken JPEG at byte $i" }
