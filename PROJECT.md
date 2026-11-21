@@ -7,16 +7,16 @@ Queue and journals are generated from SQLite. Change them through the API.
 Easy Paper — KMP-приложение (Android, Desktop, Web/Wasm, Ktor-сервер): врач собирает из виджетов запрос под жалобу, пациент несколько дней заполняет его текстом, числами и фото (еда, упаковки лекарств), а на приёме передаёт через QR зашифрованный отчёт, который ИИ сжимает в сводку со ссылками на оригиналы и предзаполненную форму клиники. Экономный ИИ-конвейер (штрих-код/OCR без LLM, маленькая модель для простого, большая один раз на сводку, кэш, учёт токенов и цены) и режим локального ИИ-модуля в клинике (Ollama). Приложение не ставит диагнозов и не советует — только собирает и структурирует факты; ИИ пишет черновик, каждое поле подтверждает врач.
 Порядок: задача 1 первая; UI-задачи 4, 5, 10 — только после утверждённого mykhailo docs/design.md (задача 3). Секреты только в env/локально; коммиты без подписи Claude; в origin не пушить.
 
-Phases: accepted 2, build 1, plan 8
+Phases: accepted 2, plan 8, review 1
 
 ## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB]
 
 Latest intent: mykhailo/MyPc-chat · 2026-11-21T15:28:27+00:00: fix по ревью vlad: test.py без Android SDK
-Phase: build; build 1; submitter: mykhailo; branch: attempt/mykhailo/task-1-1.
-Status: running; assignee: mykhailo; owner: mykhailo; client: MyPc-chat.
-Lease expires: 2026-11-21T15:32:28+00:00.
+Phase: review; build 2; submitter: mykhailo; branch: attempt/mykhailo/task-1-2.
+Status: ready; assignee: mykhailo; owner: -; client: -.
+Lease expires: -.
 Acceptance: python test.py зелёный на Windows и Linux, Desktop и Android запускаются
-Checkpoint SHA: 616b398c1dbd3b80d75aca5d95d9336cbac2ac12
+Checkpoint SHA: 81198aa71f84701fbcb36f08746d2689edfeae44
 Review notes: Проверено на Linux (без Android SDK), sha 616b398: gradlew :core:jvmTest :app:shared:jvmTest :server:test :app:desktopApp:compileKotlin — BUILD SUCCESSFUL; :app:desktopApp:run — окно стартует, 20 с без исключений; .claude/skills, teamhub.json, .gitattributes на месте. ПРОБЛЕМА (критерий 'python test.py зелёный на Linux'): test.py:66-68 — при отсутствии Android SDK возвращает 2 ещё до Gradle, хотя QUICK-задачам SDK не нужен (проверено: они проходят без local.properties). Т.к. teamhub.json запуска
 
 ## Task 2: Модель виджетов и данных в commonMain: схема запроса врача (список виджетов: опросник, давление, вода, еда, лекарства, дневник, вопросы врачу), ответы, зашифрованное локальное хранилище; формат схемы зафиксировать первым коммитом [JB][IMC]
