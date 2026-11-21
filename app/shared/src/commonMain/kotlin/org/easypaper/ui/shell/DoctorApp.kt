@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +34,7 @@ import easypaper.app.shared.generated.resources.section_entries
 import kotlinx.datetime.LocalDate
 import org.easypaper.report.Report
 import org.easypaper.ui.components.BackAction
+import org.easypaper.ui.doctor.VisitScreen
 import org.easypaper.ui.components.CategoryRow
 import org.easypaper.ui.components.EmptyState
 import org.easypaper.ui.components.GroupedSection
@@ -179,7 +181,7 @@ private fun RequestList(state: ShellState, select: (DoctorScreen) -> Unit, onDev
 @Composable
 private fun DoctorDetail(state: ShellState, screen: DoctorScreen, back: BackAction?) {
     when (screen) {
-        is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { VisitScreen(it, back) }
+        is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { key(it.id) { VisitScreen(it, back) } }
             ?: NothingOpen()
         DoctorScreen.NewRequest -> NewRequestScreen(back)
         // Demo reports have no AI ledger or server status yet.
@@ -202,38 +204,6 @@ private fun NothingOpen() {
                 color = EasyPaperTheme.colors.secondaryLabel, textAlign = TextAlign.Center)
             Text(stringResource(Res.string.doctor_empty_message), style = EasyPaperTheme.typography.body,
                 color = EasyPaperTheme.colors.secondaryLabel, textAlign = TextAlign.Center)
-        }
-    }
-}
-
-/** Task 10 replaces the body with the summary, the originals and the clinic form. */
-@Composable
-private fun VisitScreen(report: Report, back: BackAction?) {
-    val request = report.record.request
-    val counts = report.record.entries.groupingBy { it.widgetId }.eachCount()
-    LargeTitleScaffold(
-        title = request.complaint,
-        back = back,
-        header = {
-            reportPeriod(report)?.let {
-                Text(it, style = EasyPaperTheme.typography.subheadline, color = EasyPaperTheme.colors.secondaryLabel)
-            }
-        },
-    ) {
-        item {
-            GroupedSection(header = stringResource(Res.string.section_entries)) {
-                request.widgets.forEachIndexed { index, widget ->
-                    if (index > 0) RowSeparator()
-                    val count = counts[widget.id] ?: 0
-                    CategoryRow(widget.category, widget.title, trailing = {
-                        Text(
-                            pluralStringResource(Res.plurals.entries, count, count),
-                            style = EasyPaperTheme.typography.footnote,
-                            color = EasyPaperTheme.colors.secondaryLabel,
-                        )
-                    })
-                }
-            }
         }
     }
 }

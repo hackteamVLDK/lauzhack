@@ -11,6 +11,7 @@ import org.easypaper.model.Food
 import org.easypaper.model.PatientRecord
 import org.easypaper.report.Report
 import org.easypaper.storage.PatientRepository
+import org.easypaper.visit.demoVisitReport
 
 /** Which app this device shows. Android is always the patient, the web always the doctor. */
 enum class Role { Patient, Doctor }
@@ -40,13 +41,15 @@ class ShellState(role: Role? = null, val repository: PatientRepository = inMemor
     val selectedReport: Report? get() = reports.firstOrNull { it.id == selectedReportId }
     val hasData: Boolean get() = repository.records.value.isNotEmpty() || reports.isNotEmpty()
 
-    /** The shared demo (#13): the five-day headache record for the patient and its report for the doctor. */
+    /** The shared demo (#13): the five-day headache record for the patient and its report (with summary) for the doctor. */
     suspend fun fillWithDemoData() {
         repository.start(Demo.request)
         val stored = repository.records.value.firstOrNull { it.request.id == Demo.request.id }?.entries?.map { it.id }.orEmpty().toSet()
         for (entry in Demo.record.entries) if (entry.id !in stored) repository.add(Demo.request.id, entry.withoutPhotoRef())
-        reports = listOf(Demo.report)
-        selectedReportId = Demo.report.id
+        // The doctor's copy carries the demo summary with links to every entry (task 10).
+        val report = demoVisitReport()
+        reports = listOf(report)
+        selectedReportId = report.id
     }
 
     suspend fun clear() {

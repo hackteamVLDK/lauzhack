@@ -48,6 +48,13 @@ data class ClinicForm(val reportId: String, val fields: List<FormField>) {
 
     fun reject(key: FormFieldKey): ClinicForm = update(key) { it.copy(state = FieldState.REJECTED) }
 
+    /**
+     * A new draft for one field (e.g. the AI summary arrived after the form was opened): the field starts over
+     * as a draft with its new sources; the doctor's decisions on the other fields stay.
+     */
+    fun replaceDraft(key: FormFieldKey, draft: String, sourceIds: List<String>): ClinicForm =
+        update(key) { FormField(key, draft, sourceIds) }
+
     /** Takes back a decision. */
     fun reopen(key: FormFieldKey): ClinicForm = update(key) { it.copy(state = FieldState.DRAFT) }
 

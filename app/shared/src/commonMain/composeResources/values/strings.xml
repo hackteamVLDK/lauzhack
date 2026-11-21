@@ -179,4 +179,39 @@
     <string name="cost_empty_message">This report has no recorded AI usage.</string>
     <string name="cost_usd">$%1$s</string>
     <string name="cost_decimal_separator">.</string>
+
+    <!-- Doctor visit (task 10) -->
+    <string name="facts_without_ai">Facts without AI</string>
+    <string name="no_source">No source</string>
+    <string name="confirm_summary">Confirm summary</string>
+    <string name="clinic_form">Clinic form</string>
+    <string name="fields_decided">Decided: %1$d of %2$d</string>
+    <string name="remove">Remove</string>
+    <string name="removed">Removed</string>
+    <string name="save_record">Save to clinic record</string>
+    <string name="saved_at">Saved %1$s</string>
+    <string name="save_hint">Confirm or remove every field to save. Nothing is saved before that.</string>
+    <string name="original_entry">Original entry</string>
+    <string name="field_complaint">Complaint</string>
+    <string name="field_history">History</string>
+    <string name="field_bp">Blood pressure</string>
+    <string name="field_meds">Current medication</string>
+    <string name="field_fluid">Fluid intake</string>
+    <string name="field_questions">Patient’s questions</string>
+    <string name="wording_bp">%1$s: %2$s/%3$s mmHg, readings: %4$d</string>
+    <string name="wording_pulse">, pulse %1$s/min</string>
+    <string name="wording_fluid">%1$d ml per day on average, days: %2$d</string>
+    <string name="med_not_confirmed">not confirmed by the patient</string>
+    <string name="no_entries">No entries</string>
+    <string-array name="weekdays_short">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+    <string name="date_short">%1$d %2$s</string>
+    <string name="more_sources">%1$d more</string>
 </resources>

@@ -179,4 +179,39 @@
     <string name="cost_empty_message">Für diesen Bericht ist keine KI-Nutzung erfasst.</string>
     <string name="cost_usd">%1$s $</string>
     <string name="cost_decimal_separator">,</string>
+
+    <!-- Doctor visit (task 10) -->
+    <string name="facts_without_ai">Fakten ohne KI</string>
+    <string name="no_source">Keine Quelle</string>
+    <string name="confirm_summary">Zusammenfassung bestätigen</string>
+    <string name="clinic_form">Praxisformular</string>
+    <string name="fields_decided">Entschieden: %1$d von %2$d</string>
+    <string name="remove">Entfernen</string>
+    <string name="removed">Entfernt</string>
+    <string name="save_record">In die Akte übernehmen</string>
+    <string name="saved_at">Gespeichert %1$s</string>
+    <string name="save_hint">Bestätigen oder entfernen Sie jedes Feld, um zu speichern. Vorher wird nichts gespeichert.</string>
+    <string name="original_entry">Originaleintrag</string>
+    <string name="field_complaint">Beschwerde</string>
+    <string name="field_history">Anamnese</string>
+    <string name="field_bp">Blutdruck</string>
+    <string name="field_meds">Aktuelle Medikation</string>
+    <string name="field_fluid">Trinkmenge</string>
+    <string name="field_questions">Fragen an die Praxis</string>
+    <string name="wording_bp">%1$s: %2$s/%3$s mmHg, Messungen: %4$d</string>
+    <string name="wording_pulse">, Puls %1$s/min</string>
+    <string name="wording_fluid">Durchschnittlich %1$d ml pro Tag, Tage: %2$d</string>
+    <string name="med_not_confirmed">von der Person nicht bestätigt</string>
+    <string name="no_entries">Keine Einträge</string>
+    <string-array name="weekdays_short">
+        <item>Mo.</item>
+        <item>Di.</item>
+        <item>Mi.</item>
+        <item>Do.</item>
+        <item>Fr.</item>
+        <item>Sa.</item>
+        <item>So.</item>
+    </string-array>
+    <string name="date_short">%1$d. %2$s</string>
+    <string name="more_sources">%1$d weitere</string>
 </resources>

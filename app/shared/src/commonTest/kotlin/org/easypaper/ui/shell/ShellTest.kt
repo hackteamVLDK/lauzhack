@@ -10,6 +10,7 @@ import org.easypaper.ui.format.formatLongDate
 import org.easypaper.ui.format.lastDay
 import org.easypaper.ui.format.requestDay
 import org.easypaper.ui.theme.Category
+import org.easypaper.visit.demoVisitReport
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -119,7 +120,7 @@ class ShellTest {
         assertFalse(state.hasData)
         state.fillWithDemoData()
         assertEquals(Demo.record.entries.map { it.id }, state.repository.records.value.current()?.entries?.map { it.id })
-        assertEquals(Demo.report, state.selectedReport)
+        assertEquals(demoVisitReport(), state.selectedReport)
         state.fillWithDemoData() // twice: no duplicate entries
         assertEquals(Demo.record.entries.size, state.repository.records.value.single().entries.size)
         state.clear()

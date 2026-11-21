@@ -181,4 +181,39 @@
     <string name="cost_empty_message">Для цього звіту немає записів про використання ШІ.</string>
     <string name="cost_usd">%1$s $</string>
     <string name="cost_decimal_separator">,</string>
+
+    <!-- Doctor visit (task 10) -->
+    <string name="facts_without_ai">Факти без ШІ</string>
+    <string name="no_source">Без джерела</string>
+    <string name="confirm_summary">Підтвердити підсумок</string>
+    <string name="clinic_form">Форма клініки</string>
+    <string name="fields_decided">Вирішено: %1$d з %2$d</string>
+    <string name="remove">Прибрати</string>
+    <string name="removed">Прибрано</string>
+    <string name="save_record">Зберегти до картки</string>
+    <string name="saved_at">Збережено о %1$s</string>
+    <string name="save_hint">Підтвердьте або приберіть кожне поле, щоб зберегти. До того нічого не зберігається.</string>
+    <string name="original_entry">Оригінальний запис</string>
+    <string name="field_complaint">Скарга</string>
+    <string name="field_history">Анамнез</string>
+    <string name="field_bp">Артеріальний тиск</string>
+    <string name="field_meds">Поточні ліки</string>
+    <string name="field_fluid">Вживання рідини</string>
+    <string name="field_questions">Запитання пацієнта</string>
+    <string name="wording_bp">%1$s: %2$s/%3$s мм рт. ст., вимірювань: %4$d</string>
+    <string name="wording_pulse">, пульс %1$s/хв</string>
+    <string name="wording_fluid">У середньому %1$d мл на день, днів: %2$d</string>
+    <string name="med_not_confirmed">пацієнт не підтвердив</string>
+    <string name="no_entries">Записів немає</string>
+    <string-array name="weekdays_short">
+        <item>Пн</item>
+        <item>Вт</item>
+        <item>Ср</item>
+        <item>Чт</item>
+        <item>Пт</item>
+        <item>Сб</item>
+        <item>Нд</item>
+    </string-array>
+    <string name="date_short">%1$d %2$s</string>
+    <string name="more_sources">ще %1$d</string>
 </resources>

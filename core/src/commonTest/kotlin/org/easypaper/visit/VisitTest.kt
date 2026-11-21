@@ -185,4 +185,16 @@ class VisitTest {
         )
         assertEquals(listOf(false, true), lines.map { it.unconfirmed })
     }
+
+    @Test
+    fun aNewSummaryDraftResetsOnlyTheHistoryField() {
+        val form = prefillClinicForm(demo).confirm(FormFieldKey.COMPLAINT).edit(FormFieldKey.HISTORY, "typed by the doctor")
+        val updated = form.replaceDraft(FormFieldKey.HISTORY, "New summary", listOf("e01"))
+        val history = updated.field(FormFieldKey.HISTORY)
+        assertEquals("New summary", history.value)
+        assertEquals(listOf("e01"), history.sourceIds)
+        assertEquals(FieldState.DRAFT, history.state)
+        assertFalse(history.edited)
+        assertEquals(FieldState.CONFIRMED, updated.field(FormFieldKey.COMPLAINT).state)
+    }
 }
