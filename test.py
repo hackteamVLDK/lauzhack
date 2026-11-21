@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent
 # core is compiled for JS and Wasm too: JVM-only calls (toSortedMap, String.format, Math.*) pass the JVM tests but break the web
 QUICK = [":core:jvmTest", ":core:compileTestKotlinJs", ":core:compileTestKotlinWasmJs",
          ":app:shared:jvmTest", ":server:test", ":app:desktopApp:compileKotlin"]
-FULL = [":app:androidApp:assembleDebug", ":app:webApp:wasmJsBrowserDistribution"]
+FULL = [":core:testAndroidHostTest", ":app:androidApp:assembleDebug", ":app:webApp:wasmJsBrowserDistribution"]
 RESULT_DIRS = ["core", "app/shared", "server"]
 
 

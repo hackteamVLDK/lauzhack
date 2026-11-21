@@ -31,6 +31,12 @@ kotlin {
        withHostTest {
            isIncludeAndroidResources = true
        }
+       // device tests: commonTest + androidDeviceTest on an emulator/phone (real Android Keystore)
+       withDeviceTestBuilder {
+           sourceSetTreeName = "test"
+       }.configure {
+           instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+       }
     }
     // jvmAndAndroidMain: code shared by Desktop and Android only (java.io files, e.g. FileBlobStore)
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -53,6 +59,9 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutinesTest)
+        }
+        getByName("androidDeviceTest").dependencies {
+            implementation(libs.androidx.testRunner)
         }
     }
 }
