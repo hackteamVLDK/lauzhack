@@ -57,6 +57,9 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+        jvmTest.dependencies {
+            implementation(compose.desktop.currentOs) // Skia natives for shape and text tests
+        }
         jsMain.dependencies {
             implementation(libs.wrappers.browser)
         }

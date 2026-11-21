@@ -28,20 +28,25 @@ context and the Compose specifics.
 - Implement it once in `commonMain` as `EasyPaperTheme`: custom `ColorScheme` (light + dark),
   `Typography`, `Shapes`, spacing tokens. Screens use only theme tokens — no hex colors,
   no `dp`/`sp` literals for design values, no `Color(0xFF…)` inside screens.
-- Fonts: chosen deliberately (not Roboto/Inter by default), bundled via Compose resources
-  (`composeResources/font`), with Cyrillic and German glyphs.
+- **Visual direction (set by mykhailo): a native Apple look, following Apple's Human Interface
+  Guidelines** — iOS text styles (Large Title 34, Body 17, Footnote 13…), semantic system colors,
+  one tint, inset grouped lists, large titles, tab bar on the phone, sidebar + grouped form on
+  desktop. `docs/design.md` has the exact tokens; it wins over anything below.
+- Fonts: Inter / Inter Display (open stand-in for SF Pro), bundled via Compose resources
+  (`composeResources/font`), with Cyrillic and German glyphs. Never ship SF Pro or SF Symbols:
+  their license allows Apple platforms only. Icons: Material Symbols Rounded.
 - Material 3 is the component base, but not its look: no default purple/baseline scheme,
-  no untouched `Card` grid, no FAB unless the screen has one primary action.
+  no Material elevation tints, no FAB; components are restyled to the iOS shapes in the theme.
 
 ## Anti-slop rules specific to this app
 
 - No gradients, glassmorphism, glowing blobs, sparkles, robot or brain icons, "AI ✨" badges.
-  AI work is shown as plain facts: "Summary from 14 entries · 3 photos" with a link to each original.
-- No emoji in UI. Icons from one icon set, one stroke weight.
-- Not every block is a rounded card with a shadow. Hierarchy comes from type, spacing and
-  alignment; borders/containers only where they group something real.
-- Medical ≠ hospital blue + white by reflex. Choose a palette from the subject (paper, ink,
-  handwriting, a calm accent) and justify it in `docs/design.md`.
+  AI work is shown as plain facts: "Written from 14 entries, 3 photos" with a link to each original.
+- No emoji in UI. Icons from one icon set, one weight.
+- Group with iOS inset grouped sections only where iOS would group; no shadows on sections,
+  no Material cards, no gradients. Hierarchy comes from the text styles and spacing.
+- Colors only from `docs/design.md`: semantic tokens + one tint. Category colors (blood pressure
+  pink, water cyan…) only on 29 dp icon tiles and category names, never as the only signal.
 - Charts (blood pressure) are simple: one line per series, real units (mmHg), no 3D, no decoration.
 - Real content everywhere: real-looking complaints, medicine names, dates — never lorem ipsum.
 

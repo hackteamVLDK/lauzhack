@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="today">Heute</string>
+    <string name="catalog_date">Samstag, 21. November</string>
+    <string name="catalog_day">Tag 3 von 7 für Dr. Weber</string>
+    <string name="appearance_dark">Dunkles Erscheinungsbild</string>
+    <string name="cat_blood_pressure">Blutdruck</string>
+    <string name="cat_water">Wasser</string>
+    <string name="cat_food">Essen</string>
+    <string name="cat_medicines">Medikamente</string>
+    <string name="cat_questionnaire">Fragebogen</string>
+    <string name="cat_diary">Wie es Ihnen geht</string>
+    <string name="cat_question">Frage an den Arzt</string>
+    <string name="evening_reading">Abendmessung</string>
+    <string name="unit_mmhg">mmHg</string>
+    <string name="pulse">Puls %1$s</string>
+    <string name="water_amount">%1$s von %2$s l</string>
+    <string name="sample_food">Haferbrei mit Banane, Tee</string>
+    <string name="sample_medicine">Ramipril 5 mg, 1 am Morgen</string>
+    <string name="taken_at">Eingenommen %1$s</string>
+    <string name="add">Hinzufügen</string>
+    <string name="write_feeling">Schreiben, wie es Ihnen geht</string>
+    <string name="ask_question">Frage stellen</string>
+    <string name="footer_privacy">Auf diesem Telefon gespeichert. Geteilt wird nur, wenn Sie beim Termin den QR-Code zeigen.</string>
+    <string name="section_doctor">Für den Arzt</string>
+    <string name="summary">Zusammenfassung</string>
+    <string name="draft">Entwurf</string>
+    <string name="written_from">Aus %1$s Einträgen erstellt</string>
+    <string name="sample_summary">Blutdruck morgens 128–142/82–90 mmHg.</string>
+    <string name="confirm">Bestätigen</string>
+    <string name="confirmed_at">Bestätigt %1$s</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="show_qr">QR-Code dem Arzt zeigen</string>
+    <string name="sample_sources">Mo 08:10   Do 07:55</string>
+    <string name="sample_med_form">Ramipril 5 mg 1-0-0</string>
+</resources>
