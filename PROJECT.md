@@ -34,7 +34,7 @@ Review notes: PASS на 4610fac: python test.py зелёный (Windows), 11 т�
 Latest intent: mykhailo/MyPc-chat · 2026-11-21T15:34:33+00:00: docs/design.md, затем EasyPaperTheme
 Phase: build; build 0; submitter: -; branch: -.
 Status: running; assignee: mykhailo; owner: mykhailo; client: MyPc-chat.
-Lease expires: 2026-11-21T15:38:29+00:00.
+Lease expires: 2026-11-21T15:39:00+00:00.
 Acceptance: mykhailo утвердил docs/design.md, тема работает в light/dark
 Checkpoint SHA: -
 Review notes: -
