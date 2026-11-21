@@ -9,6 +9,7 @@ import org.easypaper.model.DiaryWidget
 import org.easypaper.model.DoctorQuestion
 import org.easypaper.model.DoctorQuestionsWidget
 import org.easypaper.model.Entry
+import org.easypaper.model.EntryPayload
 import org.easypaper.model.Food
 import org.easypaper.model.FoodWidget
 import org.easypaper.model.Medication
@@ -45,7 +46,15 @@ fun CareRequest.check(entry: Entry): List<EntryProblem> {
         is DoctorQuestion -> widget is DoctorQuestionsWidget
     }
     if (!fits) return listOf(EntryProblem.WRONG_WIDGET_TYPE)
+    return p.problems(widget as? QuestionnaireWidget)
+}
 
+/**
+ * The value rules of a payload, with or without a doctor's request (v2 diary, #47). Answers need the
+ * questionnaire they answer; without one every answer is an unknown question.
+ */
+fun EntryPayload.problems(questionnaire: QuestionnaireWidget? = null): List<EntryProblem> {
+    val p = this
     return buildList {
         when (p) {
             is BloodPressure -> {
@@ -60,7 +69,7 @@ fun CareRequest.check(entry: Entry): List<EntryProblem> {
             is DoctorQuestion -> if (p.text.isBlank()) add(EntryProblem.EMPTY_TEXT)
             is Medication -> if (p.name.isBlank()) add(EntryProblem.EMPTY_MEDICATION_NAME)
             is Answers -> {
-                val questions = (widget as QuestionnaireWidget).questions.associateBy { it.id }
+                val questions = questionnaire?.questions.orEmpty().associateBy { it.id }
                 for ((id, value) in p.values) {
                     val q = questions[id]
                     if (q == null) { add(EntryProblem.UNKNOWN_QUESTION); continue }
