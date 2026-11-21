@@ -2,6 +2,29 @@
 
 Every push to the hub: who, which branch, which files. Newest first.
 
+## Push 179 · 2026-11-21T15:28:03+00:00 · mykhailo · main
+
+mykhailo pushed main: 6 commit(s), 10 file(s)
+`36ac13425e` → `7b0491c5ee`
+
+- 79648c2 UladzislauHrynevich: core: data schema v1 for requests, widgets and patient entries
+- 50ed1dd UladzislauHrynevich: core: encrypted record store (AES-256-GCM via cryptography-kotlin)
+- 4610fac UladzislauHrynevich: core: add kotlinx-serialization, cryptography-kotlin and coroutines-test
+- ad5879b UladzislauHrynevich: core: report format v1, FHIR-like bundle, sealed transfer with key in QR
+- 8a5e91b Mykhailo Titov: Merge task 9: report format v1, FHIR-like bundle, sealed transfer with key in QR (vlad)
+- 7b0491c Mykhailo Titov: Merge task 2 review branch (vlad): code already in main; keep main's build files (serialization-json 1.13.0, api)
+
+    M build.gradle.kts
+    M core/build.gradle.kts
+    A core/src/commonMain/kotlin/org/easypaper/model/Schema.kt
+    A core/src/commonMain/kotlin/org/easypaper/report/Report.kt
+    A core/src/commonMain/kotlin/org/easypaper/report/Transfer.kt
+    A core/src/commonMain/kotlin/org/easypaper/storage/RecordStore.kt
+    A core/src/commonTest/kotlin/org/easypaper/model/SchemaTest.kt
+    A core/src/commonTest/kotlin/org/easypaper/report/ReportTest.kt
+    A core/src/commonTest/kotlin/org/easypaper/storage/RecordStoreTest.kt
+    M gradle/libs.versions.toml
+
 ## Push 167 · 2026-11-21T15:23:59+00:00 · vlad · attempt/vlad/task-9-1
 
 vlad pushed attempt/vlad/task-9-1: 1 commit(s), 4 file(s)
