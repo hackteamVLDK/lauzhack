@@ -214,4 +214,20 @@
     </string-array>
     <string name="date_short">%1$d %2$s</string>
     <string name="more_sources">%1$d more</string>
+    <!-- patient medicines screen (task 31) -->
+    <string name="med_title">Medicines</string>
+    <string name="med_scan">Scan package</string>
+    <string name="med_type">Type it in</string>
+    <string name="med_take_now">Taken now</string>
+    <string name="med_taken_today">Today: %1$s</string>
+    <string name="med_empty">No medicines yet</string>
+    <string name="med_empty_message">Scan the package or type the name.</string>
+    <string name="med_footer">Only what you take. The app gives no advice about medicines.</string>
+    <string name="med_found">Is this your medicine?</string>
+    <string name="med_not_found">The package was not recognised. Type the name.</string>
+    <string name="med_name">Name of the medicine</string>
+    <string name="med_dose">Dose and how often, e.g. 1 tablet in the morning</string>
+    <string name="med_check">Check the scan</string>
+    <string name="med_reading">Reading the photo…</string>
+    <string name="med_other">Not on the list? Type it in</string>
 </resources>

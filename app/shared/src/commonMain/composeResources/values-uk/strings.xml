@@ -216,4 +216,20 @@
     </string-array>
     <string name="date_short">%1$d %2$s</string>
     <string name="more_sources">ще %1$d</string>
+    <!-- patient medicines screen (task 31) -->
+    <string name="med_title">Ліки</string>
+    <string name="med_scan">Сканувати упаковку</string>
+    <string name="med_type">Ввести вручну</string>
+    <string name="med_take_now">Прийняв зараз</string>
+    <string name="med_taken_today">Сьогодні: %1$s</string>
+    <string name="med_empty">Ліків ще немає</string>
+    <string name="med_empty_message">Відскануйте упаковку або введіть назву.</string>
+    <string name="med_footer">Лише те, що ви приймаєте. Застосунок не дає порад щодо ліків.</string>
+    <string name="med_found">Це ваші ліки?</string>
+    <string name="med_not_found">Упаковку не розпізнано. Введіть назву.</string>
+    <string name="med_name">Назва ліків</string>
+    <string name="med_dose">Доза і як часто, напр. 1 таблетка зранку</string>
+    <string name="med_check">Перевірити скан</string>
+    <string name="med_reading">Читаю фото…</string>
+    <string name="med_other">Немає в списку? Ввести вручну</string>
 </resources>

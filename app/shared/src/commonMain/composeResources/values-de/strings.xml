@@ -214,4 +214,20 @@
     </string-array>
     <string name="date_short">%1$d. %2$s</string>
     <string name="more_sources">%1$d weitere</string>
+    <!-- patient medicines screen (task 31) -->
+    <string name="med_title">Medikamente</string>
+    <string name="med_scan">Packung scannen</string>
+    <string name="med_type">Selbst eingeben</string>
+    <string name="med_take_now">Jetzt genommen</string>
+    <string name="med_taken_today">Heute: %1$s</string>
+    <string name="med_empty">Noch keine Medikamente</string>
+    <string name="med_empty_message">Scannen Sie die Packung oder geben Sie den Namen ein.</string>
+    <string name="med_footer">Nur was Sie einnehmen. Die App gibt keine Ratschläge zu Medikamenten.</string>
+    <string name="med_found">Ist das Ihr Medikament?</string>
+    <string name="med_not_found">Die Packung wurde nicht erkannt. Bitte geben Sie den Namen ein.</string>
+    <string name="med_name">Name des Medikaments</string>
+    <string name="med_dose">Dosis und wie oft, z. B. 1 Tablette morgens</string>
+    <string name="med_check">Scan prüfen</string>
+    <string name="med_reading">Foto wird gelesen…</string>
+    <string name="med_other">Nicht dabei? Selbst eingeben</string>
 </resources>
