@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -32,6 +33,7 @@ import easypaper.app.shared.generated.resources.share_explain
 import easypaper.app.shared.generated.resources.starts_on
 import easypaper.app.shared.generated.resources.tab_history
 import easypaper.app.shared.generated.resources.tab_share
+import easypaper.app.shared.generated.resources.open_invite
 import easypaper.app.shared.generated.resources.today
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -61,6 +63,7 @@ import org.easypaper.ui.format.requestDay
 import org.easypaper.ui.patient.DayScreen
 import org.easypaper.ui.patient.EntryForm
 import org.easypaper.ui.patient.HistoryScreen
+import org.easypaper.ui.patient.OpenInviteForm
 import org.easypaper.ui.patient.TodayActions
 import org.easypaper.ui.patient.medications.MedicationsScreen
 import org.easypaper.ui.patient.TodayScreen
@@ -82,6 +85,7 @@ sealed interface PatientScreen {
     data class AddEntry(val widgetId: String) : PatientScreen
     data class Day(val date: LocalDate) : PatientScreen
     data class Medicines(val widgetId: String) : PatientScreen
+    data object OpenInvite : PatientScreen
 }
 
 private val TAB_ROOTS = listOf(PatientScreen.Today, PatientScreen.History, PatientScreen.Share)
@@ -126,6 +130,7 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
                             header = { TodayHeader(record, today) },
                             onDeveloper = openDeveloper,
                             actions = actions,
+                            onOpenInvite = { navigator.presentSheet(PatientScreen.OpenInvite) },
                         )
                         PatientScreen.History -> HistoryScreen(
                             record, timeZone, stringResource(Res.string.tab_history), openDeveloper,
@@ -143,7 +148,7 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
                         }
                         PatientScreen.Share -> ShareScreen(state.repository, relayUrl(settings.serverUrl, defaultServerUrl()), openDeveloper)
                         PatientScreen.DesignCatalog -> CatalogScreen(settings, BackAction(tabTitle(tab), navigator::back))
-                        PatientScreen.Developer, is PatientScreen.AddEntry -> Unit // shown as sheets
+                        PatientScreen.Developer, PatientScreen.OpenInvite, is PatientScreen.AddEntry -> Unit // shown as sheets
                     }
                 }
             }
@@ -158,6 +163,25 @@ fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> 
             )
         }
         EntrySheet(state, record, navigator, scope)
+        // An invite link that opened the app goes straight into the open-invite sheet on Today.
+        LaunchedEffect(state.pendingInvite) {
+            if (state.pendingInvite != null) {
+                tab = 0
+                navigators[0].presentSheet(PatientScreen.OpenInvite)
+            }
+        }
+        Sheet(
+            visible = navigators[0].sheet == PatientScreen.OpenInvite,
+            title = stringResource(Res.string.open_invite),
+            doneLabel = stringResource(Res.string.cancel),
+            onDismiss = { state.pendingInvite = null; navigators[0].dismissSheet() },
+        ) {
+            OpenInviteForm(state.pendingInvite) { request ->
+                scope.launch { state.repository.start(request) }
+                state.pendingInvite = null
+                navigators[0].dismissSheet()
+            }
+        }
         Sheet(
             visible = navigator.sheet == PatientScreen.Developer,
             title = developerTitle(),

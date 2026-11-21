@@ -47,6 +47,9 @@ class ShellState(
     serverUrl: String? = null,
     aiToken: () -> String? = { null },
 ) {
+    /** An invite link that opened the app (Android: easypaper://invite#…); the patient app offers to open it. */
+    var pendingInvite: String? by mutableStateOf(null)
+
     /** The Easy Paper server for the AI summary (doctor app); null when there is none. */
     val server: ServerConnection? = serverUrl?.let { ServerConnection(it, aiToken) }
 

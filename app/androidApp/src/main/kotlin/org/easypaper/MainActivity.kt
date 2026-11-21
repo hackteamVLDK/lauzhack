@@ -15,7 +15,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            EasyPaperApp(role = Role.Patient)
+            // easypaper://invite#epi1:… from the doctor's QR or link opens the invite (task 5).
+            EasyPaperApp(role = Role.Patient, invite = intent?.data?.toString())
         }
     }
 }

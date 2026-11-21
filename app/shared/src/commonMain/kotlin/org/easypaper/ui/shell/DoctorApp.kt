@@ -46,6 +46,7 @@ import org.easypaper.ai.AiStatus
 import org.easypaper.demo.DemoAi
 import org.easypaper.report.Report
 import org.easypaper.ui.components.BackAction
+import org.easypaper.ui.doctor.RequestBuilderScreen
 import org.easypaper.ui.doctor.VisitAi
 import org.easypaper.ui.doctor.VisitScreen
 import org.easypaper.ui.components.CategoryRow
@@ -214,7 +215,7 @@ private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: Shel
     when (screen) {
         is DoctorScreen.Visit -> state.reports.firstOrNull { it.id == screen.reportId }?.let { report -> key(report.id) { VisitScreen(report, back, visitAi(state, report), state.reportPhotos[report.id].orEmpty()) } }
             ?: NothingOpen()
-        DoctorScreen.NewRequest -> NewRequestScreen(back)
+        DoctorScreen.NewRequest -> RequestBuilderScreen(back)
         // the patient's QR opens the report once (task 30); it joins the list and opens right away
         DoctorScreen.OpenReport -> OpenReportScreen(relayUrl(settings.serverUrl, defaultServerUrl()), back = back, onOpened = { received ->
             state.receive(received)
@@ -272,24 +273,6 @@ private fun NothingOpen() {
     }
 }
 
-/** Task 5 builds the request form here. */
-@Composable
-private fun NewRequestScreen(back: BackAction?) {
-    LargeTitleScaffold(title = stringResource(Res.string.new_request), back = back) {
-        item {
-            GroupedSection {
-                Text(
-                    stringResource(Res.string.new_request_message),
-                    style = EasyPaperTheme.typography.body,
-                    color = EasyPaperTheme.colors.label,
-                    modifier = Modifier.padding(EasyPaperTheme.spacing.m),
-                )
-            }
-        }
-    }
-}
-
-/** "17–21 Nov" from the request's start date and length; null for a malformed date. */
 @Composable
 private fun reportPeriod(report: Report): String? {
     val request = report.record.request

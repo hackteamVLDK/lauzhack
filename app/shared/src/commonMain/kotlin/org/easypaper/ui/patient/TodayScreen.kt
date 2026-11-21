@@ -28,6 +28,7 @@ import easypaper.app.shared.generated.resources.ic_add
 import easypaper.app.shared.generated.resources.ic_check_circle
 import easypaper.app.shared.generated.resources.ic_remove
 import easypaper.app.shared.generated.resources.nothing_today
+import easypaper.app.shared.generated.resources.open_invite
 import easypaper.app.shared.generated.resources.pulse
 import easypaper.app.shared.generated.resources.today_empty_message
 import easypaper.app.shared.generated.resources.today_empty_title
@@ -81,10 +82,15 @@ fun TodayScreen(
     header: @Composable () -> Unit,
     onDeveloper: () -> Unit,
     actions: TodayActions,
+    onOpenInvite: () -> Unit = {},
 ) {
     LargeTitleScaffold(title = title, onTitleLongPress = onDeveloper, bottomInset = false, header = { header() }) {
         if (record == null) {
-            item { EmptyState(stringResource(Res.string.today_empty_title), stringResource(Res.string.today_empty_message)) }
+            item {
+                EmptyState(stringResource(Res.string.today_empty_title), stringResource(Res.string.today_empty_message)) {
+                    TintedButton(stringResource(Res.string.open_invite), onClick = onOpenInvite)
+                }
+            }
             return@LargeTitleScaffold
         }
         val widgets = todayFor(record, today, timeZone)

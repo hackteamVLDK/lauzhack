@@ -16,6 +16,13 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- The doctor's invite: easypaper://invite#epi1:… (QR or link), task 5 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="easypaper" android:host="invite" />
+            </intent-filter>
         </activity>
     </application>
 

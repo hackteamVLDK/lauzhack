@@ -269,4 +269,53 @@
     <string name="choose_photo">Choose photo</string>
     <string name="remove_photo">Remove photo</string>
     <string name="photo_optional">A photo is optional.</string>
+
+    <!-- Request builder and invite (task 5) -->
+    <string name="rb_complaint_placeholder">For example: headache in the morning for two weeks</string>
+    <string name="rb_doctor_header">Your name for the patient</string>
+    <string name="rb_doctor_placeholder">Dr. Anna Keller</string>
+    <string name="rb_period">Period</string>
+    <string name="rb_start">Starts</string>
+    <string name="rb_length">Length</string>
+    <string name="rb_widgets">What the patient records</string>
+    <string name="rb_widgets_footer">The patient sees these in this order, with these names.</string>
+    <string name="rb_times_per_day">Times a day: %1$d</string>
+    <string name="rb_water_target">Daily target: %1$s l</string>
+    <string name="rb_water_no_target">No daily target</string>
+    <string name="rb_questions">Questions</string>
+    <string name="rb_question_placeholder">Write a question</string>
+    <string name="rb_kind_yesno">Yes or no</string>
+    <string name="rb_kind_scale">0–10</string>
+    <string name="rb_kind_text">Text</string>
+    <string name="rb_add_question">Add question</string>
+    <string name="rb_create">Create invite</string>
+    <string name="rb_invite_title">Invite</string>
+    <string name="rb_invite_footer">The patient scans this code with the phone camera or opens the link. It holds only this request.</string>
+    <string name="rb_too_long_for_qr">Too long for one QR code: send the link instead.</string>
+    <string name="rb_copy">Copy link</string>
+    <string name="rb_copied">Link copied</string>
+    <string name="scale_none">none</string>
+    <string name="scale_worst">worst</string>
+    <string name="q_default_1">Did you have the complaint today?</string>
+    <string name="q_default_2">How strong was it?</string>
+    <string name="err_doctor">Write your name as the patient should see it.</string>
+    <string name="err_complaint">Write the complaint.</string>
+    <string name="err_start">Choose a start date.</string>
+    <string name="err_days">The period must be 1 to 30 days.</string>
+    <string name="err_no_widgets">Choose at least one thing to record.</string>
+    <string name="err_questionnaire">Each question needs text, or remove it.</string>
+    <string name="err_other">The request could not be built. Start a new request.</string>
+    <string name="open_invite">Open invite</string>
+    <string name="invite_placeholder">Paste the link or code from your doctor</string>
+    <string name="invite_open">Open</string>
+    <string name="invite_not">This is not an Easy Paper invite. Check that you copied the whole link.</string>
+    <string name="invite_newer">This invite needs a newer version of the app. Update Easy Paper and open it again.</string>
+    <string name="invite_damaged">The invite is incomplete or changed. Ask your doctor to send it again.</string>
+    <string name="invite_too_large">The text is too long to be an invite. Paste only the link.</string>
+    <plurals name="days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <string name="less">Less</string>
+    <string name="more">More</string>
 </resources>

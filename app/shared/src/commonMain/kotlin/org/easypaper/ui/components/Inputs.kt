@@ -36,7 +36,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import easypaper.app.shared.generated.resources.Res
+import easypaper.app.shared.generated.resources.ic_add
 import easypaper.app.shared.generated.resources.ic_check_circle
+import easypaper.app.shared.generated.resources.ic_remove
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.easypaper.ui.theme.tabular
 import org.jetbrains.compose.resources.painterResource
@@ -83,6 +85,61 @@ fun NumberFieldRow(
     }
 }
 
+/** One line of text in a grouped cell (a name, a short answer); [placeholder] says what to type. */
+@Composable
+fun TextFieldRow(value: String, onValueChange: (String) -> Unit, placeholder: String, modifier: Modifier = Modifier) {
+    val spacing = EasyPaperTheme.spacing
+    val colors = EasyPaperTheme.colors
+    val type = EasyPaperTheme.typography
+    Box(modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight).padding(horizontal = spacing.m, vertical = spacing.s),
+        contentAlignment = Alignment.CenterStart) {
+        if (value.isEmpty()) Text(placeholder, style = type.body, color = colors.secondaryLabel)
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            singleLine = true,
+            textStyle = type.body.copy(color = colors.label),
+            cursorBrush = SolidColor(colors.tint),
+            modifier = Modifier.fillMaxWidth().semantics { contentDescription = placeholder },
+        )
+    }
+}
+
+/**
+ * A value changed with − and + (iOS stepper), e.g. "7 days". The buttons are named for screen readers by
+ * [lessLabel] / [moreLabel] and turn off at the ends.
+ */
+@Composable
+fun StepperRow(
+    label: String,
+    value: String,
+    onLess: () -> Unit,
+    onMore: () -> Unit,
+    lessLabel: String,
+    moreLabel: String,
+    modifier: Modifier = Modifier,
+    canLess: Boolean = true,
+    canMore: Boolean = true,
+) {
+    val spacing = EasyPaperTheme.spacing
+    val type = EasyPaperTheme.typography
+    Row(
+        modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight).padding(horizontal = spacing.m, vertical = spacing.xxs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(label, style = type.body, color = EasyPaperTheme.colors.label)
+            Text(value, style = type.subheadline.tabular(), color = EasyPaperTheme.colors.secondaryLabel)
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(spacing.xs)) {
+            GrayButton("", onClick = onLess, icon = Res.drawable.ic_remove, enabled = canLess,
+                modifier = Modifier.semantics { contentDescription = lessLabel })
+            GrayButton("", onClick = onMore, icon = Res.drawable.ic_add, enabled = canMore,
+                modifier = Modifier.semantics { contentDescription = moreLabel })
+        }
+    }
+}
+
 /** Multi-line text in a grouped cell, for the patient's own words. */
 @Composable
 fun TextAreaRow(value: String, onValueChange: (String) -> Unit, placeholder: String, modifier: Modifier = Modifier) {
@@ -116,7 +173,8 @@ fun SegmentedControl(options: List<String>, selected: Int?, onSelect: (Int) -> U
             Box(
                 Modifier.weight(1f).heightIn(min = spacing.rowMinHeight - spacing.xxs)
                     .clip(EasyPaperTheme.shapes.small)
-                    .background(if (isSelected) colors.cellRaised else colors.fill)
+                    // In dark mode the track (fill) and cellRaised are the same gray: lift the selection with label at low alpha.
+                    .background(if (!isSelected) colors.fill else if (colors.isDark) colors.label.copy(alpha = SELECTED_DARK_ALPHA) else colors.cellRaised)
                     .selectable(
                         selected = isSelected,
                         interactionSource = remember { MutableInteractionSource() },
@@ -209,3 +267,4 @@ fun ScaleInput(value: Int?, onValueChange: (Int) -> Unit, minLabel: String, maxL
 }
 
 private const val SCALE_MAX = 10
+private const val SELECTED_DARK_ALPHA = 0.24f

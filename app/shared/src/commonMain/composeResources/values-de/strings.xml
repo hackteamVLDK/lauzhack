@@ -269,4 +269,53 @@
     <string name="choose_photo">Foto auswählen</string>
     <string name="remove_photo">Foto entfernen</string>
     <string name="photo_optional">Ein Foto ist freiwillig.</string>
+
+    <!-- Request builder and invite (task 5) -->
+    <string name="rb_complaint_placeholder">Zum Beispiel: Kopfschmerzen am Morgen seit zwei Wochen</string>
+    <string name="rb_doctor_header">Ihr Name für die Person</string>
+    <string name="rb_doctor_placeholder">Dr. Anna Keller</string>
+    <string name="rb_period">Zeitraum</string>
+    <string name="rb_start">Beginn</string>
+    <string name="rb_length">Dauer</string>
+    <string name="rb_widgets">Was die Person erfasst</string>
+    <string name="rb_widgets_footer">Die Person sieht sie in dieser Reihenfolge, mit diesen Namen.</string>
+    <string name="rb_times_per_day">Mal pro Tag: %1$d</string>
+    <string name="rb_water_target">Tagesziel: %1$s l</string>
+    <string name="rb_water_no_target">Kein Tagesziel</string>
+    <string name="rb_questions">Fragen</string>
+    <string name="rb_question_placeholder">Frage eingeben</string>
+    <string name="rb_kind_yesno">Ja oder nein</string>
+    <string name="rb_kind_scale">0–10</string>
+    <string name="rb_kind_text">Text</string>
+    <string name="rb_add_question">Frage hinzufügen</string>
+    <string name="rb_create">Einladung erstellen</string>
+    <string name="rb_invite_title">Einladung</string>
+    <string name="rb_invite_footer">Die Person scannt den Code mit der Handykamera oder öffnet den Link. Er enthält nur diese Anfrage.</string>
+    <string name="rb_too_long_for_qr">Zu lang für einen QR-Code: Senden Sie stattdessen den Link.</string>
+    <string name="rb_copy">Link kopieren</string>
+    <string name="rb_copied">Link kopiert</string>
+    <string name="scale_none">keine</string>
+    <string name="scale_worst">am stärksten</string>
+    <string name="q_default_1">Hatten Sie die Beschwerden heute?</string>
+    <string name="q_default_2">Wie stark waren sie?</string>
+    <string name="err_doctor">Geben Sie Ihren Namen so ein, wie die Person ihn sehen soll.</string>
+    <string name="err_complaint">Geben Sie die Beschwerde ein.</string>
+    <string name="err_start">Wählen Sie einen Beginn.</string>
+    <string name="err_days">Der Zeitraum muss 1 bis 30 Tage lang sein.</string>
+    <string name="err_no_widgets">Wählen Sie mindestens eine Sache zum Erfassen.</string>
+    <string name="err_questionnaire">Jede Frage braucht einen Text, oder entfernen Sie sie.</string>
+    <string name="err_other">Die Anfrage konnte nicht erstellt werden. Beginnen Sie eine neue Anfrage.</string>
+    <string name="open_invite">Einladung öffnen</string>
+    <string name="invite_placeholder">Link oder Code aus der Praxis einfügen</string>
+    <string name="invite_open">Öffnen</string>
+    <string name="invite_not">Das ist keine Easy-Paper-Einladung. Prüfen Sie, ob der ganze Link kopiert wurde.</string>
+    <string name="invite_newer">Diese Einladung braucht eine neuere App-Version. Aktualisieren Sie Easy Paper und öffnen Sie sie erneut.</string>
+    <string name="invite_damaged">Die Einladung ist unvollständig oder verändert. Bitten Sie die Praxis, sie erneut zu senden.</string>
+    <string name="invite_too_large">Der Text ist zu lang für eine Einladung. Fügen Sie nur den Link ein.</string>
+    <plurals name="days">
+        <item quantity="one">%1$d Tag</item>
+        <item quantity="other">%1$d Tage</item>
+    </plurals>
+    <string name="less">Weniger</string>
+    <string name="more">Mehr</string>
 </resources>

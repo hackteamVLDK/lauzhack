@@ -271,4 +271,55 @@
     <string name="choose_photo">Вибрати фото</string>
     <string name="remove_photo">Прибрати фото</string>
     <string name="photo_optional">Фото — за бажанням.</string>
+
+    <!-- Request builder and invite (task 5) -->
+    <string name="rb_complaint_placeholder">Наприклад: головний біль зранку два тижні</string>
+    <string name="rb_doctor_header">Ваше ім’я для пацієнта</string>
+    <string name="rb_doctor_placeholder">Др. Анна Келлер</string>
+    <string name="rb_period">Період</string>
+    <string name="rb_start">Початок</string>
+    <string name="rb_length">Тривалість</string>
+    <string name="rb_widgets">Що записує пацієнт</string>
+    <string name="rb_widgets_footer">Пацієнт бачить їх у такому порядку й з такими назвами.</string>
+    <string name="rb_times_per_day">Разів на день: %1$d</string>
+    <string name="rb_water_target">Мета на день: %1$s л</string>
+    <string name="rb_water_no_target">Без мети на день</string>
+    <string name="rb_questions">Запитання</string>
+    <string name="rb_question_placeholder">Напишіть запитання</string>
+    <string name="rb_kind_yesno">Так чи ні</string>
+    <string name="rb_kind_scale">0–10</string>
+    <string name="rb_kind_text">Текст</string>
+    <string name="rb_add_question">Додати запитання</string>
+    <string name="rb_create">Створити запрошення</string>
+    <string name="rb_invite_title">Запрошення</string>
+    <string name="rb_invite_footer">Пацієнт сканує код камерою телефона або відкриває посилання. У ньому лише цей запит.</string>
+    <string name="rb_too_long_for_qr">Задовго для одного QR-коду: надішліть посилання.</string>
+    <string name="rb_copy">Скопіювати посилання</string>
+    <string name="rb_copied">Посилання скопійовано</string>
+    <string name="scale_none">немає</string>
+    <string name="scale_worst">найсильніше</string>
+    <string name="q_default_1">Чи були скарги сьогодні?</string>
+    <string name="q_default_2">Наскільки сильно?</string>
+    <string name="err_doctor">Напишіть своє ім’я так, як його має бачити пацієнт.</string>
+    <string name="err_complaint">Напишіть скаргу.</string>
+    <string name="err_start">Оберіть дату початку.</string>
+    <string name="err_days">Період має бути від 1 до 30 днів.</string>
+    <string name="err_no_widgets">Оберіть хоча б одне, що записувати.</string>
+    <string name="err_questionnaire">Кожне запитання потребує тексту, або приберіть його.</string>
+    <string name="err_other">Не вдалося створити запит. Почніть новий запит.</string>
+    <string name="open_invite">Відкрити запрошення</string>
+    <string name="invite_placeholder">Вставте посилання або код від лікаря</string>
+    <string name="invite_open">Відкрити</string>
+    <string name="invite_not">Це не запрошення Easy Paper. Перевірте, чи скопійовано все посилання.</string>
+    <string name="invite_newer">Для цього запрошення потрібна новіша версія застосунку. Оновіть Easy Paper і відкрийте знову.</string>
+    <string name="invite_damaged">Запрошення неповне або змінене. Попросіть лікаря надіслати його ще раз.</string>
+    <string name="invite_too_large">Текст задовгий для запрошення. Вставте лише посилання.</string>
+    <plurals name="days">
+        <item quantity="one">%1$d день</item>
+        <item quantity="few">%1$d дні</item>
+        <item quantity="many">%1$d днів</item>
+        <item quantity="other">%1$d дня</item>
+    </plurals>
+    <string name="less">Менше</string>
+    <string name="more">Більше</string>
 </resources>

@@ -41,6 +41,8 @@ fun EasyPaperApp(
     role: Role? = null,
     settings: ShellSettings = remember { ShellSettings() },
     demo: Boolean = false,
+    /** An invite link the app was opened with (task 5). */
+    invite: String? = null,
 ) {
     // The demo stays in memory so it never mixes with the patient's real records on the device.
     val device = if (demo) remember { Result.success(inMemoryPatientRepository()) } else rememberDeviceRepository()
@@ -58,6 +60,7 @@ fun EasyPaperApp(
             aiToken = { settings.aiToken },
         )
     }
+    LaunchedEffect(state, invite) { if (invite != null) state.pendingInvite = invite }
     LaunchedEffect(state) {
         state.repository.refresh()
         if (demo) state.fillWithDemoData()
