@@ -42,3 +42,10 @@ fun textByRows(lines: List<TextLine>): String {
     }
     return rows.joinToString("\n") { r -> r.sortedBy { it.left }.joinToString(" ") { it.text } }
 }
+
+/**
+ * A guess at the medicine name printed on a box that is not in the local list: the first line of the read text
+ * with at least three letters (names are printed first and largest). The patient always checks and edits it.
+ */
+fun PhotoReading.likelyName(): String? =
+    text.lines().map { it.trim() }.firstOrNull { line -> line.count { it.isLetter() } >= 3 }?.take(60)

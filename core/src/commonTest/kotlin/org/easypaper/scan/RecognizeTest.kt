@@ -48,3 +48,12 @@ class TextByRowsTest {
         assertEquals("", textByRows(emptyList()))
     }
 }
+
+class LikelyNameTest {
+    @Test
+    fun firstLineWithAWordIsTheName() {
+        assertEquals("Nurofen Forte", PhotoReading(emptyList(), "  \n12\nNurofen Forte\n400 mg\n12 tabl.").likelyName())
+        assertEquals(null, PhotoReading(emptyList(), "400\n12 x\n").likelyName())
+        assertEquals(60, PhotoReading(emptyList(), "A".repeat(100)).likelyName()?.length)
+    }
+}

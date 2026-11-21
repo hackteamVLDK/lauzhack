@@ -383,4 +383,5 @@
     <string name="v2_profile_sample">Profile example selected.</string>
     <string name="v2_qr_selected">QR sharing option selected.</string>
     <string name="v2_sample_initials">MT</string>
+    <string name="med_not_in_list">This package is not in the medicine list. We filled in the name we read on the box — please check it.</string>
 </resources>

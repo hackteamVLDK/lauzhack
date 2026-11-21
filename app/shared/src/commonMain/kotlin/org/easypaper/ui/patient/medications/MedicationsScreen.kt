@@ -1,5 +1,8 @@
 package org.easypaper.ui.patient.medications
 
+import easypaper.app.shared.generated.resources.med_not_in_list
+import org.easypaper.scan.likelyName
+import kotlin.coroutines.cancellation.CancellationException
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
@@ -85,7 +88,7 @@ private sealed interface MedSheet {
     data object Reading : MedSheet
     data class Choose(val choices: List<Medication>) : MedSheet
     data class Check(val item: MedicineItem) : MedSheet
-    data class Type(val code: String?, val unreadable: Boolean = false) : MedSheet
+    data class Type(val code: String?, val unreadable: Boolean = false, val readName: String? = null) : MedSheet
 }
 
 /**
@@ -121,9 +124,16 @@ fun MedicationsScreen(
     val photos = rememberPhotoSource(onError = { problems = emptyList(); sheet = MedSheet.Type(code = null, unreadable = true) }) { photo ->
         sheet = MedSheet.Reading
         scope.launch {
-            val match = try { db.recognize(readPhoto(photo)) } catch (_: IllegalArgumentException) { null }
+            // any failure of on-device recognition ends in typing, never in silence or a crash
+            val reading = try { readPhoto(photo) } catch (e: CancellationException) { throw e } catch (e: Exception) { null }
+            val match = reading?.let { db.recognize(it) }
             val choices = match?.let { scanChoices(it, record.request.locale) }.orEmpty()
-            sheet = if (choices.isEmpty()) MedSheet.Type(match?.code?.gtin) else MedSheet.Choose(choices)
+            sheet = when {
+                choices.isNotEmpty() -> MedSheet.Choose(choices)
+                reading == null -> MedSheet.Type(code = null, unreadable = true)
+                // not in the local list: offer what was read on the box, for the patient to check
+                else -> MedSheet.Type(match?.code?.gtin, unreadable = true, readName = reading.likelyName())
+            }
         }
     }
     val scan = (photos.takePhoto ?: photos.pickPhoto)?.takeIf { widget.scan }
@@ -181,7 +191,7 @@ fun MedicationsScreen(
                 is MedSheet.Check -> CheckForm(open.item, problems, saving,
                     save = { dose -> run { repository.confirm(requestId, widget.id, open.item, dose, now()) } },
                     delete = { scope.launch { open.item.draftIds.forEach { repository.removeEntry(requestId, it) }; sheet = null } })
-                is MedSheet.Type -> TypeForm(open.code != null || open.unreadable, problems, saving) { name, dose ->
+                is MedSheet.Type -> TypeForm(open.code != null || open.unreadable, open.readName, problems, saving) { name, dose ->
                     run { repository.addMedication(requestId, widget.id, typedMedication(name, dose, open.code), now()) }
                 }
                 null -> Unit
@@ -234,10 +244,11 @@ private fun ColumnScope.CheckForm(item: MedicineItem, problems: List<EntryProble
 }
 
 @Composable
-private fun ColumnScope.TypeForm(notRecognised: Boolean, problems: List<EntryProblem>, saving: Boolean, save: (String, String) -> Unit) {
-    var name by remember { mutableStateOf("") }
+private fun ColumnScope.TypeForm(notRecognised: Boolean, readName: String?, problems: List<EntryProblem>, saving: Boolean, save: (String, String) -> Unit) {
+    var name by remember(readName) { mutableStateOf(readName.orEmpty()) }
     var dose by remember { mutableStateOf("") }
-    if (notRecognised) Hint(stringResource(Res.string.med_not_found))
+    if (readName != null) Hint(stringResource(Res.string.med_not_in_list))
+    else if (notRecognised) Hint(stringResource(Res.string.med_not_found))
     GroupedSection { TextAreaRow(name, { name = it }, placeholder = stringResource(Res.string.med_name)) }
     DoseField(dose) { dose = it }
     Problems(problems)

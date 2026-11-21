@@ -383,4 +383,5 @@
     <string name="v2_profile_sample">Profilbeispiel ausgewählt.</string>
     <string name="v2_qr_selected">Freigabe per QR-Code ausgewählt.</string>
     <string name="v2_sample_initials">MT</string>
+    <string name="med_not_in_list">Diese Packung ist nicht in der Medikamentenliste. Wir haben den Namen von der Packung eingetragen — bitte prüfen.</string>
 </resources>
