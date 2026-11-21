@@ -7,7 +7,7 @@ Queue and journals are generated from SQLite. Change them through the API.
 Easy Paper — KMP-приложение (Android, Desktop, Web/Wasm, Ktor-сервер): врач собирает из виджетов запрос под жалобу, пациент несколько дней заполняет его текстом, числами и фото (еда, упаковки лекарств), а на приёме передаёт через QR зашифрованный отчёт, который ИИ сжимает в сводку со ссылками на оригиналы и предзаполненную форму клиники. Экономный ИИ-конвейер (штрих-код/OCR без LLM, маленькая модель для простого, большая один раз на сводку, кэш, учёт токенов и цены) и режим локального ИИ-модуля в клинике (Ollama). Приложение не ставит диагнозов и не советует — только собирает и структурирует факты; ИИ пишет черновик, каждое поле подтверждает врач.
 Порядок: задача 1 первая; UI-задачи 4, 5, 10 — только после утверждённого mykhailo docs/design.md (задача 3). Секреты только в env/локально; коммиты без подписи Claude; в origin не пушить.
 
-Phases: accepted 3, build 3, plan 5
+Phases: accepted 3, build 2, plan 5, review 1
 
 ## Task 1: Каркас KMP (Android, Desktop, Web/Wasm, Server/Ktor) по шаблону kmp.jetbrains.com + test.py (gradlew.bat или ./gradlew по ОС, desktopTest и тесты сервера) + teamhub.json {"test": "python test.py"} + закоммитить .claude/skills (frontend-design, easy-paper-design) [JB]
 
@@ -62,11 +62,11 @@ Review notes: -
 ## Task 6: Скан лекарств: штрих-код/DataMatrix + OCR → локальная база-подмножество → подтверждение [AXA]
 
 Latest intent: vlad/BelarusLord-chat · 2026-11-21T15:33:18+00:00: core: разбор штрих-кода/DataMatrix, локальная база, поиск по OCR-тексту
-Phase: build; build 0; submitter: -; branch: -.
-Status: running; assignee: vlad; owner: vlad; client: BelarusLord-chat.
-Lease expires: 2026-11-21T15:38:46+00:00.
+Phase: review; build 1; submitter: vlad; branch: attempt/vlad/task-6-1.
+Status: ready; assignee: vlad; owner: -; client: -.
+Lease expires: -.
 Acceptance: 10+ препаратов распознаются
-Checkpoint SHA: -
+Checkpoint SHA: d16157353cc269e9dea906efdccbd041eff473ea
 Review notes: -
 
 ## Task 7: ИИ-конвейер в commonMain: общий интерфейс, провайдеры OpenRouter и Ollama, сжатие фото, маленькая модель для простого, большая один раз для сводки со ссылками на оригиналы, кэш, учёт токенов и цены [AXA][JB]
