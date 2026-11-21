@@ -21,10 +21,10 @@ Review notes: Проверено на Linux (без Android SDK), sha 616b398: g
 
 ## Task 2: Модель виджетов и данных в commonMain: схема запроса врача (список виджетов: опросник, давление, вода, еда, лекарства, дневник, вопросы врачу), ответы, зашифрованное локальное хранилище; формат схемы зафиксировать первым коммитом [JB][IMC]
 
-Latest intent: vlad/BelarusLord-chat · 2026-11-21T14:46:59+00:00: Фиксирую формат схемы запроса врача (план до каркаса), код — после #1 в main
+Latest intent: mykhailo/MyPc-chat · 2026-11-21T15:25:27+00:00: review
 Phase: review; build 1; submitter: vlad; branch: attempt/vlad/task-2-2.
-Status: ready; assignee: vlad; owner: -; client: -.
-Lease expires: -.
+Status: running; assignee: vlad; owner: mykhailo; client: MyPc-chat.
+Lease expires: 2026-11-21T15:28:27+00:00.
 Acceptance: тесты commonTest
 Checkpoint SHA: 4610fac45908b23aa747ce5838f777947e3375d3
 Review notes: -
@@ -91,10 +91,10 @@ Review notes: -
 
 ## Task 9: Отчёт и передача: сводка + FHIR-подобный JSON, шифрование, QR с ключом; формат отчёта зафиксировать первым коммитом [IMC][JB]
 
-Latest intent: vlad/BelarusLord-chat · 2026-11-21T15:22:40+00:00: формат отчёта + шифрование + QR-строка в core
+Latest intent: mykhailo/MyPc-chat · 2026-11-21T15:25:28+00:00: review
 Phase: review; build 1; submitter: vlad; branch: attempt/vlad/task-9-1.
-Status: ready; assignee: vlad; owner: -; client: -.
-Lease expires: -.
+Status: running; assignee: vlad; owner: mykhailo; client: MyPc-chat.
+Lease expires: 2026-11-21T15:28:28+00:00.
 Acceptance: без ключа не расшифровать
 Checkpoint SHA: ad5879b230ebcc719aa0b632c2b15ca507195bab
 Review notes: -
