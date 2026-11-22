@@ -45,7 +45,6 @@ import org.easypaper.ui.patient.localDate
 import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 
@@ -75,6 +74,11 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
         in 12..17 -> Res.string.p2_good_afternoon
         else -> Res.string.p2_good_evening
     })
+    val entryDates = remember(records, timeZone) {
+        records.flatMap { record -> record.entries.map { it.localDate(timeZone) } }
+    }
+    val diaryStreak = remember(entryDates, today) { streak(entryDates, today) }
+    val entriesToday = remember(entryDates, today) { entryDates.count { it == today } }
     Box(Modifier.fillMaxSize().background(colors.background).windowInsetsPadding(WindowInsets.statusBars),
         contentAlignment = Alignment.TopCenter) {
         LazyColumn(Modifier.widthIn(max = spacing.contentMaxWidth).fillMaxWidth(),
@@ -83,15 +87,8 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
             item(key = "greeting") {
                 SummaryHeader(settings.name.value, greeting, today, onProfile, onDeveloper)
             }
-            item(key = "counts") {
-                val entriesToday = records.sumOf { record -> record.entries.count { it.localDate(timeZone) == today } }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacing.xxl)) {
-                    // The label agrees with the number: 1 widget, 2 виджета, 5 виджетов.
-                    SummaryCount(stringResource(Res.string.p2_widget_count_value, pinned.size),
-                        pluralStringResource(Res.plurals.p2_widgets_label, pinned.size), Modifier.weight(1f))
-                    SummaryCount(stringResource(Res.string.p2_widget_count_value, entriesToday),
-                        pluralStringResource(Res.plurals.p2_entries_today_label, entriesToday), Modifier.weight(1f))
-                }
+            item(key = "streak") {
+                StreakCard(diaryStreak, entriesToday)
             }
             if (active != null) item(key = "plan") {
                 PlanCard(active, today, onClick = { onPlan(active.request.id) })
@@ -144,15 +141,15 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
 private fun SummaryHeader(name: String?, greeting: String, today: LocalDate, onProfile: () -> Unit, onDeveloper: () -> Unit) {
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
-    Column(verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(if (name.isNullOrBlank()) longDate(today)
-                else stringResource(Res.string.p2_hi_name, name.trim()), style = EasyPaperTheme.typography.title3,
-                color = colors.secondaryLabel, modifier = Modifier.weight(1f))
-            AvatarButton(initials(name), onProfile)
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(spacing.s)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+            Text(longDate(today), style = EasyPaperTheme.typography.footnote, color = colors.secondaryLabel)
+            val title = if (name.isNullOrBlank()) greeting else stringResource(Res.string.p2_greeting_name, greeting, name.trim())
+            WordFitText(title, style = EasyPaperTheme.typography.largeTitle, color = colors.label,
+                modifier = Modifier.combinedClickable(onClick = {}, onLongClick = onDeveloper).semantics { heading() })
         }
-        WordFitText(greeting, style = EasyPaperTheme.typography.largeTitle, color = colors.label,
-            modifier = Modifier.combinedClickable(onClick = {}, onLongClick = onDeveloper).semantics { heading() })
+        AvatarButton(initials(name), onProfile)
     }
 }
 
@@ -183,14 +180,6 @@ private fun AddWidgetTile(onClick: () -> Unit, modifier: Modifier = Modifier) {
         }
         Spacer(Modifier.height(spacing.s))
         Text(label, style = EasyPaperTheme.typography.subheadline, color = colors.link, textAlign = TextAlign.Center)
-    }
-}
-
-@Composable
-private fun SummaryCount(value: String, label: String, modifier: Modifier = Modifier) {
-    Column(modifier) {
-        AnimatedValueText(value, style = EasyPaperTheme.typography.largeTitle)
-        Text(label, style = EasyPaperTheme.typography.subheadline, color = EasyPaperTheme.colors.secondaryLabel)
     }
 }
 

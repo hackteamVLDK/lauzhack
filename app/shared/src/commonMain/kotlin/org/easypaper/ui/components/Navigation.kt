@@ -59,6 +59,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -263,9 +264,9 @@ fun Sheet(
     val motion = EasyPaperTheme.motion
     BoxWithConstraints(modifier.fillMaxSize()) {
         val maxSheetHeight = maxHeight * SHEET_MAX_FRACTION
-        AnimatedVisibility(visible, enter = fadeIn(motion.fade()), exit = fadeOut(motion.fade())) {
+        AnimatedVisibility(visible, enter = fadeIn(motion.fade()), exit = fadeOut(motion.fade()), label = "sheet scrim") {
             Box(
-                Modifier.fillMaxSize().background(MaterialTheme.colorScheme.scrim)
+                Modifier.fillMaxSize().testTag("sheet-scrim").background(MaterialTheme.colorScheme.scrim)
                     .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = onDismiss),
             )
         }
@@ -274,9 +275,11 @@ fun Sheet(
             modifier = Modifier.align(Alignment.BottomCenter),
             enter = motion.sheetEnter(),
             exit = motion.sheetExit(),
+            label = "sheet surface",
         ) {
             Column(
                 Modifier.widthIn(max = spacing.contentMaxWidth).fillMaxWidth().heightIn(max = maxSheetHeight)
+                    .testTag("sheet-surface")
                     .shadow(spacing.xs, EasyPaperTheme.shapes.sheet)
                     .clip(EasyPaperTheme.shapes.sheet)
                     .background(if (grouped) colors.background else colors.cellRaised)

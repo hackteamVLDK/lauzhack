@@ -136,20 +136,20 @@
     <string name="p2_continue_email">Mit E-Mail fortfahren</string>
     <string name="p2_soon">Demnächst</string>
     <string name="p2_local_profile_privacy">Mit „Weiter“ erstellst du ein Profil auf diesem Gerät. Kein Konto nötig. Du entscheidest, was du teilst.</string>
-    <string name="p2_hi">Hallo</string>
-    <string name="p2_hi_name">Hallo, %1$s</string>
+    <string name="p2_greeting_name">%1$s, %2$s</string>
     <string name="p2_good_morning">Guten Morgen</string>
     <string name="p2_good_afternoon">Guten Tag</string>
     <string name="p2_good_evening">Guten Abend</string>
     <string name="p2_widget_count_value">%1$d</string>
-    <plurals name="p2_widgets_label">
-        <item quantity="one">Widget</item>
-        <item quantity="other">Widgets</item>
+    <plurals name="p2_streak_days">
+        <item quantity="one">Tag in Folge</item>
+        <item quantity="other">Tage in Folge</item>
     </plurals>
-    <plurals name="p2_entries_today_label">
-        <item quantity="one">Eintrag heute</item>
-        <item quantity="other">Einträge heute</item>
-    </plurals>
+    <string name="p2_streak_today">Heute: %1$s</string>
+    <string name="p2_streak_start">Füge heute deinen ersten Eintrag hinzu</string>
+    <string name="p2_streak_done">Für heute erledigt. Bis morgen!</string>
+    <string name="p2_streak_keep">Setze deine Serie fort: Füge heute einen Eintrag hinzu</string>
+    <string name="p2_streak_description">%1$d %2$s. %3$s. %4$s</string>
     <string name="p2_empty_widgets">Was möchtest du erfassen?</string>
     <string name="p2_add_widgets">Widgets hinzufügen</string>
     <string name="p2_your_widgets">Deine Widgets</string>

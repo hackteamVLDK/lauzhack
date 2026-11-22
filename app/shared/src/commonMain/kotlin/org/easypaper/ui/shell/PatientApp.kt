@@ -83,17 +83,11 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
     var finishing by remember { mutableStateOf(false) }
     var failed by remember { mutableStateOf(false) }
     var selection by remember { mutableStateOf<ShareSelection?>(null) }
-    val back = BackAction(stringResource(Res.string.p2_back)) { navigator.back() }
     // official medicine registries on the Easy Paper server (task 71): only package codes and printed text are sent
     val catalogUrl = relayUrl(settings.serverUrl, defaultServerUrl())
     val catalogHttp = remember { io.ktor.client.HttpClient() }
     DisposableEffect(catalogHttp) { onDispose { catalogHttp.close() } }
     val catalog = remember(catalogUrl) { org.easypaper.catalog.HttpCatalog(catalogUrl, catalogHttp) }
-    val openDeveloper = { navigator.presentSheet(PatientScreen.Developer) }
-    val openProfile = { navigator.presentSheet(PatientScreen.Profile) }
-    val openInvite = { navigator.presentSheet(PatientScreen.OpenInvite) }
-    val openCategory: (Category) -> Unit = { navigator.push(PatientScreen.CategoryPage(it)) }
-    val openEntry: (OwnedEntry) -> Unit = { navigator.presentSheet(PatientScreen.EntryView(it.record.request.id, it.entry.id)) }
 
     // Idempotent even if the first repository refresh is still running.
     LaunchedEffect(completed, state.repository) {
@@ -156,7 +150,14 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
     var tabBarHeight by remember { mutableStateOf(spacing.rowMinHeight + spacing.xxl * 2) }
     Box(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background)) {
         Box(Modifier.fillMaxSize().padding(bottom = tabBarHeight)) {
-            key(tab) {
+            TabNavigation(tab, Modifier.fillMaxSize()) { shownTab ->
+                val navigator = navigators[shownTab]
+                val back = BackAction(stringResource(Res.string.p2_back)) { navigator.back() }
+                val openDeveloper = { navigator.presentSheet(PatientScreen.Developer) }
+                val openProfile = { navigator.presentSheet(PatientScreen.Profile) }
+                val openInvite = { navigator.presentSheet(PatientScreen.OpenInvite) }
+                val openCategory: (Category) -> Unit = { navigator.push(PatientScreen.CategoryPage(it)) }
+                val openEntry: (OwnedEntry) -> Unit = { navigator.presentSheet(PatientScreen.EntryView(it.record.request.id, it.entry.id)) }
                 PushNavigation(navigator.stack, Modifier.fillMaxSize()) { screen ->
                     when (screen) {
                         PatientScreen.Summary -> SummaryTab(records, patient, today, timeZone, openProfile, openDeveloper,

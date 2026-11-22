@@ -113,7 +113,7 @@ class PatientScreensUiTest {
         assertTrue(patient.pinnedCategories.isEmpty())
         assertEquals(null, patient.pinned.value)
         assertTrue(state.repository.records.value.all { it.entries.isEmpty() })
-        onNodeWithText("Hi").assertDoesNotExist()
+        onNodeWithContentDescription("0 days in a row. Today: 0 entries. Add your first entry today").assertExists()
         val date = java.time.LocalDate.now().format(
             java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale.ENGLISH))
         onNodeWithText(date).assertExists()

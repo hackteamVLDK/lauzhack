@@ -136,24 +136,22 @@
     <string name="p2_continue_email">Продовжити з ел. поштою</string>
     <string name="p2_soon">Незабаром</string>
     <string name="p2_local_profile_privacy">Продовжуючи, ти створюєш профіль на цьому пристрої. Обліковий запис не потрібен. Ти вирішуєш, чим ділитися.</string>
-    <string name="p2_hi">Привіт</string>
-    <string name="p2_hi_name">Привіт, %1$s</string>
+    <string name="p2_greeting_name">%1$s, %2$s</string>
     <string name="p2_good_morning">Доброго ранку</string>
     <string name="p2_good_afternoon">Доброго дня</string>
     <string name="p2_good_evening">Доброго вечора</string>
     <string name="p2_widget_count_value">%1$d</string>
-    <plurals name="p2_widgets_label">
-        <item quantity="one">віджет</item>
-        <item quantity="few">віджети</item>
-        <item quantity="many">віджетів</item>
-        <item quantity="other">віджета</item>
+    <plurals name="p2_streak_days">
+        <item quantity="one">день поспіль</item>
+        <item quantity="few">дні поспіль</item>
+        <item quantity="many">днів поспіль</item>
+        <item quantity="other">дня поспіль</item>
     </plurals>
-    <plurals name="p2_entries_today_label">
-        <item quantity="one">запис сьогодні</item>
-        <item quantity="few">записи сьогодні</item>
-        <item quantity="many">записів сьогодні</item>
-        <item quantity="other">запису сьогодні</item>
-    </plurals>
+    <string name="p2_streak_today">Сьогодні: %1$s</string>
+    <string name="p2_streak_start">Додай свій перший запис сьогодні</string>
+    <string name="p2_streak_done">На сьогодні все. До завтра!</string>
+    <string name="p2_streak_keep">Продовжуй серію: додай запис сьогодні</string>
+    <string name="p2_streak_description">%1$d %2$s. %3$s. %4$s</string>
     <string name="p2_empty_widgets">Що ти хочеш відстежувати?</string>
     <string name="p2_add_widgets">Додати віджети</string>
     <string name="p2_your_widgets">Твої віджети</string>

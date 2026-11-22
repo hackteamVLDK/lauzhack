@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
@@ -105,13 +106,13 @@ fun EasyPaperMotion.disclosureExit(): ExitTransition =
 
 fun EasyPaperMotion.sheetEnter(): EnterTransition =
     if (transition == MotionTransition.Crossfade) fadeIn(fade())
-    else slideInVertically(default.spec()) { it }
+    else slideInVertically(smooth.spec()) { it }
 
 fun EasyPaperMotion.sheetExit(): ExitTransition =
     if (transition == MotionTransition.Crossfade) fadeOut(fade())
-    else slideOutVertically(default.spec()) { it }
+    else slideOutVertically(smooth.spec()) { it }
 
-/** Push right-to-left, or the inverse for Back. The previous page travels 30% of its width. */
+/** Push right-to-left, or the inverse for Back, with iOS's one-third-width parallax. */
 fun EasyPaperMotion.pushTransition(forward: Boolean): ContentTransform {
     if (transition == MotionTransition.Crossfade) {
         return ContentTransform(
@@ -120,18 +121,34 @@ fun EasyPaperMotion.pushTransition(forward: Boolean): ContentTransform {
         )
     }
     return ContentTransform(
-        targetContentEnter = slideInHorizontally(default.spec()) { width ->
-            if (forward) width else -(width * PREVIOUS_PAGE_TRAVEL).roundToInt()
-        },
-        initialContentExit = slideOutHorizontally(default.spec()) { width ->
-            if (forward) -(width * PREVIOUS_PAGE_TRAVEL).roundToInt() else width
-        },
+        targetContentEnter = slideInHorizontally(smooth.spec()) { width ->
+            if (forward) width else -(width * navigationParallaxFraction).roundToInt()
+        } + if (forward) fadeIn(fade(), initialAlpha = navigationFadeAlpha) else EnterTransition.None,
+        initialContentExit = slideOutHorizontally(smooth.spec()) { width ->
+            if (forward) -(width * navigationParallaxFraction).roundToInt() else width
+        } + if (forward) ExitTransition.None else fadeOut(fade(), targetAlpha = navigationFadeAlpha),
         targetContentZIndex = if (forward) 1f else -1f,
         sizeTransform = SizeTransform(sizeAnimationSpec = { _, _ -> snap() }),
     )
 }
 
-/** Animate stack changes, keeping tab switches separate by keying this host to the selected tab. */
+/** Tab changes only crossfade; each tab owns its independent push host and stack. */
+@Composable
+fun TabNavigation(
+    selected: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable (Int) -> Unit,
+) {
+    Crossfade(
+        targetState = selected,
+        modifier = modifier,
+        animationSpec = EasyPaperTheme.motion.fade(),
+        label = "navigation tab",
+        content = content,
+    )
+}
+
+/** Animate stack changes inside one tab. */
 @Composable
 fun <S : Any> PushNavigation(
     stack: List<S>,
@@ -150,5 +167,3 @@ fun <S : Any> PushNavigation(
         Box(Modifier.fillMaxSize().background(background)) { content(shown.last()) }
     }
 }
-
-private const val PREVIOUS_PAGE_TRAVEL = 0.3f

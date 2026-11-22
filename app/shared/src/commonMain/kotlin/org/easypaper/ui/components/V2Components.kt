@@ -1,6 +1,9 @@
 package org.easypaper.ui.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntOffsetAsState
+import androidx.compose.animation.core.animateIntSizeAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
@@ -14,6 +17,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,7 +41,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +54,10 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -60,8 +70,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
+import androidx.compose.ui.unit.round
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.v2_cancel
 import easypaper.app.shared.generated.resources.v2_clear_search
@@ -355,31 +367,68 @@ fun FloatingTabBar(items: List<TabItem>, selected: Int, onSelect: (Int) -> Unit,
     val colors = EasyPaperTheme.colors
     val spacing = EasyPaperTheme.spacing
     val shape = EasyPaperTheme.shapes.capsule
+    val motion = EasyPaperTheme.motion
+    val tabBounds = remember(items.size) { mutableStateMapOf<Int, IntRect>() }
     Box(modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars)
         .padding(horizontal = spacing.screenMargin, vertical = spacing.s), contentAlignment = Alignment.Center) {
-        Row(Modifier.widthIn(max = spacing.floatingBarMaxWidth).fillMaxWidth()
+        Box(Modifier.widthIn(max = spacing.floatingBarMaxWidth).fillMaxWidth()
             .shadow(spacing.floatingBarShadow, shape, ambientColor = colors.scrim, spotColor = colors.scrim)
-            .background(colors.cellRaised, shape).padding(spacing.xxs).selectableGroup()) {
-            items.forEachIndexed { index, item ->
-                val isSelected = index == selected
-                val foreground = if (isSelected) colors.onTint else colors.label
-                Column(Modifier.weight(1f).clip(shape)
-                    .background(if (isSelected) colors.tint else colors.cellRaised)
-                    .selectable(isSelected, role = Role.Tab, onClick = { onSelect(index) })
-                    .heightIn(min = spacing.rowMinHeight).padding(horizontal = spacing.xxs, vertical = spacing.xs),
-                    horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacing.xxs)) {
-                    Icon(painterResource(item.icon), null, Modifier.size(spacing.rowIcon), tint = foreground)
-                    // Tab labels grow only so far (as in iOS tab bars): at 200 % a German label would break
-                    // inside the word in a third of a phone width. The tab still says its full name.
-                    CappedFontScale(TAB_LABEL_FONT_SCALE) {
-                        Text(item.label, style = EasyPaperTheme.typography.caption1, color = foreground,
-                            textAlign = TextAlign.Center, maxLines = 1,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            .clip(shape).background(colors.cellRaised).padding(spacing.xxs), contentAlignment = AbsoluteAlignment.TopLeft) {
+            // Both layers share the row's origin. Measure physical coordinates, including RTL,
+            // rather than deriving the thumb from an assumed tab width or a dp constant.
+            val bounds = tabBounds[selected]
+            if (bounds != null) FloatingTabIndicator(bounds)
+            Row(Modifier.fillMaxWidth().selectableGroup()) {
+                items.forEachIndexed { index, item ->
+                    val isSelected = index == selected
+                    val foreground by animateColorAsState(
+                        if (isSelected) colors.onTint else colors.label,
+                        animationSpec = motion.selection(), label = "tab foreground",
+                    )
+                    Column(Modifier.weight(1f)
+                        .onGloballyPositioned { coordinates ->
+                            val measured = IntRect(coordinates.positionInParent().round(), coordinates.size)
+                            if (tabBounds[index] != measured) tabBounds[index] = measured
+                        }
+                        .clip(shape)
+                        .selectable(isSelected, role = Role.Tab, onClick = { onSelect(index) })
+                        .heightIn(min = spacing.rowMinHeight).padding(horizontal = spacing.xxs, vertical = spacing.xs),
+                        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacing.xxs)) {
+                        Icon(painterResource(item.icon), null, Modifier.size(spacing.rowIcon), tint = foreground)
+                        // Tab labels grow only so far (as in iOS tab bars): at 200 % a German label would break
+                        // inside the word in a third of a phone width. The tab still says its full name.
+                        CappedFontScale(TAB_LABEL_FONT_SCALE) {
+                            Text(item.label, style = EasyPaperTheme.typography.caption1, color = foreground,
+                                textAlign = TextAlign.Center, maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                        }
                     }
                 }
             }
         }
     }
+}
+
+/** One decorative thumb behind all tab targets; it never changes accessibility focus order. */
+@Composable
+private fun FloatingTabIndicator(bounds: IntRect) {
+    val motion = EasyPaperTheme.motion
+    val density = LocalDensity.current
+    // Read targets directly in reduced mode: no animation frame is required to catch up.
+    val position = if (motion.reduceMotion) bounds.topLeft else {
+        val animated by animateIntOffsetAsState(bounds.topLeft, motion.selection(), label = "tab position")
+        animated
+    }
+    val size = if (motion.reduceMotion) bounds.size else {
+        val animated by animateIntSizeAsState(bounds.size, motion.selection(), label = "tab size")
+        animated
+    }
+    Box(
+        Modifier.absoluteOffset { position }
+            .size(with(density) { size.width.toDp() }, with(density) { size.height.toDp() })
+            .background(EasyPaperTheme.colors.tint, EasyPaperTheme.shapes.capsule)
+            .testTag("floating-tab-indicator"),
+    )
 }
 
 /** Large, wrapping capsule label; disabled account options retain readable text and explicit status. */

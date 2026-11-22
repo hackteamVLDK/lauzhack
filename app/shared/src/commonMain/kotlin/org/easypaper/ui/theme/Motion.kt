@@ -1,8 +1,10 @@
 package org.easypaper.ui.theme
 
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Immutable
 import kotlin.math.PI
@@ -27,9 +29,14 @@ data class EasyPaperMotion(val reduceMotion: Boolean = false) {
     val bouncy: EasyPaperSpring = preset(0.7f)
     val fadeDurationMillis: Int = 200
     val pressFadeDurationMillis: Int = 150
+    val navigationParallaxFraction: Float = 1f / 3f
+    val navigationFadeAlpha: Float = 0.96f
     val transition: MotionTransition = if (reduceMotion) MotionTransition.Crossfade else MotionTransition.Spatial
 
     fun <T> fade(): TweenSpec<T> = tween(durationMillis = fadeDurationMillis)
+
+    /** Selection uses the same spring for geometry and color; Reduce Motion has no travel. */
+    fun <T> selection(): FiniteAnimationSpec<T> = if (reduceMotion) snap() else snappy.spec()
 
     private fun preset(damping: Float) = EasyPaperSpring(stiffness, if (reduceMotion) 1f else damping)
 }

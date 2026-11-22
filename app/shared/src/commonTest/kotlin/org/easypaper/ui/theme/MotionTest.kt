@@ -2,6 +2,8 @@ package org.easypaper.ui.theme
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.SnapSpec
+import androidx.compose.animation.core.SpringSpec
 import org.easypaper.ui.components.disclosureEnter
 import org.easypaper.ui.components.disclosureExit
 import org.easypaper.ui.components.pushTransition
@@ -12,6 +14,7 @@ import kotlin.math.PI
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class MotionTest {
@@ -50,6 +53,17 @@ class MotionTest {
             assertEquals(0, motion.fade<Float>().delay)
             assertEquals(150, motion.pressFadeDurationMillis)
         }
+    }
+
+    @Test
+    fun selectionUsesTheSnappySpringOrSnapsWithReducedMotion() {
+        val motion = EasyPaperMotion()
+        val selection = assertIs<SpringSpec<Float>>(motion.selection<Float>())
+        assertEquals(motion.snappy.stiffness, selection.stiffness)
+        assertEquals(motion.snappy.dampingRatio, selection.dampingRatio)
+        assertIs<SnapSpec<Float>>(EasyPaperMotion(reduceMotion = true).selection<Float>())
+        assertEquals(1f / 3f, motion.navigationParallaxFraction)
+        assertTrue(motion.navigationFadeAlpha in 0.9f..1f)
     }
 
     @Test
