@@ -25,6 +25,10 @@ class PatientSettings(
     val dismissedTips: SavedSetting = SavedSetting(null) {},
     /** The day (ISO date) the streak card was last shown: it greets once a day, on the first Summary visit. */
     val streakSeen: SavedSetting = SavedSetting(null) {},
+    val accountToken: SavedSetting = SavedSetting(null) {},
+    val accountEmail: SavedSetting = SavedSetting(null) {},
+    val accountName: SavedSetting = SavedSetting(null) {},
+    val accountProvider: SavedSetting = SavedSetting(null) {},
 ) {
     val dismissedTipIds: Set<String> get() = dismissedTips.value?.split(',')?.filter { it.isNotBlank() }?.toSet().orEmpty()
     fun dismissTip(tip: SummaryTip) = dismissedTips.update((dismissedTipIds + tip.name).sorted().joinToString(","))
@@ -44,7 +48,8 @@ class PatientSettings(
         }
     }
     fun reset() {
-        listOf(onboarding, language, pinned, name, birth, sex, height, weight, allergies, reminders, history, dismissedTips, streakSeen)
+        listOf(onboarding, language, pinned, name, birth, sex, height, weight, allergies, reminders, history, dismissedTips, streakSeen,
+            accountToken, accountEmail, accountName, accountProvider)
             .forEach { it.update(null) }
     }
 }
@@ -56,6 +61,8 @@ fun rememberPatientSettings() = PatientSettings(
     rememberSavedSetting("p2_height"), rememberSavedSetting("p2_weight"), rememberSavedSetting("p2_allergies"),
     rememberSavedSetting("p2_reminders"), rememberSavedSetting("p2_history"),
     rememberSavedSetting("p2_dismissed_tips"), rememberSavedSetting("p2_streak_seen"),
+    rememberSavedSetting("p2_account_token"), rememberSavedSetting("p2_account_email"),
+    rememberSavedSetting("p2_account_name"), rememberSavedSetting("p2_account_provider"),
 )
 
 fun supportedLanguage(language: String): String = language.substringBefore('-').substringBefore('_').lowercase()

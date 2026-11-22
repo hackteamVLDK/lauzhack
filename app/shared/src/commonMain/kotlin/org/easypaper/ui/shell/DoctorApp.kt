@@ -244,7 +244,8 @@ private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: Shel
                         onSource = { id, source -> state.documentSources[id] = source }, onShow = show)
                 }) } }
             ?: NothingOpen(emptyActions)
-        DoctorScreen.NewRequest -> RequestBuilderScreen(back)
+        DoctorScreen.NewRequest -> RequestBuilderScreen(back,
+            serverUrl = relayUrl(settings.serverUrl, state.server?.baseUrl ?: defaultServerUrl()), clinicToken = settings.aiToken)
         // QR, clinic code and report files all join the same list and open the visit right away.
         DoctorScreen.OpenReport -> OpenReportScreen(relayUrl(settings.serverUrl, defaultServerUrl()), clinicToken = settings.aiToken, back = back, onOpened = { received ->
             state.receive(received)

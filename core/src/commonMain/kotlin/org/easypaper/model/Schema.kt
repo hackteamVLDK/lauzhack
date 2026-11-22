@@ -25,6 +25,7 @@ data class CareRequest(
     val days: Int,
     val locale: String, // BCP 47, e.g. "ru", "en"
     val widgets: List<WidgetSpec>,
+    val personToken: String? = null,
 ) {
     init {
         require(schemaVersion in 1..SCHEMA_VERSION) { "Unsupported schemaVersion $schemaVersion, app knows $SCHEMA_VERSION" }

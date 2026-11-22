@@ -6,9 +6,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.CancellationException
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
+import org.easypaper.account.AccountClient
+import org.easypaper.account.AccountException
 import org.easypaper.invite.DraftError
 import org.easypaper.invite.MAX_REQUEST_DAYS
 import org.easypaper.invite.RequestDraft
@@ -42,6 +46,8 @@ const val WATER_TARGET_STEP_ML = 250
 const val WATER_TARGET_MAX_ML = 4000
 const val BP_TIMES_MAX = 3
 
+enum class PatientInviteError { InvalidEmail, MissingClinicToken, ServerUnavailable, MailUnavailable, Network, Failed }
+
 /**
  * What the doctor sets in "New request" (task 5). [build] turns it into the [RequestDraft] of core, whose
  * [validate] says what is missing; [create] gives the [CareRequest] that the invite carries.
@@ -50,6 +56,16 @@ const val BP_TIMES_MAX = 3
 class RequestBuilderState(doctorName: String = "", startQuestions: List<QuestionDraft> = emptyList()) {
     var complaint by mutableStateOf("")
     var doctorName by mutableStateOf(doctorName)
+    var patientName by mutableStateOf("")
+    var patientPhone by mutableStateOf("")
+    var patientEmail by mutableStateOf("")
+    var patientError by mutableStateOf<PatientInviteError?>(null)
+        private set
+    var inviteBusy by mutableStateOf(false)
+        private set
+    /** Only a successfully linked patient's name and masked email; never included in the invite URL. */
+    var invitedPatient by mutableStateOf<String?>(null)
+        private set
     /** Start = today + this many days. */
     var startOffsetDays by mutableStateOf(0)
     var days by mutableStateOf(7)
@@ -114,5 +130,65 @@ class RequestBuilderState(doctorName: String = "", startQuestions: List<Question
         val draft = build(today, titles, locale, scaleEnds)
         errors = draft.validate()
         return if (errors.isEmpty()) draft.toCareRequest(id, now) else null
+    }
+
+    /** Attach the opaque person token before the UI encodes the request as a link or QR. */
+    suspend fun createInvite(
+        today: LocalDate,
+        titles: Map<WidgetKind, String>,
+        locale: String,
+        now: Long,
+        serverUrl: String?,
+        clinicToken: String?,
+        http: HttpClient,
+        scaleEnds: List<String> = emptyList(),
+        withoutPatientDetails: Boolean = false,
+    ): CareRequest? {
+        if (inviteBusy) return null
+        val request = create(today, titles, locale, now, scaleEnds)
+        patientError = null
+        invitedPatient = null
+        if (request == null) return null
+        val email = patientEmail.trim()
+        if (withoutPatientDetails || email.isEmpty()) return request
+        if (!Regex("^[^\\s@]+@[^\\s@.]+(?:\\.[^\\s@.]+)+$").matches(email)) {
+            patientError = PatientInviteError.InvalidEmail
+            return null
+        }
+        val token = clinicToken?.trim()?.takeIf { it.isNotEmpty() }
+        if (token == null) {
+            patientError = PatientInviteError.MissingClinicToken
+            return null
+        }
+        val url = serverUrl?.trim()?.takeIf { it.isNotEmpty() }
+        if (url == null) {
+            patientError = PatientInviteError.ServerUnavailable
+            return null
+        }
+        val name = patientName.trim()
+        val phone = patientPhone.trim().takeIf { it.isNotEmpty() }
+        inviteBusy = true
+        return try {
+            val personToken = AccountClient(url, http).createInvite(token, name, phone, email)
+            val linked = request.copy(personToken = personToken)
+            val masked = email.take(1) + "***@" + email.substringAfter('@')
+            invitedPatient = listOf(name, masked).filter { it.isNotEmpty() }.joinToString(", ")
+            linked
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: AccountException) {
+            patientError = when (e.kind) {
+                AccountException.Kind.Unauthorized -> PatientInviteError.MissingClinicToken
+                AccountException.Kind.MailUnavailable -> PatientInviteError.MailUnavailable
+                AccountException.Kind.Network -> PatientInviteError.Network
+                else -> PatientInviteError.Failed
+            }
+            null
+        } catch (e: Exception) {
+            patientError = PatientInviteError.Network
+            null
+        } finally {
+            inviteBusy = false
+        }
     }
 }

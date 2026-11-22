@@ -193,7 +193,7 @@ private fun RoutingCall.handoffIp(): String {
 
 internal fun handoffClientIp(remote: String, forwardedFor: String?): String {
     return if (remote == "127.0.0.1" || remote == "::1") {
-        forwardedFor?.substringBefore(',')?.trim()?.takeIf { it.isNotEmpty() } ?: remote
+        forwardedFor?.substringAfterLast(',')?.trim()?.takeIf { it.isNotEmpty() } ?: remote
     } else remote
 }
 

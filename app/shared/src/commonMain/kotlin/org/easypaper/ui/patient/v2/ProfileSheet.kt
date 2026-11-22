@@ -16,6 +16,8 @@ import kotlinx.datetime.LocalDate
 import org.easypaper.storage.PatientRepository
 import org.easypaper.storage.exportBackup
 import org.easypaper.ui.components.*
+import org.easypaper.ui.account.AccountSection
+import org.easypaper.ui.account.AccountSignIn
 import org.easypaper.ui.shell.SavedSetting
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.stringResource
@@ -37,6 +39,7 @@ fun ProfileSheet(visible: Boolean, settings: PatientSettings, repository: Patien
     val scope = rememberCoroutineScope()
     val saveBackup = rememberBackupSaver { success -> busy = false; saved = success }
     val title = stringResource(when (page) {
+        "account" -> Res.string.p2_account_sign_in
         "backup" -> Res.string.p2_export
         "delete" -> Res.string.p2_delete_all
         else -> Res.string.p2_profile
@@ -44,6 +47,7 @@ fun ProfileSheet(visible: Boolean, settings: PatientSettings, repository: Patien
     Sheet(visible, title, stringResource(when { busy -> Res.string.p2_working; page == "profile" -> Res.string.p2_done; else -> Res.string.p2_cancel }),
         onDismiss = { if (!busy) { if (page == "profile") onDismiss() else { page = "profile"; password = "" } } }) {
         when (page) {
+            "account" -> AccountSignIn(settings, onSignedIn = { page = "profile" })
             "backup" -> {
                 PatientMessage(stringResource(Res.string.p2_backup_body))
                 GroupedSection {
@@ -122,9 +126,9 @@ fun ProfileSheet(visible: Boolean, settings: PatientSettings, repository: Patien
                         onClick = { page = "delete"; failed = false })
                 }
                 Spacer(Modifier.height(EasyPaperTheme.spacing.sectionGap))
+                AccountSection(settings, onSignIn = { page = "account" })
+                Spacer(Modifier.height(EasyPaperTheme.spacing.sectionGap))
                 GroupedSection {
-                    ListRow(stringResource(Res.string.p2_account), subtitle = stringResource(Res.string.p2_account_body), chevron = false)
-                    RowSeparator()
                     ListRow(stringResource(Res.string.p2_about), subtitle = stringResource(Res.string.p2_about_body), chevron = false)
                 }
             }

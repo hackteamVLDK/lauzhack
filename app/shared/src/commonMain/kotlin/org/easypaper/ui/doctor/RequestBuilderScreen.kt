@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +34,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.input.KeyboardType
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.cat_blood_pressure
 import easypaper.app.shared.generated.resources.cat_diary
@@ -75,6 +77,19 @@ import easypaper.app.shared.generated.resources.rb_period
 import easypaper.app.shared.generated.resources.rb_question_placeholder
 import easypaper.app.shared.generated.resources.rb_complaint_placeholder
 import easypaper.app.shared.generated.resources.rb_start
+import easypaper.app.shared.generated.resources.rb_patient_header
+import easypaper.app.shared.generated.resources.rb_patient_name
+import easypaper.app.shared.generated.resources.rb_patient_phone
+import easypaper.app.shared.generated.resources.rb_patient_email
+import easypaper.app.shared.generated.resources.rb_patient_footer
+import easypaper.app.shared.generated.resources.rb_patient_email_invalid
+import easypaper.app.shared.generated.resources.rb_patient_clinic_token
+import easypaper.app.shared.generated.resources.rb_patient_server_unavailable
+import easypaper.app.shared.generated.resources.rb_patient_mail_unavailable
+import easypaper.app.shared.generated.resources.rb_patient_network
+import easypaper.app.shared.generated.resources.rb_patient_failed
+import easypaper.app.shared.generated.resources.rb_patient_without_details
+import easypaper.app.shared.generated.resources.rb_patient_for
 import easypaper.app.shared.generated.resources.rb_times_per_day
 import easypaper.app.shared.generated.resources.rb_too_long_for_qr
 import easypaper.app.shared.generated.resources.rb_water_no_target
@@ -85,6 +100,8 @@ import easypaper.app.shared.generated.resources.remove
 import easypaper.app.shared.generated.resources.scale_none
 import easypaper.app.shared.generated.resources.scale_worst
 import kotlinx.datetime.LocalDate
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.launch
 import org.easypaper.invite.DraftError
 import org.easypaper.invite.MAX_REQUEST_DAYS
 import org.easypaper.invite.inviteFitsQr
@@ -108,6 +125,7 @@ import org.easypaper.ui.components.TextAreaRow
 import org.easypaper.ui.components.TextFieldRow
 import org.easypaper.ui.format.longDate
 import org.easypaper.ui.format.today
+import org.easypaper.ui.handover.rememberHttpClient
 import org.easypaper.ui.patient.litres
 import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
@@ -149,6 +167,15 @@ private fun DraftError.message(): StringResource = when (this) {
     DraftError.DUPLICATE_WIDGET_ID, DraftError.BLANK_WIDGET_TITLE -> Res.string.err_other
 }
 
+private fun PatientInviteError.message(): StringResource = when (this) {
+    PatientInviteError.InvalidEmail -> Res.string.rb_patient_email_invalid
+    PatientInviteError.MissingClinicToken -> Res.string.rb_patient_clinic_token
+    PatientInviteError.ServerUnavailable -> Res.string.rb_patient_server_unavailable
+    PatientInviteError.MailUnavailable -> Res.string.rb_patient_mail_unavailable
+    PatientInviteError.Network -> Res.string.rb_patient_network
+    PatientInviteError.Failed -> Res.string.rb_patient_failed
+}
+
 @OptIn(ExperimentalTime::class)
 private fun now(): Long = Clock.System.now().toEpochMilliseconds()
 
@@ -157,7 +184,13 @@ private fun now(): Long = Clock.System.now().toEpochMilliseconds()
  * then creates the invite: a QR code and a link that carry exactly this request.
  */
 @Composable
-fun RequestBuilderScreen(back: BackAction?, onCreated: (CareRequest) -> Unit = {}) {
+fun RequestBuilderScreen(
+    back: BackAction?,
+    serverUrl: String? = null,
+    clinicToken: String? = null,
+    http: HttpClient = rememberHttpClient(),
+    onCreated: (CareRequest) -> Unit = {},
+) {
     val q1 = stringResource(Res.string.q_default_1)
     val q2 = stringResource(Res.string.q_default_2)
     val state = remember(q1, q2) { RequestBuilderState(startQuestions = listOf(QuestionDraft(q1, QuestionKind.YES_NO), QuestionDraft(q2, QuestionKind.SCALE))) }
@@ -166,6 +199,7 @@ fun RequestBuilderScreen(back: BackAction?, onCreated: (CareRequest) -> Unit = {
     val locale = Locale.current.language
     val today = remember { today() }
     var created by remember { mutableStateOf<CareRequest?>(null) }
+    val scope = rememberCoroutineScope()
     val spacing = EasyPaperTheme.spacing
 
     Box(Modifier.fillMaxSize()) {
@@ -180,6 +214,7 @@ fun RequestBuilderScreen(back: BackAction?, onCreated: (CareRequest) -> Unit = {
                     TextFieldRow(state.doctorName, { state.doctorName = it }, placeholder = stringResource(Res.string.rb_doctor_placeholder))
                 }
             }
+            item(key = "patient") { PatientSection(state) }
             item(key = "period") { PeriodSection(state, today) }
             item(key = "widgets") { WidgetsSection(state, titles) }
             item(key = "create") {
@@ -187,18 +222,57 @@ fun RequestBuilderScreen(back: BackAction?, onCreated: (CareRequest) -> Unit = {
                     for (error in state.errors) {
                         Text(stringResource(error.message()), style = EasyPaperTheme.typography.subheadline, color = EasyPaperTheme.colors.destructive)
                     }
+                    state.patientError?.let { error ->
+                        Text(stringResource(error.message()), style = EasyPaperTheme.typography.subheadline, color = EasyPaperTheme.colors.destructive)
+                    }
                     Spacer(Modifier.height(spacing.xs))
-                    ProminentButton(stringResource(Res.string.rb_create), modifier = Modifier.fillMaxWidth(), onClick = {
-                        state.create(today, titles, locale, now(), scaleEnds)?.let { request ->
-                            created = request
-                            onCreated(request)
+                    ProminentButton(stringResource(Res.string.rb_create), modifier = Modifier.fillMaxWidth(),
+                        enabled = !state.inviteBusy, busy = state.inviteBusy, onClick = {
+                        scope.launch {
+                            state.createInvite(today, titles, locale, now(), serverUrl, clinicToken, http, scaleEnds)?.let { request ->
+                                created = request
+                                onCreated(request)
+                            }
                         }
                     })
+                    if (state.patientError != null) {
+                        PlainButton(stringResource(Res.string.rb_patient_without_details), enabled = !state.inviteBusy, onClick = {
+                            scope.launch {
+                                state.createInvite(today, titles, locale, now(), serverUrl, clinicToken, http, scaleEnds,
+                                    withoutPatientDetails = true)?.let { request ->
+                                    created = request
+                                    onCreated(request)
+                                }
+                            }
+                        })
+                    }
                 }
             }
         }
-        InviteSheet(created, onDismiss = { created = null })
+        InviteSheet(created, state.invitedPatient, onDismiss = { created = null })
     }
+}
+
+@Composable
+private fun PatientSection(state: RequestBuilderState) {
+    GroupedSection(
+        Modifier.padding(top = EasyPaperTheme.spacing.sectionGap),
+        header = stringResource(Res.string.rb_patient_header),
+        footer = stringResource(Res.string.rb_patient_footer),
+    ) {
+        PatientField(stringResource(Res.string.rb_patient_name), state.patientName, { if (!state.inviteBusy) state.patientName = it })
+        RowSeparator()
+        PatientField(stringResource(Res.string.rb_patient_phone), state.patientPhone, { if (!state.inviteBusy) state.patientPhone = it }, KeyboardType.Phone)
+        RowSeparator()
+        PatientField(stringResource(Res.string.rb_patient_email), state.patientEmail, { if (!state.inviteBusy) state.patientEmail = it }, KeyboardType.Email)
+    }
+}
+
+@Composable
+private fun PatientField(label: String, value: String, onChange: (String) -> Unit, keyboardType: KeyboardType = KeyboardType.Text) {
+    Text(label, style = EasyPaperTheme.typography.footnote, color = EasyPaperTheme.colors.secondaryLabel,
+        modifier = Modifier.padding(start = EasyPaperTheme.spacing.m, end = EasyPaperTheme.spacing.m, top = EasyPaperTheme.spacing.s))
+    TextFieldRow(value, onChange, placeholder = "", description = label, keyboardType = keyboardType)
 }
 
 @Composable
@@ -312,7 +386,7 @@ private fun QuestionsEditor(state: RequestBuilderState) {
 
 /** The invite: a QR code when the link fits one, the link to copy or send in any case. */
 @Composable
-private fun InviteSheet(request: CareRequest?, onDismiss: () -> Unit) {
+private fun InviteSheet(request: CareRequest?, patient: String?, onDismiss: () -> Unit) {
     var shown by remember { mutableStateOf<CareRequest?>(null) }
     if (request != null) shown = request
     var copied by remember(request) { mutableStateOf(false) }
@@ -322,6 +396,9 @@ private fun InviteSheet(request: CareRequest?, onDismiss: () -> Unit) {
         val r = shown ?: return@Sheet
         val link = remember(r) { inviteLink(r) }
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacing.s)) {
+            if (patient != null) {
+                Text(stringResource(Res.string.rb_patient_for, patient), style = EasyPaperTheme.typography.subheadline, color = EasyPaperTheme.colors.label)
+            }
             if (inviteFitsQr(link)) {
                 QrCodeImage(link, description = stringResource(Res.string.rb_invite_title))
             } else {

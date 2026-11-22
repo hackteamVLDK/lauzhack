@@ -57,6 +57,8 @@ as second reviewer; agents built most code; humans reviewed and merged. Show one
 
 ## 6. Before the demo
 
+- Accounts VM env (`/etc/easypaper/env`): `EASYPAPER_DATA_DIR=/var/lib/easypaper` (service user needs write access; atomic `accounts.json`), `EASYPAPER_CLINIC_TOKEN`, `EASYPAPER_GOOGLE_CLIENT_IDS` (comma-separated); mail: `EASYPAPER_MAIL=resend`, `RESEND_API_KEY`, `EASYPAPER_MAIL_FROM`, or `EASYPAPER_MAIL=smtp`, `SMTP_HOST`, `SMTP_PORT` (default 587; 465 for implicit TLS), `SMTP_USER`, `SMTP_PASSWORD`, `EASYPAPER_MAIL_FROM`. Missing mail configuration returns HTTP 503.
+
 - [ ] `git pull --ff-only hub main`; `python test.py --all` green.
 - [ ] Cloud server (default in all apps): `https://74-148-56-1.sslip.io` on the hub VM - relay, AI (OpenRouter, Claude Haiku, budget $3), the doctor's web app. systemd `easypaper` (127.0.0.1:8090, secrets only in `/etc/easypaper/env`, root 600) behind Caddy with a Let's Encrypt certificate; Azure NSG opens 80/443 only. The clinic token for the doctor app is in `~/.config/easypaper/clinic-token.txt` on mykhailo's laptop (never in Git). Update: `:server:installDist` + web dist -> `/opt/easypaper/{server,web}` -> `sudo systemctl restart easypaper`.
 - [ ] Clinic module instead (daytime only): run the server locally with `EASYPAPER_AI=clinic` and Ollama `gemma4:12b` warmed up; on mykhailo's laptop 8080 is Apache, so `$env:PORT = "8090"`; set `http://<laptop-ip>:8090` (emulator: `http://10.0.2.2:8090`) in the developer menu. Android 17 then asks for local network access when the patient creates a code - tap Allow.

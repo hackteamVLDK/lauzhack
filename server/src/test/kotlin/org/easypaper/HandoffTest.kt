@@ -189,8 +189,8 @@ class HandoffTest {
 
     @Test
     fun onlyLoopbackProxyCanSupplyFirstForwardedAddress() {
-        assertEquals("203.0.113.1", handoffClientIp("127.0.0.1", "203.0.113.1, 203.0.113.2"))
-        assertEquals("203.0.113.1", handoffClientIp("::1", " 203.0.113.1 , 203.0.113.2"))
+        assertEquals("203.0.113.2", handoffClientIp("127.0.0.1", "203.0.113.1, 203.0.113.2")) // the last address is the one Caddy wrote
+        assertEquals("203.0.113.2", handoffClientIp("::1", " 203.0.113.1 , 203.0.113.2"))
         assertEquals("198.51.100.1", handoffClientIp("198.51.100.1", "203.0.113.1"))
         assertEquals("::1", handoffClientIp("::1", null))
     }

@@ -40,6 +40,9 @@ kotlin {
     }
     sourceSets {
         androidMain.dependencies {
+            implementation(libs.androidx.credentials)
+            implementation(libs.androidx.credentials.play.services.auth)
+            implementation(libs.googleid)
             implementation(libs.ktor.clientCio)
             implementation(libs.androidx.activity.compose) // camera and photo picker launchers (task 28)
             implementation(libs.androidx.core.ktx) // FileProvider for the camera's photo

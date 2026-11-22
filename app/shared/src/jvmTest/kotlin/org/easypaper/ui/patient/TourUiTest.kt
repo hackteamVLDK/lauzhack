@@ -58,7 +58,7 @@ class TourUiTest {
         clickAction("Skip")
         waitForText("Welcome")
         onNodeWithText("Welcome").assertIsDisplayed()
-        onNodeWithText("Continue").assertExists()
+        onNodeWithText("Continue without an account").assertExists()
         onNodeWithText("Name (optional)").assertExists()
     }
 
@@ -80,7 +80,7 @@ class TourUiTest {
         clickAction("Continue")
         waitForText("Welcome")
 
-        clickAction("Continue")
+        clickAction("Continue without an account")
         waitForText("Privacy & data")
         clickAction("Back")
         waitForText("Welcome")

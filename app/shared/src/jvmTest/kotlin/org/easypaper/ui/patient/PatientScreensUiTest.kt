@@ -15,6 +15,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -124,10 +125,10 @@ class PatientScreensUiTest {
         waitForText("Track what matters")
         onNodeWithText("Skip").performScrollTo().performClick()
         waitForText("Welcome")
-        onNodeWithText("Continue with Google").assertIsNotEnabled()
-        onNodeWithText("Continue with email").assertIsNotEnabled()
-        onAllNodesWithText("Soon", useUnmergedTree = true).assertCountEquals(2)
-        onNodeWithText("Continue").performClick()
+        onNodeWithText("Continue with Google").assertIsEnabled()
+        onNodeWithText("Continue with Apple").assertIsEnabled()
+        onNodeWithText("Continue with email").assertIsEnabled()
+        onNodeWithText("Continue without an account").performScrollTo().performClick()
         waitForText("Privacy & data")
         onNodeWithText("Language").assertExists()
         onNode(hasScrollAction()).performScrollToNode(hasText("Continue"))

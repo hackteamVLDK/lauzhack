@@ -41,7 +41,9 @@ fun Application.module(
     aiToken: String? = System.getenv("EASYPAPER_CLINIC_TOKEN"),
     handoff: Handoff = Handoff(maxBytes = relay.maxBytes, maxTotalBytes = relay.maxTotalBytes),
     catalog: CatalogService? = null,
+    accounts: Accounts? = null,
 ) {
+    val accountService = accounts ?: Accounts.fromEnv(this)
     protectAiRoutes(ai.mode, aiToken)
     launch {
         while (isActive) {
@@ -55,6 +57,7 @@ fun Application.module(
         handoffRoutes(handoff, aiToken)
         aiRoutes(ai)
         catalog?.let { catalogRoutes(it) }
+        accountRoutes(accountService)
         if (webDir != null) staticFiles("/", webDir) { default("index.html") }
     }
 }

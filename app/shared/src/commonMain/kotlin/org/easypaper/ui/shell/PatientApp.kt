@@ -18,6 +18,7 @@ import org.easypaper.diary.EntryProblem
 import org.easypaper.model.*
 import org.easypaper.ui.catalog.DesignCatalog
 import org.easypaper.ui.components.*
+import org.easypaper.ui.account.PatientInviteForm
 import org.easypaper.ui.handover.ShareScreen
 import org.easypaper.ui.handover.ShareCodeScreen
 import org.easypaper.ui.handover.ShareFileScreen
@@ -238,14 +239,9 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
         WidgetGallery(navigator.sheet == PatientScreen.Pinned, patient, navigator::dismissSheet)
         Sheet(navigator.sheet == PatientScreen.OpenInvite, stringResource(Res.string.p2_add_request), stringResource(Res.string.p2_cancel),
             { state.pendingInvite = null; navigator.dismissSheet() }) {
-            OpenInviteForm(state.pendingInvite) { request ->
-                scope.launch {
-                    try {
-                        state.repository.start(request)
-                        state.pendingInvite = null; navigator.dismissSheet()
-                    } catch (e: CancellationException) { throw e
-                    } catch (e: Exception) { failed = true }
-                }
+            PatientInviteForm(state.pendingInvite, patient, settings.serverUrl) { request ->
+                state.repository.start(request)
+                state.pendingInvite = null; navigator.dismissSheet()
             }
         }
         Sheet(navigator.sheet == PatientScreen.Developer, developerTitle(), stringResource(Res.string.p2_done), navigator::dismissSheet) {

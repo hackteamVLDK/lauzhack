@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import easypaper.app.shared.generated.resources.*
 import kotlinx.coroutines.launch
 import org.easypaper.ui.components.*
+import org.easypaper.ui.account.AccountSignIn
 import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.DrawableResource
@@ -64,13 +65,7 @@ fun Onboarding(settings: PatientSettings, saving: Boolean, error: Boolean,
                                 TextFieldRow(settings.name.value.orEmpty(), settings.name::update,
                                     stringResource(Res.string.p2_optional_name))
                             }
-                            Column(verticalArrangement = Arrangement.spacedBy(spacing.s)) {
-                                CapsuleButton(stringResource(Res.string.p2_continue), { step = 3 }, prominent = true)
-                                CapsuleButton(stringResource(Res.string.p2_continue_google), {}, enabled = false,
-                                    badge = stringResource(Res.string.p2_soon))
-                                CapsuleButton(stringResource(Res.string.p2_continue_email), {}, enabled = false,
-                                    badge = stringResource(Res.string.p2_soon))
-                            }
+                            AccountSignIn(settings, onSignedIn = { step = 3 }, onContinueWithoutAccount = { step = 3 })
                             Text(stringResource(Res.string.p2_local_profile_privacy), style = EasyPaperTheme.typography.footnote,
                                 color = colors.secondaryLabel, textAlign = TextAlign.Center)
                         }
