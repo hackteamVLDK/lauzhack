@@ -135,23 +135,32 @@ class AiTest {
     }
 
     @Test
-    fun thirtyFirstRequestWithinAMinuteIsRateLimited() = app(cloud()) {
-        repeat(30) { assertEquals(HttpStatusCode.OK, client.get("/ai/status").status) }
-        val response = client.post("/ai/summary") {
-            header("X-Forwarded-For", "203.0.113.123")
-            setBody(demoRequest)
-        }
-        assertEquals(HttpStatusCode.TooManyRequests, response.status)
-        assertNoToken(response)
+    fun clientsBehindTheProxyHaveTheirOwnLimit() = app(cloud()) {
+        // the test host connects from loopback, as Caddy does on the VM
+        repeat(30) { assertEquals(HttpStatusCode.OK, client.get("/ai/status") { header("X-Forwarded-For", "203.0.113.1") }.status) }
+        val limited = client.post("/ai/summary") { header("X-Forwarded-For", "203.0.113.1"); setBody(demoRequest) }
+        assertEquals(HttpStatusCode.TooManyRequests, limited.status)
+        assertNoToken(limited)
+        assertEquals(HttpStatusCode.OK, client.get("/ai/status") { header("X-Forwarded-For", "198.51.100.7, 10.0.0.1") }.status)
     }
 
     @Test
-    fun unauthorizedRequestsAlsoUseTheSharedAiLimit() = app(cloud()) {
+    fun requestsWithoutTheTokenDoNotUseTheLimit() = app(cloud()) {
         val anonymous = createClient { }
-        repeat(30) {
-            assertEquals(HttpStatusCode.Unauthorized, anonymous.get("/ai/unknown").status)
+        repeat(40) {
+            assertEquals(HttpStatusCode.Unauthorized, anonymous.get("/ai/unknown") { header("X-Forwarded-For", "203.0.113.9") }.status)
         }
-        assertEquals(HttpStatusCode.TooManyRequests, client.get("/ai/status").status)
+        assertEquals(HttpStatusCode.OK, client.get("/ai/status") { header("X-Forwarded-For", "203.0.113.9") }.status)
+    }
+
+    @Test
+    fun onlyTheLocalProxyIsTrustedForTheClientAddress() {
+        assertEquals("203.0.113.1", aiClientKey("127.0.0.1", "203.0.113.1"))
+        assertEquals("198.51.100.2", aiClientKey("127.0.0.1", "6.6.6.6, 198.51.100.2"), "the address the proxy appended, not a forged first one")
+        assertEquals("203.0.113.1", aiClientKey("0:0:0:0:0:0:0:1", " 203.0.113.1 "))
+        assertEquals("198.51.100.4", aiClientKey("198.51.100.4", "1.2.3.4"), "a forged header from the internet is ignored")
+        assertEquals("127.0.0.1", aiClientKey("127.0.0.1", null))
+        assertEquals("127.0.0.1", aiClientKey("127.0.0.1", " "))
     }
 
     @Test

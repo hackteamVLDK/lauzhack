@@ -184,8 +184,8 @@ internal fun Application.protectAiRoutes(mode: AiMode, token: String?) {
             return@intercept
         }
         if (segments.firstOrNull() == "ai") {
-            val failure = when {
-                !limiter.allow(call.request.local.remoteAddress) -> HttpStatusCode.TooManyRequests to "Too many AI requests"
+            // The token comes first: a request without it is refused and never uses up the clinic's limit (#65).
+            val access = when {
                 tokenDigest == null -> {
                     if (mode == AiMode.OFF && segments == listOf("ai", "status") && call.request.httpMethod == HttpMethod.Get) null
                     else HttpStatusCode.ServiceUnavailable to "AI access token not configured"
@@ -197,12 +197,26 @@ internal fun Application.protectAiRoutes(mode: AiMode, token: String?) {
                     if (MessageDigest.isEqual(tokenDigest, digest)) null else HttpStatusCode.Unauthorized to "Unauthorized"
                 }
             }
+            val client = aiClientKey(call.request.local.remoteAddress, call.request.headers["X-Forwarded-For"])
+            val failure = access ?: if (!limiter.allow(client)) HttpStatusCode.TooManyRequests to "Too many AI requests" else null
             if (failure != null) {
                 call.respondText(failure.second, status = failure.first)
                 finish()
             }
         }
     }
+}
+
+/**
+ * Whom the AI limit counts: behind the local reverse proxy (Caddy on the VM, connecting from loopback) the client is
+ * the last X-Forwarded-For address — the one the proxy itself wrote (Caddy replaces a client's header by default; a
+ * proxy that appends still puts the real address last, while earlier ones can be forged). A connection from anywhere
+ * else is its own address, so a forged header from the internet changes nothing.
+ */
+internal fun aiClientKey(remote: String, forwardedFor: String?): String {
+    val fromProxy = remote == "127.0.0.1" || remote == "::1" || remote == "0:0:0:0:0:0:0:1" || remote == "localhost"
+    val client = forwardedFor?.substringAfterLast(',')?.trim()?.takeIf { it.isNotEmpty() }
+    return if (fromProxy && client != null) client else remote
 }
 
 private fun hashAiToken(token: String): ByteArray = MessageDigest.getInstance("SHA-256").digest(token.toByteArray(Charsets.UTF_8))
