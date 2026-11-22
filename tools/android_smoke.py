@@ -85,20 +85,41 @@ class Smoke:
             if any(label == text for label, _, _ in screen()):
                 return
             self.scroll_down()
+        self.find(text, timeout=0)  # still not there: fail with this step and the texts on screen
 
     def type(self, text):
         adb("shell", "input", "text", text.replace(" ", "%s"))
         time.sleep(0.4)
 
     def scroll_down(self):
-        adb("shell", "input", "swipe", "540", "2000", "540", "900", "300")
+        width, height = self.size()
+        x = str(width // 2)
+        adb("shell", "input", "swipe", x, str(height * 3 // 4), x, str(height // 3), "300")
         time.sleep(0.6)
+
+    def size(self):
+        """Screen size in pixels ("Override size" wins over "Physical size")."""
+        sizes = re.findall(r"(\d+)x(\d+)", adb("shell", "wm", "size"))
+        if not sizes:
+            raise SystemExit("adb shell wm size: no screen size")
+        width, height = sizes[-1]
+        return int(width), int(height)
 
     def shot(self, name):
         self.step += 1
         path = self.out / f"{self.step:02d}-{name}.png"
         path.write_bytes(adb("exec-out", "screencap", "-p", binary=True))
         print(f"  {path.relative_to(ROOT) if path.is_relative_to(ROOT) else path}")
+
+    def bright_orange_pixels(self):
+        """Strongly orange pixels in the lower half of the screen: the test photo's orange stripes (the photo has no
+        accessibility label, so it is checked by its pixels)."""
+        raw = adb("exec-out", "screencap", binary=True)  # header (width, height, format[, colour space]) + RGBA
+        width, height = int.from_bytes(raw[0:4], "little"), int.from_bytes(raw[4:8], "little")
+        pixels = raw[len(raw) - width * height * 4:]
+        start = (height // 2) * width * 4
+        return sum(1 for i in range(start, len(pixels), 16)
+                   if pixels[i] > 200 and 80 < pixels[i + 1] < 170 and pixels[i + 2] < 90)
 
     def launch(self):
         adb("shell", "am", "start", "-W", "-n", f"{PACKAGE}/.MainActivity")
@@ -111,6 +132,8 @@ PHOTO = ROOT / "core/src/jvmTest/resources/photos/baseline.jpg"  # stripes with 
 def run(s: Smoke):
     adb("shell", "pm", "clear", PACKAGE)
     adb("push", str(PHOTO), "/sdcard/Pictures/easypaper-meal.jpg")
+    # the newest picture comes first in the system photo picker: make ours the newest
+    adb("shell", "touch", "/sdcard/Pictures/easypaper-meal.jpg")
     adb("shell", "am", "broadcast", "-a", "android.intent.action.MEDIA_SCANNER_SCAN_FILE", "-d",
         "file:///sdcard/Pictures/easypaper-meal.jpg")
     s.launch()
@@ -119,7 +142,8 @@ def run(s: Smoke):
     s.find("Get started")
     s.shot("welcome")
     s.tap("Get started")
-    for _ in range(3):
+    for page in range(3):
+        s.shot(f"tour-{page + 1}")
         s.tap("Next")
     s.shot("onboarding-private")
     s.tap("Continue")
@@ -127,6 +151,7 @@ def run(s: Smoke):
     s.shot("profile-name")
     s.tap("Continue")
     s.find("Privacy & data")
+    s.shot("privacy")
     s.tap("Continue")
     s.find("Summary")
     s.shot("summary-empty")
@@ -146,6 +171,7 @@ def run(s: Smoke):
     s.tap("Back")
     s.tap("Water")
     s.tap("Add Data")
+    s.shot("water-form")
     s.tap("Add Data", last=True)  # the sheet's button repeats the toolbar action; 250 ml is pre-filled
     s.find("250\u00a0ml")
     s.shot("water-saved")
@@ -154,7 +180,9 @@ def run(s: Smoke):
     s.tap("Add Data")
     s.fill("What did you eat or drink?", "Soup and tea")
     s.tap("Choose photo")
-    s.tap("Photo taken on", prefix=True)  # the system photo picker
+    s.find("Photo taken on", prefix=True)
+    s.shot("photo-picker")
+    s.tap("Photo taken on", prefix=True)  # the first one: the newest, easypaper-meal.jpg (touched above)
     s.find("Remove photo")
     s.shot("food-form-photo")
     s.tap("Save", last=True)
@@ -185,10 +213,20 @@ def run(s: Smoke):
     s.tap("Browse")
     s.tap("Blood pressure")
     s.find("128/84 mmHg, pulse 72")
+    s.shot("after-restart-pressure")
+    s.tap("Back")
+    s.tap("Water")
+    s.find("250\u00a0ml")
+    s.shot("after-restart-water")
     s.tap("Back")
     s.tap("Food")
-    s.find("Soup and tea (Photo)")
-    s.shot("after-restart-food")
+    s.tap("Soup and tea (Photo)")
+    s.find("Entry")
+    time.sleep(1.0)
+    if s.bright_orange_pixels() < 200:
+        s.shot("FAILED")
+        raise SystemExit(f"FAILED at step {s.step}: the food photo is not shown after the restart")
+    s.shot("after-restart-food-photo")
 
 
 def main():
