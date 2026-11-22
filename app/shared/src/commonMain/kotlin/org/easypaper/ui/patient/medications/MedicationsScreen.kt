@@ -136,8 +136,6 @@ fun MedicationsScreen(
     var saving by remember { mutableStateOf(false) }
     val now = { Clock.System.now().toEpochMilliseconds() }
     val recognition = injectedRecognition ?: remember(catalog) { Recognition(catalog, reader) }
-    val countrySetting = org.easypaper.ui.shell.rememberSavedSetting("med_purchase_country")
-    recognition.country = countrySetting.value
     // records the confirmed medicine with its intake; the same entry id makes a second tap a no-op
     val saveMedicine: (String, Medication, org.easypaper.model.Intake?) -> Unit = { entryId, medication, intake ->
         saving = true
@@ -249,7 +247,6 @@ fun MedicationsScreen(
             onDismiss = recognition::close,
         ) {
             RecognitionContent(recognition, photos.takePhoto, photos.pickPhoto, saving, timeZone,
-                onCountry = { code -> countrySetting.update(code); scope.launch { recognition.retryWithCountry(code) } },
                 onSave = saveMedicine)
         }
 

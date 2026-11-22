@@ -1,0 +1,47 @@
+{
+  "info": {
+    "registry": "ch-swissmedic",
+    "name": "CH recognition test fixture",
+    "countries": [
+      "CH"
+    ],
+    "url": "https://example.invalid/catalog-fixture",
+    "dataDate": "2026-11-22",
+    "importedAt": "",
+    "records": 1,
+    "note": "Synthetic recognition fixture; pack identifiers are test data."
+  },
+  "products": [
+    {
+      "id": "ch-swissmedic:DAFALGAN",
+      "card": {
+        "name": "DAFALGAN 500 mg",
+        "brand": "DAFALGAN",
+        "form": "tablet",
+        "ingredients": [
+          {
+            "name": "paracetamol",
+            "amount": "500",
+            "unit": "mg"
+          }
+        ],
+        "perUnit": "tablet",
+        "doseUnit": "tablet",
+        "source": {
+          "registry": "ch-swissmedic",
+          "registryName": "CH recognition test fixture",
+          "country": "CH",
+          "recordId": "DAFALGAN",
+          "url": "https://example.invalid/catalog-fixture",
+          "updated": "2026-11-22"
+        }
+      },
+      "packs": [
+        {
+          "gtin": "7680000000014",
+          "description": "DAFALGAN test pack"
+        }
+      ]
+    }
+  ]
+}

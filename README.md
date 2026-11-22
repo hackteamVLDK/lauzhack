@@ -14,9 +14,9 @@ Kotlin Multiplatform project generated with [kmp.jetbrains.com](https://kmp.jetb
 ## Try it
 
 - **Live server:** <https://74-148-56-1.sslip.io> (the team's VM behind Caddy, HTTPS): the doctor's web app, the
-  blind relay for reports and the AI proxy. The medicine catalog (`/catalog/resolve`) needs a newer deploy and an
-  import of the registries (`./gradlew :server:importCatalog`); until then, recognising a medicine on the public
-  server ends in "registries can't be reached" and the patient types the name.
+  blind relay for reports, the AI proxy and the medicine catalog (`/catalog/coverage` lists the imported registries:
+  Switzerland, France, EU names, Ukraine, Turkey, Belarus).
+- **Android APK:** <https://74-148-56-1.sslip.io/download/easypaper.apk> (debug build of `main`).
 - **Doctor (web):** open it in Chrome or Firefox — *Open patient report* → *Read QR code* (camera), paste the code,
   enter the patient's 6-digit code or open an encrypted report file. Receiving by code needs the clinic token in
   the settings.
@@ -31,10 +31,13 @@ Kotlin Multiplatform project generated with [kmp.jetbrains.com](https://kmp.jetb
 - widgets for blood pressure, water, food (photo optional), medicines, symptoms questionnaires, diary, questions for
   the doctor and own measurements (weight or anything with its own unit); a doctor's request is a plan on top of the
   same records, with its progress;
-- medicine packs are recognised **without any LLM**: the barcode (DataMatrix/EAN, ML Kit on Android, ZXing on
-  Desktop) and the printed text (OCR) are read on the device; then only those codes, the label text and the country
-  of purchase — no photo, no patient data — are looked up in official registries on the server (`/catalog/resolve`:
-  Swissmedic/Refdata, French BDPM, EMA Article 57 and more), and the patient confirms the card; for the common
+- medicine packs are recognised **without an LLM first**: the barcode (DataMatrix/EAN, ML Kit on Android, ZXing on
+  Desktop) and the printed text (OCR) are read on the device; then only those codes and the label text — no photo,
+  no patient data, no country to choose — are looked up in every imported registry at once (`/catalog/resolve`:
+  Swissmedic/Refdata, French BDPM, EMA Article 57, Ukraine, Turkey, Belarus), Latin and Cyrillic spellings alike.
+  If the phone can't read the label (on-device OCR has no Cyrillic), the patient may press *Read the box online*:
+  only then the photo goes to the server, a small vision model copies the printed text (budgeted, rate-limited,
+  photo not kept) and the same registry search runs on it. The patient always confirms the card; for the common
   medicines in the app's side-effect table, three common side effects are asked as yes/no once a day — facts only,
   never advice;
 - optional account: Google or a code by email, or none; a doctor can invite a patient by name, phone and email,

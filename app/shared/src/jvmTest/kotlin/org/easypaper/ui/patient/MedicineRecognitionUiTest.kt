@@ -19,6 +19,9 @@ import org.easypaper.catalog.Catalog
 import org.easypaper.catalog.CatalogIndex
 import org.easypaper.catalog.CatalogPack
 import org.easypaper.catalog.CatalogProduct
+import org.easypaper.catalog.CatalogQuery
+import org.easypaper.catalog.Resolution
+import org.easypaper.catalog.ResolutionKind
 import org.easypaper.catalog.resolve
 import org.easypaper.model.Ingredient
 import org.easypaper.model.Medication
@@ -83,6 +86,7 @@ class MedicineRecognitionUiTest {
         "sachet" to PhotoReading(emptyList(), "FERVEX\nADULTES\nparacétamol 500 mg\nacide ascorbique 200 mg\nmaléate de phéniramine 25 mg"),
         "cut-blister" to PhotoReading(emptyList(), "DOLIPRANE\nparacétamol\nLot 4512"),
         "unknown-code" to PhotoReading(listOf("4006381333931"), "DOLIPRANE 1000 mg\ncomprimés"),
+        "supplement" to PhotoReading(emptyList(), "Burgerstein ZinkVital Nahrungsergänzungsmittel 150 Minitabletten"),
     )
     private val reader: suspend (ByteArray) -> PhotoReading = { photos.getValue(it.decodeToString()) }
 
@@ -95,7 +99,7 @@ class MedicineRecognitionUiTest {
         val medicines get() = record.entries.filter { it.widgetId == widget.id }.map { it.payload }.filterIsInstance<Medication>()
     }
 
-    private fun ComposeUiTest.patientScreen(): Setup {
+    private fun ComposeUiTest.patientScreen(catalog: Catalog = this@MedicineRecognitionUiTest.catalog): Setup {
         val state = ShellState(Role.Patient)
         runBlocking { state.fillWithDemoData() }
         val setup = Setup(state, Recognition(catalog, reader))
@@ -114,6 +118,85 @@ class MedicineRecognitionUiTest {
     }
 
     private fun ComposeUiTest.photo(setup: Setup, name: String) = runBlocking { setup.recognition.onPhoto(name.encodeToByteArray()) }
+
+    @Test
+    fun recognitionHasNoCountryChoiceAndPhotoAndTypedQueriesSearchEveryRegistry() = runComposeUiTest {
+        val queries = mutableListOf<CatalogQuery>()
+        val setup = patientScreen(Catalog { query -> queries.add(query); resolve(index, query) })
+        onNodeWithText("Bought in").assertDoesNotExist()
+        onNodeWithText("Any country").assertDoesNotExist()
+        onNodeWithText("Switzerland").assertDoesNotExist()
+        photo(setup, "box-of-8")
+        waitForText("Confirm")
+        assertEquals(1, queries.size)
+        assertNull(queries.single().country)
+        onNodeWithText("Bought in").assertDoesNotExist()
+
+        runOnIdle { setup.recognition.start() }
+        waitForText("Type what’s printed on the package")
+        onNodeWithText("Type what’s printed on the package").performClick()
+        waitForText("Search the registries")
+        onNode(hasSetTextAction()).performTextInput("DOLIPRANE 1000 mg")
+        onNodeWithText("Search the registries").performClick()
+        waitForText("Confirm")
+        assertEquals(2, queries.size)
+        assertTrue(queries.all { it.country == null })
+        onNodeWithText("Bought in").assertDoesNotExist()
+    }
+
+    @Test
+    fun anUnregisteredSupplementOffersThePatientsOwnWords() = runComposeUiTest {
+        val setup = patientScreen()
+        photo(setup, "supplement")
+        waitForText("Not enough is readable on this photo.", substring = true)
+        onNodeWithText("Describe it in my words").assertExists()
+        onNodeWithText("Confirm").assertDoesNotExist()
+        onNodeWithText("Bought in").assertDoesNotExist()
+    }
+
+    @Test
+    fun notFoundOffersOnlineReadingAndSendsTheSamePhotoOnlyAfterClick() = runComposeUiTest {
+        var uploads = 0
+        var uploaded: ByteArray? = null
+        val onlineCatalog = object : Catalog {
+            override suspend fun resolve(query: CatalogQuery) = Resolution(ResolutionKind.NOT_FOUND)
+            override suspend fun readLabel(jpeg: ByteArray): Resolution {
+                uploads++
+                uploaded = jpeg
+                return resolve(index, CatalogQuery(text = "FERVEX ADULTES"))
+            }
+        }
+        val setup = patientScreen(onlineCatalog)
+        photo(setup, "box-of-8")
+        waitForText("Read the box online")
+        onNodeWithText("The photo of the box is sent to the Easy Paper server to read the label; nothing else.").assertExists()
+        assertEquals(0, uploads)
+        onNodeWithText("Read the box online").performClick()
+        waitForText("Confirm")
+        assertEquals(1, uploads)
+        assertEquals("box-of-8", uploaded!!.decodeToString())
+    }
+
+    @Test
+    fun onlineUnavailableKeepsTheRetryAndManualChoices() = runComposeUiTest {
+        val setup = patientScreen(Catalog { Resolution(ResolutionKind.TOO_LITTLE) })
+        photo(setup, "box-of-8")
+        waitForText("Read the box online")
+        onNodeWithText("Read the box online").performClick()
+        waitForText("Reading online is not available right now")
+        onNodeWithText("Read the box online").assertExists()
+        onNodeWithText("Describe it in my words").assertExists()
+    }
+
+    @Test
+    fun anEmptyCatalogHasItsOwnMessageAndStillOffersThePatientsOwnWords() = runComposeUiTest {
+        val setup = patientScreen(Catalog { Resolution(ResolutionKind.NOT_LOADED) })
+        photo(setup, "box-of-8")
+        waitForText("Medicine lists are not loaded on the server yet")
+        onNodeWithText("Describe it in my words").assertExists()
+        onNodeWithText("can’t be reached", substring = true).assertDoesNotExist()
+        onNodeWithText("Bought in").assertDoesNotExist()
+    }
 
     /** The doctor's screen for the patient's record as it is now. */
     private fun ComposeUiTest.doctorSees(setup: Setup, vararg texts: String) {
@@ -174,8 +257,8 @@ class MedicineRecognitionUiTest {
         val setup = patientScreen()
         photo(setup, "cut-blister")
         waitForText("Which strength is printed on the package?", substring = true)
-        onNodeWithText("500 mg").assertExists()
-        onNodeWithText("1000 mg").assertExists()
+        onNodeWithText("FR · 500 mg").assertExists()
+        onNodeWithText("FR · 1000 mg").assertExists()
         assertTrue(onAllNodesWithText("Confirm").fetchSemanticsNodes().isEmpty(), "no card is offered before a strength is chosen")
         onNodeWithText("DOLIPRANE 1000 mg, comprimé").performClick() // the person picks what the box says
         waitForText("Confirm")

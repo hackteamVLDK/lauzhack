@@ -77,7 +77,8 @@ class CostComparisonTest {
         assertEquals(0.50, result.perStep.getValue(AiStep.PhotoDescription).cloudUsd, 1e-12)
         assertEquals(6.00, result.perStep.getValue(AiStep.Summary).cloudUsd, 1e-12)
         assertEquals(6.00, result.perStep.getValue(AiStep.DocumentExtraction).cloudUsd, 1e-12)
-        assertEquals(12.50, result.cloudUsd, 1e-12)
+        assertEquals(0.50, result.perStep.getValue(AiStep.MedicineLabel).cloudUsd, 1e-12)
+        assertEquals(13.00, result.cloudUsd, 1e-12)
     }
 
     @Test
@@ -92,7 +93,8 @@ class CostComparisonTest {
         assertEquals(8.0, result.perStep.getValue(AiStep.PhotoDescription).cloudUsd)
         assertEquals(29.0, result.perStep.getValue(AiStep.Summary).cloudUsd)
         assertEquals(29.0, result.perStep.getValue(AiStep.DocumentExtraction).cloudUsd)
-        assertEquals(66.0, result.cloudUsd)
+        assertEquals(8.0, result.perStep.getValue(AiStep.MedicineLabel).cloudUsd)
+        assertEquals(74.0, result.cloudUsd)
     }
 
     @Test

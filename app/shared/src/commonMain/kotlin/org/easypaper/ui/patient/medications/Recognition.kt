@@ -21,7 +21,7 @@ import org.easypaper.ui.patient.newEntryId
 
 /** One step of recognising a medicine package (task 71). */
 sealed interface RecognitionStep {
-    /** Country of purchase, then camera, an image file or typing the label. */
+    /** Camera, an image file or typing the label; every loaded registry is searched. */
     data object Start : RecognitionStep
     data object Reading : RecognitionStep
     data object Searching : RecognitionStep
@@ -50,14 +50,14 @@ class Recognition(
 ) {
     var step: RecognitionStep? by mutableStateOf(null)
         private set
+    private var packagePhoto: ByteArray? = null
+    var onlineUnavailable: Boolean by mutableStateOf(false)
+        private set
+    val canReadOnline: Boolean get() = packagePhoto != null && catalog != null &&
+        (step as? RecognitionStep.Result)?.resolution?.kind in setOf(ResolutionKind.TOO_LITTLE, ResolutionKind.NOT_FOUND)
 
-    /** Country of purchase chosen by the person (ISO alpha-2); null = every market. Not taken from the app language. */
-    var country: String? by mutableStateOf(null)
-
-    private var lastQuery: CatalogQuery? = null
-
-    fun start() { step = RecognitionStep.Start }
-    fun close() { step = null }
+    fun start() { packagePhoto = null; onlineUnavailable = false; step = RecognitionStep.Start }
+    fun close() { packagePhoto = null; onlineUnavailable = false; step = null }
     /** An intake of a medicine already on the list (its confirmed card is reused, nothing is looked up again). */
     fun intakeOf(medication: Medication) { step = RecognitionStep.Intake(medication.copy(intake = null), newEntryId()) }
     fun typeLabel() { step = RecognitionStep.TypeLabel }
@@ -65,21 +65,42 @@ class Recognition(
     fun choose(candidate: Candidate, gtin: String?) { step = RecognitionStep.Card(candidate, gtin) }
 
     suspend fun onPhoto(photo: ByteArray) {
+        packagePhoto = photo.copyOf()
+        onlineUnavailable = false
         step = RecognitionStep.Reading
         val reading = try { reader(photo) } catch (e: CancellationException) { throw e } catch (e: Exception) { PhotoReading(emptyList(), "") }
-        search(CatalogQuery(reading.codes, reading.text, country))
+        search(CatalogQuery(reading.codes, reading.text, country = null))
     }
 
-    suspend fun onLabelText(text: String) = search(CatalogQuery(emptyList(), text, country))
+    suspend fun onLabelText(text: String) {
+        packagePhoto = null
+        onlineUnavailable = false
+        search(CatalogQuery(emptyList(), text, country = null))
+    }
 
-    /** Asks again with another country after the person changed it. */
-    suspend fun retryWithCountry(newCountry: String?) {
-        country = newCountry
-        lastQuery?.let { search(it.copy(country = newCountry)) }
+    /** Called only by the separate online-reading button, after its photo disclosure is shown. */
+    suspend fun readOnline() {
+        if (!canReadOnline) return
+        val previous = step as? RecognitionStep.Result ?: return
+        val photo = packagePhoto ?: return
+        val registries = catalog ?: return
+        onlineUnavailable = false
+        step = RecognitionStep.Reading
+        step = try {
+            val result = registries.readLabel(photo)
+            if (packagePhoto !== photo || step != RecognitionStep.Reading) return
+            if (result.kind == ResolutionKind.EXACT) RecognitionStep.Card(result.candidates.single(), result.gtin)
+            else RecognitionStep.Result(result, previous.query)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            if (packagePhoto !== photo || step != RecognitionStep.Reading) return
+            onlineUnavailable = true
+            previous
+        }
     }
 
     private suspend fun search(query: CatalogQuery) {
-        lastQuery = query
         if (query.codes.isEmpty() && query.text.isBlank()) {
             step = RecognitionStep.Result(Resolution(ResolutionKind.TOO_LITTLE, question = org.easypaper.catalog.ResolutionQuestion.PHOTO_PACKAGE), query)
             return

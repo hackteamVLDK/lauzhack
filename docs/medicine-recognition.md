@@ -8,19 +8,25 @@ the intake as reported, and a link to the official record.
 
 **Patient** (Medicines → *Recognise medicine*):
 
-1. *Bought in* — the country of purchase, chosen by hand. The app language and the language of the package do not
-   decide the market.
-2. *Take photo* (camera, Android) or *Choose image* (all platforms, works without a camera). *Type what's printed on
-   the package* or *Describe it in my words* are always there.
-3. The phone reads barcodes and text on the device (ML Kit on Android, ZXing barcodes on Desktop). Only the codes and
+1. *Take photo* (camera, Android) or *Choose image* (all platforms, works without a camera). *Type what's printed on
+   the package* or *Describe it in my words* are always there. There is no country to choose (task 86): every
+   imported registry is searched at once, by the whole brand first, then the brand with its strength, then the
+   active substance (INN) with its strength; Latin and Cyrillic spellings match each other (Стрепсілс / Strepsils).
+2. The phone reads barcodes and text on the device (ML Kit on Android, ZXing barcodes on Desktop). Only the codes and
    the text go to the server's `/catalog/resolve`, never the photo or anything about the person.
+3. If that is not enough (ML Kit reads no Cyrillic), the result offers *Read the box online*. Only after that tap the
+   photo (metadata stripped) goes to `/catalog/read-label`: a small vision model copies what is printed (brand,
+   strengths, substances), the same resolver runs on that text, and the photo is not kept (only a hash of it and the
+   text, for a repeat). The call is counted in the AI budget and limited per address (10 a minute, 60 a day).
 4. The answer is one of:
    - **exact**: one registry version. The card shows the exact name and version, the form, every active substance
      with its amount per unit, the pack when the code found one, the source with its date and a link. *Confirm*.
    - **candidates**: several versions. Each shows what sets it apart ("500 mg" / "1000 mg", Forte, the form), with a
      question: which strength is printed, or a photo of that part. The app never picks a strength itself.
    - **conflict**: the barcode names one product and the label another. The patient is asked for a new photo.
-   - **too little**: the patient is asked for a photo of the foil or the box, to type the label, or to use their own words.
+   - **too little** / **not found**: the patient is asked for a photo of the foil or the box, to type the label, to
+     read the box online, or to use their own words.
+   - **not loaded**: the server has no registries imported yet; the patient can still use their own words.
 5. After *Confirm*, a separate step asks *What did you take?*: an amount in the registry's counting unit (sachet,
    tablet, ml …), and *Now* / *Today* / *Yesterday* with a time. A photo of a box is not an intake, and the pack size
    never becomes the amount. *I didn't take it — only add it to my list* is offered too.

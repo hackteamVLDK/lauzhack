@@ -34,7 +34,6 @@ import org.easypaper.catalog.ResolutionQuestion
 import org.easypaper.model.Intake
 import org.easypaper.model.Medication
 import org.easypaper.model.MedicineProduct
-import org.easypaper.ui.components.ChoiceList
 import org.easypaper.ui.components.GrayButton
 import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.ListRow
@@ -54,14 +53,6 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 
-/** Countries offered for "Bought in"; null = any market. Markets without a connected registry say so in their name. */
-val PURCHASE_COUNTRIES: List<Pair<String?, StringResource>> = listOf(
-    null to Res.string.rec_country_any, "CH" to Res.string.country_CH, "FR" to Res.string.country_FR, "DE" to Res.string.country_DE,
-    "AT" to Res.string.country_AT, "IT" to Res.string.country_IT, "BE" to Res.string.country_BE, "ES" to Res.string.country_ES,
-    "NL" to Res.string.country_NL, "PL" to Res.string.country_PL, "UA" to Res.string.country_UA, "RU" to Res.string.country_RU,
-    "BY" to Res.string.country_BY, "TR" to Res.string.country_TR,
-)
-
 /**
  * The content of the recognition sheet for the current [Recognition.step] (task 71). [onSave] records the entry;
  * it is called with the same entry id however often the person taps.
@@ -73,7 +64,6 @@ fun ColumnScope.RecognitionContent(
     pickPhoto: (() -> Unit)?,
     saving: Boolean,
     timeZone: TimeZone,
-    onCountry: (String?) -> Unit,
     onSave: (entryId: String, medication: Medication, intake: Intake?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -85,7 +75,6 @@ fun ColumnScope.RecognitionContent(
     when (val step = recognition.step) {
         RecognitionStep.Start -> {
             Note(stringResource(Res.string.rec_intro))
-            CountryPicker(recognition.country, onCountry)
             Spacer(Modifier.height(EasyPaperTheme.spacing.l))
             photoButtons()
             PlainButton(stringResource(Res.string.rec_words), onClick = { recognition.words(null) }, modifier = Modifier.fillMaxWidth())
@@ -102,7 +91,9 @@ fun ColumnScope.RecognitionContent(
             Note(stringResource(Res.string.rec_privacy))
         }
         is RecognitionStep.Card -> CardStep(step, saving, recognition)
-        is RecognitionStep.Result -> ResultStep(step, recognition, photoButtons)
+        is RecognitionStep.Result -> ResultStep(step, recognition, photoButtons,
+            // the sheet's scope: the result step leaves composition while reading, which must not cancel the call
+            onReadOnline = { scope.launch { recognition.readOnline() } })
         is RecognitionStep.Words -> WordsStep(step, recognition)
         is RecognitionStep.Intake -> IntakeStep(step, saving, timeZone, onSave)
         is RecognitionStep.Unavailable -> {
@@ -111,20 +102,6 @@ fun ColumnScope.RecognitionContent(
         }
         null -> Unit
     }
-}
-
-@Composable
-private fun CountryPicker(country: String?, onCountry: (String?) -> Unit) {
-    var open by remember { mutableStateOf(false) }
-    val names = PURCHASE_COUNTRIES.map { (code, name) -> code to stringResource(name) }
-    val current = names.first { it.first == country }.second
-    GroupedSection(footer = stringResource(Res.string.rec_country_note)) {
-        ListRow(stringResource(Res.string.rec_country), subtitle = current, onClick = { open = !open })
-    }
-    if (open) ChoiceList(names.map { it.second }, current, onSelect = { picked ->
-        onCountry(names.first { it.second == picked }.first)
-        open = false
-    })
 }
 
 /** The registry card to confirm: exact name and version, form, every substance per unit, pack, source. */
@@ -160,7 +137,8 @@ fun MedicineCard(card: MedicineProduct, pack: String?) {
 }
 
 @Composable
-private fun ColumnScope.ResultStep(step: RecognitionStep.Result, recognition: Recognition, photoButtons: @Composable () -> Unit) {
+private fun ColumnScope.ResultStep(step: RecognitionStep.Result, recognition: Recognition, photoButtons: @Composable () -> Unit,
+                                   onReadOnline: () -> Unit) {
     val r = step.resolution
     val gtin = r.gtin
     if (gtin != null && !r.gtinKnown && r.kind != ResolutionKind.TOO_LITTLE) Note(stringResource(Res.string.rec_unknown_code, gtin))
@@ -170,16 +148,23 @@ private fun ColumnScope.ResultStep(step: RecognitionStep.Result, recognition: Re
             GroupedSection {
                 r.candidates.forEachIndexed { i, candidate ->
                     if (i > 0) RowSeparator()
-                    ListRow(candidate.product.card.name, subtitle = candidate.differences.joinToString(" · "),
+                    ListRow(candidate.product.card.name,
+                        subtitle = (listOf(candidate.product.card.source.country) + candidate.differences).distinct().joinToString(" · "),
                         onClick = { recognition.choose(candidate, r.gtin) })
                 }
             }
         }
         ResolutionKind.CONFLICT -> Note(stringResource(Res.string.rec_conflict, r.codeProduct?.card?.name.orEmpty()), live = true)
-        ResolutionKind.TOO_LITTLE -> Note(stringResource(Res.string.rec_too_little), live = true)
+        ResolutionKind.TOO_LITTLE, ResolutionKind.NOT_FOUND -> Note(stringResource(Res.string.rec_too_little), live = true)
+        ResolutionKind.NOT_LOADED -> Note(stringResource(Res.string.rec_not_loaded), live = true)
         ResolutionKind.EXACT -> Unit // shown as the card step directly
     }
     Spacer(Modifier.height(EasyPaperTheme.spacing.l))
+    if (recognition.canReadOnline) {
+        Note(stringResource(Res.string.rec_online_privacy))
+        TintedButton(stringResource(Res.string.rec_read_online), onClick = onReadOnline, modifier = Modifier.fillMaxWidth())
+    }
+    if (recognition.onlineUnavailable) Note(stringResource(Res.string.rec_online_unavailable), live = true)
     photoButtons()
     PlainButton(stringResource(Res.string.rec_words), onClick = { recognition.words() }, modifier = Modifier.fillMaxWidth())
 }

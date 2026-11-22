@@ -5,7 +5,7 @@ import dev.whyoleg.cryptography.algorithms.SHA256
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class AiStep { PhotoDescription, Summary, DocumentExtraction }
+enum class AiStep { PhotoDescription, Summary, DocumentExtraction, MedicineLabel }
 
 /** One model call (or cache hit) as the price screen (#32) shows it. */
 @Serializable

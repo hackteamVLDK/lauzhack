@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import easypaper.app.shared.generated.resources.Res
+import easypaper.app.shared.generated.resources.rec_read_online
 import easypaper.app.shared.generated.resources.cost_big_model
 import easypaper.app.shared.generated.resources.cost_budget
 import easypaper.app.shared.generated.resources.cost_budget_amount
@@ -171,6 +172,7 @@ private fun UsageRow(call: AiUsage) {
                 AiStep.PhotoDescription -> Res.string.cost_step_photo
                 AiStep.Summary -> Res.string.cost_step_summary
                 AiStep.DocumentExtraction -> Res.string.cost_step_document
+                AiStep.MedicineLabel -> Res.string.rec_read_online
             }),
             style = type.headline,
             color = colors.label,

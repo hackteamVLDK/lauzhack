@@ -1,0 +1,46 @@
+{
+  "info": {
+    "registry": "ua-drlz", "name": "UA recognition test fixture", "countries": ["UA"],
+    "url": "https://example.invalid/catalog-fixture", "dataDate": "2026-11-22", "importedAt": "",
+    "records": 4, "note": "Synthetic snapshot following Ukraine.read: trade name, release form and per-unit composition."
+  },
+  "products": [
+    {
+      "id": "ua-drlz:nurofen",
+      "card": {
+        "name": "НУРОФЄН, таблетки, вкриті оболонкою, по 200 мг", "brand": "НУРОФЄН",
+        "form": "таблетки, вкриті оболонкою, по 200 мг",
+        "ingredients": [{"name": "ібупрофену", "amount": "200", "unit": "мг"}],
+        "perUnit": "1 таблетка", "doseUnit": "tablet",
+        "source": {"registry": "ua-drlz", "registryName": "UA recognition test fixture", "country": "UA", "recordId": "nurofen", "url": "https://example.invalid/catalog-fixture", "updated": "2026-11-22"}
+      }
+    },
+    {
+      "id": "ua-drlz:citramon",
+      "card": {
+        "name": "ЦИТРАМОН-ДАРНИЦЯ, таблетки", "brand": "ЦИТРАМОН-ДАРНИЦЯ", "form": "таблетки",
+        "ingredients": [{"name": "кислоти ацетилсаліцилової", "amount": "240", "unit": "мг"}, {"name": "парацетамолу", "amount": "180", "unit": "мг"}, {"name": "кофеїну", "amount": "30", "unit": "мг"}],
+        "perUnit": "1 таблетка", "doseUnit": "tablet",
+        "source": {"registry": "ua-drlz", "registryName": "UA recognition test fixture", "country": "UA", "recordId": "citramon", "url": "https://example.invalid/catalog-fixture", "updated": "2026-11-22"}
+      }
+    },
+    {
+      "id": "ua-drlz:paracetamol",
+      "card": {
+        "name": "ПАРАЦЕТАМОЛ-ДАРНИЦЯ, таблетки по 500 мг", "brand": "ПАРАЦЕТАМОЛ-ДАРНИЦЯ", "form": "таблетки по 500 мг",
+        "ingredients": [{"name": "парацетамолу", "amount": "500", "unit": "мг"}],
+        "perUnit": "1 таблетка", "doseUnit": "tablet",
+        "source": {"registry": "ua-drlz", "registryName": "UA recognition test fixture", "country": "UA", "recordId": "paracetamol", "url": "https://example.invalid/catalog-fixture", "updated": "2026-11-22"}
+      }
+    },
+    {
+      "id": "ua-drlz:analgin",
+      "card": {
+        "name": "АНАЛЬГІН, таблетки по 500 мг", "brand": "АНАЛЬГІН", "form": "таблетки по 500 мг",
+        "ingredients": [{"name": "метамізолу натрію", "amount": "500", "unit": "мг"}],
+        "perUnit": "1 таблетка", "doseUnit": "tablet",
+        "source": {"registry": "ua-drlz", "registryName": "UA recognition test fixture", "country": "UA", "recordId": "analgin", "url": "https://example.invalid/catalog-fixture", "updated": "2026-11-22"}
+      }
+    }
+  ]
+}

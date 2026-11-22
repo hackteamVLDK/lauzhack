@@ -58,7 +58,7 @@ data class Coverage(val sources: List<SourceInfo>, val status: List<SourceStatus
 data class CatalogQuery(
     val codes: List<String> = emptyList(),
     val text: String = "",
-    /** Country where the medicine was bought (ISO alpha-2), chosen by the person; null = search every market. */
+    /** Optional registry filter for API callers; patient recognition always uses null (every loaded registry). */
     val country: String? = null,
 )
 
@@ -72,6 +72,10 @@ enum class ResolutionKind {
     CONFLICT,
     /** Nothing usable on the photo: ask for the foil or the box, or typing the name. */
     TOO_LITTLE,
+    /** A readable label had no matching registry entry; online reading can retry the package photo. */
+    NOT_FOUND,
+    /** No registry products have been loaded on the server yet. */
+    NOT_LOADED,
 }
 
 @Serializable
@@ -109,45 +113,75 @@ data class Resolution(
  */
 class CatalogIndex(val products: List<CatalogProduct>) {
     private val byGtin: Map<String, List<CatalogProduct>> = buildMap<String, MutableList<CatalogProduct>> {
-        for (p in products) for (pack in p.packs) getOrPut(pack.gtin) { mutableListOf() }.add(p)
+        for (p in products) for (pack in p.packs) {
+            val gtin = parseScanCode(pack.gtin)?.gtin ?: pack.gtin
+            getOrPut(gtin) { mutableListOf() }.add(p)
+        }
     }
     private val names: Map<String, List<List<String>>> = products.associate { p ->
-        p.id to (listOf(p.card.name, p.card.brand) + p.otherNames).map { n -> searchTokens(n) }
+        p.id to (listOf(p.card.name, p.card.brand) + p.otherNames).map { n -> comparisonTokens(n) }
     }
     private val byFirstWord: Map<String, List<CatalogProduct>> = buildMap<String, MutableSet<CatalogProduct>> {
         for (p in products) for (tokens in names.getValue(p.id)) {
             // the brand word: the first real word, not a variant ("Junior …") or a form word
-            tokens.firstOrNull { it.any(Char::isLetter) && it.length >= 2 && it !in VARIANT_WORDS && it !in FILLER_WORDS }
+            tokens.firstOrNull { it.any(Char::isLetter) && it.length >= 2 && it !in COMPARISON_VARIANTS && it !in COMPARISON_FILLERS }
                 ?.let { getOrPut(it) { mutableSetOf() }.add(p) }
         }
     }.mapValues { it.value.toList() }
 
-    fun findByGtin(gtin: String): List<CatalogProduct> = byGtin[gtin].orEmpty()
+    private val rootsByProduct = products.associate { p ->
+        p.id to p.card.ingredients.flatMap { ingredientRoots(it.name) }.toSet()
+    }
+    private val byIngredient: Map<String, List<CatalogProduct>> = buildMap<String, MutableSet<CatalogProduct>> {
+        for (p in products) for (root in rootsByProduct.getValue(p.id)) getOrPut(root) { mutableSetOf() }.add(p)
+    }.mapValues { it.value.toList() }
 
-    /** Products whose brand word (first word of a name) appears on the label, best name match first. */
+    fun findByGtin(gtin: String): List<CatalogProduct> = byGtin[parseScanCode(gtin)?.gtin ?: gtin].orEmpty().distinctBy { it.id }
+
+    /** Whole brand, then partial brand with strength, then registry INN with strength; all markets by default. */
     fun search(text: String, country: String?): List<Scored> {
-        val seen = searchTokens(text)
+        val label = parseLabel(text) ?: return emptyList()
+        val seen = comparisonTokens(text)
         val seenSet = seen.toSet()
+        val roots = seen.map(::innRoot).toSet()
         val labelVariants = variantsIn(text)
-        val labelStrengths = strengthsIn(text)
-        return seenSet.flatMap { byFirstWord[it].orEmpty() }.distinct()
+        val labelStrengths = label.strengths
+        val brandProducts = seenSet.flatMap { byFirstWord[it].orEmpty() }.toSet()
+        val substanceProducts = if (labelStrengths.isEmpty()) emptyList() else roots.flatMap { byIngredient[it].orEmpty() }
+        return (brandProducts + substanceProducts).distinctBy { it.id }
             .filter { country == null || marketFits(it.card.source.country, country) }
             .mapNotNull { p ->
                 val productVariants = (listOf(p.card.name, p.card.brand) + p.otherNames).flatMap { variantsIn(it) }.toSet()
                 // a variant printed on the box must be part of the product (FORTE on the box is never plain DOLO)
                 if (!productVariants.containsAll(labelVariants)) return@mapNotNull null
                 val best = names.getValue(p.id).maxOf { tokens ->
-                    val words = tokens.filter { it !in FILLER_WORDS }
+                    val words = tokens.filter { it !in COMPARISON_FILLERS }
                     words.count { it in seenSet } * 10 - words.count { it !in seenSet }
                 }
                 val strengths = p.strengths()
                 val strengthOk = labelStrengths.isEmpty() || labelStrengths.any { it in strengths }
-                Scored(p, best, strengthOk, labelStrengths.isNotEmpty())
+                val brandMatches = p in brandProducts
+                val wholeBrand = (listOf(p.card.brand) + p.otherNames).any { name ->
+                    val words = comparisonTokens(name).filter { it.any(Char::isLetter) && it !in COMPARISON_FILLERS }
+                    words.isNotEmpty() && words.all { it in seenSet }
+                }
+                val innMatches = roots.any { it in rootsByProduct.getValue(p.id) }
+                if (!brandMatches && (!innMatches || !strengthOk)) return@mapNotNull null
+                val rank = when {
+                    brandMatches && wholeBrand -> 300
+                    brandMatches && labelStrengths.isNotEmpty() && strengthOk -> 200
+                    brandMatches -> 150
+                    else -> 100
+                }
+                val capitalisedBrand = names.getValue(p.id).any { tokens -> tokens.firstOrNull() in label.brandTokens.map(::comparisonWord) }
+                Scored(p, rank + best.coerceIn(-40, 40) + if (capitalisedBrand) 5 else 0,
+                    strengthOk, labelStrengths.isNotEmpty(), brandMatches)
             }
-            .sortedWith(compareByDescending<Scored> { it.strengthMatches }.thenByDescending { it.score })
+            .sortedWith(compareByDescending<Scored> { it.strengthMatches }.thenByDescending { it.score }.thenBy { it.product.id })
     }
 
-    data class Scored(val product: CatalogProduct, val score: Int, val strengthMatches: Boolean, val labelHasStrength: Boolean)
+    data class Scored(val product: CatalogProduct, val score: Int, val strengthMatches: Boolean, val labelHasStrength: Boolean,
+                      val brandMatches: Boolean = true)
 }
 
 /** EU/EEA countries: a centrally authorised product (EMA country "EU") is sold in all of them. */
@@ -168,16 +202,20 @@ fun CatalogProduct.strengths(): Set<Strength> = card.ingredients.mapNotNull { st
  * strength is not readable, the strength is never chosen for the person.
  */
 fun resolve(index: CatalogIndex, query: CatalogQuery, sources: List<SourceStatus> = emptyList()): Resolution {
-    val codes = query.codes.mapNotNull(::parseScanCode)
     val labelName = query.text.lines().map { it.trim() }.firstOrNull { line -> line.count { it.isLetter() } >= 3 }?.take(80)
+    if (index.products.isEmpty()) return Resolution(ResolutionKind.NOT_LOADED, labelName = labelName, sources = sources)
+    val codes = query.codes.mapNotNull(::parseScanCode)
     val byText = if (query.text.isBlank()) emptyList() else index.search(query.text, query.country)
         .ifEmpty { if (query.country != null) index.search(query.text, null) else emptyList() }
 
     for (code in codes) {
         val found = index.findByGtin(code.gtin)
-        val product = found.firstOrNull { query.country == null || marketFits(it.card.source.country, query.country) } ?: found.firstOrNull() ?: continue
-        val pack = product.packs.first { it.gtin == code.gtin }
-        if (labelContradicts(product, query.text, byText)) {
+        val inMarket = found.filter { query.country == null || marketFits(it.card.source.country, query.country) }.ifEmpty { found }
+        if (inMarket.isEmpty()) continue
+        val compatible = inMarket.filterNot { labelContradicts(it, query.text, byText) }
+        val product = compatible.firstOrNull() ?: inMarket.first()
+        val pack = product.packs.first { (parseScanCode(it.gtin)?.gtin ?: it.gtin) == code.gtin }
+        if (compatible.isEmpty()) {
             val other = byText.firstOrNull { it.product.id != product.id && it.score > 0 }?.product
             return Resolution(
                 ResolutionKind.CONFLICT,
@@ -186,20 +224,31 @@ fun resolve(index: CatalogIndex, query: CatalogQuery, sources: List<SourceStatus
                 labelName = labelName, sources = sources,
             )
         }
+        if (compatible.size > 1) {
+            val result = candidates(compatible, null, code.gtin, labelName, sources)
+            return result.copy(gtinKnown = true, candidates = result.candidates.map { candidate ->
+                candidate.copy(pack = candidate.product.packs.first { (parseScanCode(it.gtin)?.gtin ?: it.gtin) == code.gtin })
+            })
+        }
         return Resolution(ResolutionKind.EXACT, listOf(Candidate(product, pack = pack)), gtin = code.gtin, gtinKnown = true,
             labelName = labelName, sources = sources)
     }
     val gtin = codes.firstOrNull()?.gtin
 
-    val fitting = byText.filter { it.score > 0 && it.strengthMatches }
+    val strengthMatches = byText.filter { it.score > 0 && it.strengthMatches }
+    // A readable brand takes precedence over other medicines sharing its active substance: when the brand is on the
+    // label, a medicine found only by its substance is never offered instead (DAFALGAN 280 mg is not FERVEX ENFANTS).
+    val brandSeen = byText.any { it.score > 0 && it.brandMatches }
+    val fitting = if (brandSeen) strengthMatches.filter { it.brandMatches } else strengthMatches
     if (fitting.isEmpty()) {
         // the brand is there but the printed strength fits none of its versions: show them, never pick one
-        val brandOnly = byText.filter { it.score > 0 }
+        val brandOnly = byText.filter { it.score > 0 && (!brandSeen || it.brandMatches) }
         if (brandOnly.isNotEmpty()) return candidates(brandOnly.map { it.product }, ResolutionQuestion.WHICH_STRENGTH, gtin, labelName, sources)
         return Resolution(ResolutionKind.TOO_LITTLE, question = ResolutionQuestion.PHOTO_PACKAGE, gtin = gtin, gtinKnown = false,
             labelName = labelName, sources = sources)
     }
     val top = fitting.maxOf { it.score }
+    // the best-ranked versions only, whichever registries they come from (a whole brand outranks a partial one)
     val best = fitting.filter { it.score == top }.map { it.product }
     val labelHasStrength = fitting.first().labelHasStrength
     // without a readable strength, every version of the brand stays a candidate if their strengths differ
@@ -219,15 +268,15 @@ private fun labelContradicts(product: CatalogProduct, text: String, byText: List
         // a strength on the label that this product does not have: only a conflict if it is a medicine strength
         if (labelStrengths.any { it.unit == "mg" }) return true
     }
-    val ownBrand = byText.any { it.product.id == product.id || it.product.card.brand.equals(product.card.brand, ignoreCase = true) }
-    val otherBrand = byText.firstOrNull()?.takeIf { it.score >= 10 && it.product.card.brand != product.card.brand }
+    val ownBrand = byText.any { it.brandMatches && (it.product.id == product.id || it.product.card.brand.equals(product.card.brand, ignoreCase = true)) }
+    val otherBrand = byText.firstOrNull { it.brandMatches }?.takeIf { it.product.card.brand != product.card.brand }
     return !ownBrand && otherBrand != null
 }
 
 private fun CatalogProduct.strengthSignature(): String =
     card.ingredients.joinToString("+") { "${it.amount}${it.unit}" }.ifEmpty { strengthsIn(card.name).joinToString("+") }
 
-/** Several versions: up to 8, each with the attributes that differ between them, and the question to ask. */
+/** Several versions: up to 5, each with its registry country and the attributes that differ between them. */
 private fun candidates(products: List<CatalogProduct>, question: ResolutionQuestion?, gtin: String?, labelName: String?,
                        sources: List<SourceStatus>): Resolution {
     val shown = products.distinctBy { it.id }.take(MAX_CANDIDATES)
@@ -242,10 +291,11 @@ private fun candidates(products: List<CatalogProduct>, question: ResolutionQuest
     }
     val list = shown.map { p ->
         Candidate(p, listOfNotNull(
+            p.card.source.country,
             p.strengthLabel().takeIf { strengthDiffers && it.isNotEmpty() },
             variantsIn(p.card.name).joinToString(" ").lowercase().takeIf { variantDiffers && it.isNotEmpty() },
             p.card.form.takeIf { formDiffers },
-        ).ifEmpty { listOf(p.card.name) })
+        ))
     }
     return Resolution(ResolutionKind.CANDIDATES, list, asked, gtin = gtin, gtinKnown = false, labelName = labelName, sources = sources)
 }
@@ -255,4 +305,4 @@ fun CatalogProduct.strengthLabel(): String =
     card.ingredients.filter { it.amount != null }.joinToString(" + ") { "${it.amount} ${it.unit.orEmpty()}".trim() }
         .ifEmpty { strengthsIn(card.name).joinToString(" + ") }
 
-private const val MAX_CANDIDATES = 8
+private const val MAX_CANDIDATES = 5

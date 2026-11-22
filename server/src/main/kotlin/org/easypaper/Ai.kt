@@ -37,6 +37,9 @@ import org.easypaper.ai.DocumentExtraction
 import org.easypaper.ai.DocumentExtractor
 import org.easypaper.ai.DocumentRequest
 import org.easypaper.ai.InMemoryAiCache
+import org.easypaper.ai.MedicineLabelReader
+import org.easypaper.ai.AiStep
+import org.easypaper.ai.AiUsage
 import org.easypaper.ai.SummaryPipeline
 import org.easypaper.ai.SummaryRequest
 import org.easypaper.ai.SummaryResult
@@ -67,6 +70,26 @@ class AiService(
     private val cache = InMemoryAiCache()
     val ledger = UsageLedger()
     private val lock = Mutex()
+    // Hashes and printed text only: no photos retained. Bounded for the public patient endpoint.
+    private val labels = LinkedHashMap<String, String>()
+
+    suspend fun readMedicineLabel(jpeg: ByteArray): String? = lock.withLock {
+        val ex = executor ?: return@withLock null
+        val cfg = config ?: return@withLock null
+        if (mode == AiMode.OFF || budgetUsd <= ledger.totalCostUsd) return@withLock null
+        val hash = MessageDigest.getInstance("SHA-256").digest(jpeg).joinToString("") { "%02x".format(it) }
+        labels[hash]?.let {
+            ledger.add(AiUsage(AiStep.MedicineLabel, cfg.providerName, cfg.small.id, 0, 0, 0.0, cached = true, millis = 0))
+            return@withLock it
+        }
+        // A bounded label cache owns this endpoint's answers; avoid duplicating photos' answers in the report cache.
+        val text = MedicineLabelReader(ex, cfg, InMemoryAiCache(), ledger).read(jpeg, budgetUsd - ledger.totalCostUsd)
+        if (text != null) {
+            if (labels.size >= 128) labels.remove(labels.keys.first())
+            labels[hash] = text
+        }
+        text
+    }
 
     fun status() = AiStatus(
         mode = mode.name.lowercase(),

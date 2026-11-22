@@ -56,7 +56,7 @@ fun Application.module(
         relayRoutes(relay)
         handoffRoutes(handoff, aiToken)
         aiRoutes(ai)
-        catalog?.let { catalogRoutes(it) }
+        catalog?.let { catalogRoutes(it, ai) }
         accountRoutes(accountService)
         if (webDir != null) staticFiles("/", webDir) { default("index.html") }
     }

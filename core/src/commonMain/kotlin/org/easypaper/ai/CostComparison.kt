@@ -44,7 +44,7 @@ fun costComparison(usage: List<AiUsage>, cloud: AiConfig = AiConfig.cloud(), rep
         val input = calls.sumOf { it.inputTokens }
         val output = calls.sumOf { it.outputTokens }
         val model = when (step) {
-            AiStep.PhotoDescription -> cloud.small
+            AiStep.PhotoDescription, AiStep.MedicineLabel -> cloud.small
             AiStep.Summary, AiStep.DocumentExtraction -> cloud.big
         }
         StepCost(

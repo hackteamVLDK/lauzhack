@@ -1,0 +1,78 @@
+{
+  "info": {
+    "registry": "tr-titck",
+    "name": "TR recognition test fixture",
+    "countries": [
+      "TR"
+    ],
+    "url": "https://example.invalid/catalog-fixture",
+    "dataDate": "2026-11-22",
+    "importedAt": "",
+    "records": 2,
+    "note": "Synthetic recognition fixture; pack identifiers are test data."
+  },
+  "products": [
+    {
+      "id": "tr-titck:ARVELES",
+      "card": {
+        "name": "ARVELES 25 mg",
+        "brand": "ARVELES",
+        "form": "tablet",
+        "ingredients": [
+          {
+            "name": "dexketoprofen",
+            "amount": "25",
+            "unit": "mg"
+          }
+        ],
+        "perUnit": "tablet",
+        "doseUnit": "tablet",
+        "source": {
+          "registry": "tr-titck",
+          "registryName": "TR recognition test fixture",
+          "country": "TR",
+          "recordId": "ARVELES",
+          "url": "https://example.invalid/catalog-fixture",
+          "updated": "2026-11-22"
+        }
+      },
+      "packs": [
+        {
+          "gtin": "8690000000012",
+          "description": "ARVELES test pack"
+        }
+      ]
+    },
+    {
+      "id": "tr-titck:BILAXTEN",
+      "card": {
+        "name": "BILAXTEN 20 mg",
+        "brand": "BILAXTEN",
+        "form": "tablet",
+        "ingredients": [
+          {
+            "name": "bilastine",
+            "amount": "20",
+            "unit": "mg"
+          }
+        ],
+        "perUnit": "tablet",
+        "doseUnit": "tablet",
+        "source": {
+          "registry": "tr-titck",
+          "registryName": "TR recognition test fixture",
+          "country": "TR",
+          "recordId": "BILAXTEN",
+          "url": "https://example.invalid/catalog-fixture",
+          "updated": "2026-11-22"
+        }
+      },
+      "packs": [
+        {
+          "gtin": "8690000000029",
+          "description": "BILAXTEN test pack"
+        }
+      ]
+    }
+  ]
+}
