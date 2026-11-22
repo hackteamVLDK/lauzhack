@@ -35,6 +35,10 @@ class SideEffectsTest {
         assertEquals(listOf("stomach_pain", "heartburn", "nausea"), db.sideEffectsFor(null, "Dolo Spedifen 400").map { it.key })
         assertEquals(emptyList(), db.sideEffectsFor(null, "Vitamin D"))
         assertEquals(emptyList(), db.sideEffectsFor(null, "Dolo Plus"), "a shared first word is not the whole brand")
+        assertEquals(emptyList(), db.sideEffectsFor(null, "Concor Plus"), "an extra word that is not in the listed name")
+        assertEquals(emptyList(), db.sideEffectsFor(null, "Dolo Plus Spedifen 400"), "brand words in order at the start")
+        assertEquals(listOf("headache", "diarrhoea", "nausea"), db.sideEffectsFor(null, "Pantoprazole Streuli 20 mg").map { it.key }, "French name")
+        assertEquals(listOf("stomach_pain", "heartburn", "nausea"), db.sideEffectsFor(null, "dolo spedifen forte 400mg").map { it.key })
         assertEquals(listOf("swollen_ankles", "headache", "flushing"), db.sideEffectsFor(null, "amlodipin 5 mg").map { it.key })
         assertEquals(emptyList(), db.sideEffectsFor(null, null))
     }

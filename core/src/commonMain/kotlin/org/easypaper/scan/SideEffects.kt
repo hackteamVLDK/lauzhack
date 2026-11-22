@@ -70,11 +70,20 @@ fun MedicationDb.sideEffectsFor(gtin: String?, name: String? = null): List<SideE
 }
 
 /**
- * A typed name names this product only when it contains its whole brand: the leading upper-case words of the listed
- * name ("DOLO SPEDIFEN forte …" -> DOLO, SPEDIFEN), so "Dolo Plus" is not taken for Dolo Spedifen.
+ * A typed name names this product only when it starts with the product's brand — the leading upper-case words of the
+ * listed name, in order ("DOLO SPEDIFEN forte …" -> DOLO SPEDIFEN) — and every further word with letters is also in
+ * the listed name; numbers and units pass ("Dolo Spedifen 400 mg"). So "Dolo Plus" or "Concor Plus" are unknown.
+ * German and French listed names both count.
  */
 private fun MedicationInfo.brandIn(typed: String): Boolean {
-    val words = typed.uppercase().split(Regex("[^\\p{L}\\p{N}]+")).toSet()
-    val brand = nameDe.split(' ').takeWhile { w -> w.isNotEmpty() && w.any { it.isLetter() } && w == w.uppercase() }
-    return brand.isNotEmpty() && brand.all { it in words }
+    fun words(text: String) = text.uppercase().split(Regex("[^\\p{L}\\p{N}]+")).filter { it.isNotEmpty() }
+    val typedWords = words(typed)
+    return listOf(nameDe, nameFr).any { listed ->
+        val brand = listed.split(' ').takeWhile { w -> w.isNotEmpty() && w.any { it.isLetter() } && w == w.uppercase() }.map { it.uppercase() }
+        val listedWords = words(listed).toSet()
+        brand.isNotEmpty() && typedWords.take(brand.size) == brand &&
+            typedWords.drop(brand.size).all { w -> w.first().isDigit() || w in listedWords || w in UNITS }
+    }
 }
+
+private val UNITS = setOf("MG", "G", "MCG", "ML", "IE", "STK", "PCE", "TABL", "TABLETTEN", "TABLETS", "CPR")

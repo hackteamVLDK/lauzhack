@@ -93,10 +93,10 @@ fun sideEffectQuestions(
 ): List<SideEffectQuestions> {
     val answered = record.entries.filter { it.widgetId == widgetId && it.payload is SideEffectCheck }
         .filter { Instant.fromEpochMilliseconds(it.at).toLocalDateTime(timeZone).date == today }
-        .map { (it.payload as SideEffectCheck).let { c -> c.gtin ?: c.name() } }.toSet()
+        .map { (it.payload as SideEffectCheck).let { c -> c.gtin ?: c.name().trim().lowercase() } }.toSet()
     // the package code identifies the medicine; its display name can change with the language of the list
     return items.filter { !it.isDraft }.mapNotNull { item ->
-        db.sideEffectsFor(item.code, item.name).takeIf { it.isNotEmpty() }?.let { SideEffectQuestions(item, it, (item.code ?: item.name) in answered) }
+        db.sideEffectsFor(item.code, item.name).takeIf { it.isNotEmpty() }?.let { SideEffectQuestions(item, it, (item.code ?: item.name.trim().lowercase()) in answered) }
     }
 }
 
