@@ -48,6 +48,8 @@ Pipeline `C/ai/SummaryPipeline.kt` (Koog `PromptExecutorAPI`, same code for clou
 
 Local $0 excludes hardware and power. In the clinic module documents never leave the clinic (`/ai/documents` is clinic-only).
 
+Handover also works with a 6-digit code valid for 5 minutes: the server sees only ciphertext, and claiming a code requires the clinic token.
+
 ## 5. Team and agents (JetBrains)
 
 Team Hub board: every task has a plan before edits, a review by another member at the exact commit, Codex (ChatGPT)

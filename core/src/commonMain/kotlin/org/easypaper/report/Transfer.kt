@@ -30,21 +30,26 @@ private val base64 = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT)
  */
 @OptIn(ExperimentalEncodingApi::class)
 suspend fun sealReport(report: Report, photos: Map<String, ByteArray> = emptyMap()): SealedReport {
-    val referenced = report.record.entries.mapNotNull {
-        when (val p = it.payload) { is Food -> p.photoRef; is DiaryNote -> p.photoRef; else -> null }
-    }.toSet()
-    val unknown = photos.keys - referenced
-    require(unknown.isEmpty()) { "Photos not referenced by the report: $unknown" }
-    val clean = photos.mapValues { (ref, photo) ->
-        require(photo.size > 2 && photo[0] == 0xFF.toByte() && photo[1] == 0xD8.toByte()) { "Photo $ref is not a JPEG; convert it first" }
-        stripJpegMetadata(photo)
-    }
+    val clean = prepareReportPhotos(report, photos)
     val key = generateRecordKey()
     val cipher = aesGcm(key)
     val json = EasyPaperJson.encodeToString(Report.serializer(), report)
     val bytes = cipher.encrypt(json.encodeToByteArray(), report.id.encodeToByteArray())
     val sealedPhotos = clean.mapValues { (ref, photo) -> cipher.encrypt(photo, photoBinding(report.id, ref)) }
     return SealedReport(bytes, QR_PREFIX + report.id + ":" + base64.encode(key), sealedPhotos)
+}
+
+/** Both transfer protocols apply the same reference and photo metadata checks. */
+internal fun prepareReportPhotos(report: Report, photos: Map<String, ByteArray>): Map<String, ByteArray> {
+    val referenced = report.record.entries.mapNotNull {
+        when (val p = it.payload) { is Food -> p.photoRef; is DiaryNote -> p.photoRef; else -> null }
+    }.toSet()
+    val unknown = photos.keys - referenced
+    require(unknown.isEmpty()) { "Photos not referenced by the report: $unknown" }
+    return photos.mapValues { (ref, photo) ->
+        require(photo.size > 2 && photo[0] == 0xFF.toByte() && photo[1] == 0xD8.toByte()) { "Photo $ref is not a JPEG; convert it first" }
+        stripJpegMetadata(photo)
+    }
 }
 
 /** Decrypts one photo of the report with the key from the scanned QR. Wrong key, wrong ref or damaged bytes throw. */

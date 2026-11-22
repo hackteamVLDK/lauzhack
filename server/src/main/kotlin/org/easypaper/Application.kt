@@ -34,16 +34,19 @@ fun Application.module(
     purgeEvery: Duration = 10.minutes,
     ai: AiService = AiService.off(),
     aiToken: String? = System.getenv("EASYPAPER_CLINIC_TOKEN"),
+    handoff: Handoff = Handoff(maxBytes = relay.maxBytes, maxTotalBytes = relay.maxTotalBytes),
 ) {
     protectAiRoutes(ai.mode, aiToken)
     launch {
         while (isActive) {
             delay(purgeEvery)
             relay.purge()
+            handoff.purge()
         }
     }
     routing {
         relayRoutes(relay)
+        handoffRoutes(handoff, aiToken)
         aiRoutes(ai)
         if (webDir != null) staticFiles("/", webDir) { default("index.html") }
     }
