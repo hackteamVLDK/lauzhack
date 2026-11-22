@@ -58,7 +58,12 @@ fun perUnitLabel(card: MedicineProduct): String? {
 @Composable
 fun ingredientText(ingredient: Ingredient): String {
     val amount = listOfNotNull(ingredient.amount, ingredient.unit).joinToString(" ")
-    val main = if (ingredient.amount != null) "${ingredient.name} $amount" else "${ingredient.name} (${stringResource(Res.string.rec_amount_missing)})"
+    val main = when {
+        ingredient.amount != null -> "${ingredient.name} $amount"
+        // the registry wrote the amount inside the substance text ("кислоти аскорбінової 40 мг у вигляді …")
+        ingredient.name.any(Char::isDigit) -> ingredient.name
+        else -> "${ingredient.name} (${stringResource(Res.string.rec_amount_missing)})"
+    }
     return ingredient.equivalent?.let { "$main, $it" } ?: main
 }
 

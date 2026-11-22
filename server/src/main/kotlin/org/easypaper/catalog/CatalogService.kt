@@ -10,15 +10,11 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration
 
-/** Registries asked for but not integrated, with the reason checked on 2026-11-22. */
-val NOT_COVERED = listOf(
-    NotCovered("UA", "Державний реєстр лікарських засобів України", "https://www.drlz.gov.ua/",
-        "Not reachable from the import host (connection timed out for drlz.gov.ua, drlz.com.ua and data.gov.ua); no import yet."),
-    NotCovered("RU", "ГРЛС", "https://grls.rosminzdrav.ru/",
-        "Site answered once and then timed out from the import host; its Excel export could not be downloaded or checked."),
-    NotCovered("BY", "Государственный реестр лекарственных средств", "https://www.rceth.by/Refbank/",
-        "Only an HTML search form, no documented download or API; not imported."),
-)
+/**
+ * Registries asked for but not integrated. Empty since 2026-11-22: Ukraine, Russia and Belarus are imported
+ * (see their objects for what each one cannot tell).
+ */
+val NOT_COVERED: List<NotCovered> = emptyList()
 
 /**
  * The catalog the server answers with: every snapshot of [store] loaded on its own (a broken source is reported

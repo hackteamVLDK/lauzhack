@@ -185,7 +185,8 @@ class CatalogTest {
         val r = EasyPaperJson.decodeFromString(Resolution.serializer(), response.bodyAsText())
         assertEquals("fr-bdpm:69329731", r.candidates.single().product.id)
         val coverage = EasyPaperJson.decodeFromString(Coverage.serializer(), client.get("/catalog/coverage").bodyAsText())
-        assertEquals(listOf("UA", "RU", "BY"), coverage.notCovered.map { it.country })
+        assertTrue(coverage.notCovered.isEmpty())
+        assertEquals(listOf(France.REGISTRY), coverage.sources.map { it.registry })
         assertEquals(400, client.post("/catalog/resolve") { setBody("{") }.status.value)
         dir.deleteRecursively()
     }

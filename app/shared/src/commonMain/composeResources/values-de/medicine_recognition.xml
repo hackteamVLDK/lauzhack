@@ -22,9 +22,9 @@
     <string name="country_ES">Spanien</string>
     <string name="country_NL">Niederlande</string>
     <string name="country_PL">Polen</string>
-    <string name="country_UA">Ukraine (Register noch nicht angebunden)</string>
-    <string name="country_RU">Russland (Register noch nicht angebunden)</string>
-    <string name="country_BY">Belarus (Register noch nicht angebunden)</string>
+    <string name="country_UA">Ukraine</string>
+    <string name="country_RU">Russland</string>
+    <string name="country_BY">Belarus</string>
     <string name="rec_card_title">Ist das Ihr Arzneimittel?</string>
     <string name="rec_form">Darreichungsform</string>
     <string name="rec_substances">Wirkstoffe</string>

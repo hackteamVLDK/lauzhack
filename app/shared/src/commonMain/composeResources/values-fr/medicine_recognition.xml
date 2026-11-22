@@ -22,9 +22,9 @@
     <string name="country_ES">Espagne</string>
     <string name="country_NL">Pays-Bas</string>
     <string name="country_PL">Pologne</string>
-    <string name="country_UA">Ukraine (registre pas encore relié)</string>
-    <string name="country_RU">Russie (registre pas encore relié)</string>
-    <string name="country_BY">Biélorussie (registre pas encore relié)</string>
+    <string name="country_UA">Ukraine</string>
+    <string name="country_RU">Russie</string>
+    <string name="country_BY">Biélorussie</string>
     <string name="rec_card_title">Est-ce votre médicament ?</string>
     <string name="rec_form">Forme</string>
     <string name="rec_substances">Substances actives</string>

@@ -17,7 +17,7 @@ import kotlin.system.exitProcess
 /**
  * The catalog import command (task 71): downloads the official files and writes one snapshot per source.
  *
- *   ./gradlew :server:importCatalog --args="fr ch eu"            download and import
+ *   ./gradlew :server:importCatalog --args="fr ch eu ua ru by"   download and import
  *   ./gradlew :server:importCatalog --args="fr --from C:/dumps"   import files already downloaded
  *
  * Every run rebuilds a source from its files and replaces its snapshot, keyed by the registry's record ids, so it
@@ -25,7 +25,7 @@ import kotlin.system.exitProcess
  */
 fun main(args: Array<String>) {
     val from = args.indexOf("--from").takeIf { it >= 0 }?.let { File(args[it + 1]) }
-    val wanted = args.filterIndexed { i, a -> !a.startsWith("--") && (i == 0 || args[i - 1] != "--from") }.ifEmpty { listOf("fr", "ch", "eu") }
+    val wanted = args.filterIndexed { i, a -> !a.startsWith("--") && (i == 0 || args[i - 1] != "--from") }.ifEmpty { listOf("fr", "ch", "eu", "ua", "ru", "by") }
     val store = CatalogStore.fromEnv()
     val downloads = from ?: File(store.dir, "downloads")
     var failed = 0
@@ -36,7 +36,10 @@ fun main(args: Array<String>) {
                 "fr" -> importFrance(File(downloads, "fr"), download = from == null)
                 "ch" -> importSwitzerland(File(downloads, "ch"), download = from == null)
                 "eu" -> importEma(File(downloads, "eu"), download = from == null)
-                else -> error("Unknown source '$source' (fr, ch, eu)")
+                "ua" -> importUkraine(File(downloads, "ua"), download = from == null)
+                "ru" -> importRussia(File(downloads, "ru"), download = from == null)
+                "by" -> importBelarus(File(downloads, "by"), download = from == null)
+                else -> error("Unknown source '$source' (fr, ch, eu, ua, ru, by)")
             }
             store.write(snapshot)
             println("$source: ${snapshot.info.records} products from ${snapshot.info.dataDate} -> ${store.file(snapshot.info.registry).path} (${(System.currentTimeMillis() - started) / 1000} s)")
@@ -89,6 +92,38 @@ fun importEma(dir: File, download: Boolean): SourceSnapshot {
         "Names, active substances and country of authorisation only: no strength per unit, so cards stay unverified."), products)
 }
 
+fun importUkraine(dir: File, download: Boolean): SourceSnapshot {
+    val csv = File(dir, "reestr.csv")
+    val date = (if (download) fetch(Ukraine.CSV_URL, csv) else null) ?: fileDate(csv)
+    val products = Ukraine.read(csv, date)
+    return SourceSnapshot(info(Ukraine.REGISTRY, Ukraine.NAME, listOf("UA"), Ukraine.CSV_URL, date, products.size,
+        "Registration records with the per-unit composition sentence, pharmacotherapeutic group and the official instruction file. No barcodes."),
+        products)
+}
+
+fun importRussia(dir: File, download: Boolean): SourceSnapshot {
+    val zip = File(dir, "grls.zip")
+    if (download) {
+        // the one-file export link carries a generated FileGUID: read it from the register page each time
+        val page = String(get(Russia.PAGE))
+        val link = Regex("""GetGRLS\.ashx\?FileGUID=[^'"&]+&UserReq=\d+""").find(page)?.value ?: error("No export link on ${Russia.PAGE}")
+        fetch("https://grls.rosminzdrav.ru/$link", zip)
+    }
+    val (products, date) = Russia.read(zip, File(dir, "xlsx"))
+    return SourceSnapshot(info(Russia.REGISTRY, Russia.NAME, listOf("RU"), Russia.PAGE, date.ifEmpty { fileDate(zip) }, products.size,
+        "Valid registrations with release forms and doses paired to the international names; pharmacotherapeutic group. No barcodes, no per-record link (registration number shown)."),
+        products)
+}
+
+fun importBelarus(dir: File, download: Boolean): SourceSnapshot {
+    val rows = if (download) Belarus.crawl(dir) else File(dir, Belarus.ROWS_FILE)
+    val date = fileDate(rows)
+    val products = Belarus.read(rows, date)
+    return SourceSnapshot(info(Belarus.REGISTRY, Belarus.NAME, listOf("BY"), "${Belarus.BASE}/Refbank/reestr_lekarstvennih_sredstv", date, products.size,
+        "Read page by page from the public register search (no download offered). Release forms with doses; no indication field, no barcodes."),
+        products)
+}
+
 private fun info(registry: String, name: String, countries: List<String>, url: String, date: String, records: Int, note: String) =
     SourceInfo(registry, name, countries, url, date, DateTimeFormatter.ISO_INSTANT.format(Instant.now()), records, note)
 
@@ -97,14 +132,29 @@ private val http: HttpClient = HttpClient.newBuilder().followRedirects(HttpClien
 private fun request(url: String) = HttpRequest.newBuilder(URI(url)).timeout(Duration.ofMinutes(5))
     .header("User-Agent", "EasyPaper catalog import (open-source medicine diary)").GET().build()
 
-private fun get(url: String): ByteArray {
+private fun get(url: String): ByteArray = retrying(url) {
     val response = http.send(request(url), HttpResponse.BodyHandlers.ofByteArray())
     check(response.statusCode() == 200) { "HTTP ${response.statusCode()} for $url" }
-    return response.body()
+    response.body()
+}
+
+/** Some registry hosts drop connections now and then: up to 6 attempts, a growing pause between them. */
+private fun <T> retrying(url: String, attempt: () -> T): T {
+    var last: Exception? = null
+    repeat(6) { n ->
+        try { return attempt() } catch (e: Exception) {
+            last = e
+            System.err.println("  $url: attempt ${n + 1} failed (${e.javaClass.simpleName}: ${e.message})")
+            Thread.sleep(2_000L * (n + 1))
+        }
+    }
+    throw last!!
 }
 
 /** Downloads [url] to [target]; returns the server's Last-Modified date (ISO) when it sends one. */
-private fun fetch(url: String, target: File): String? {
+private fun fetch(url: String, target: File): String? = retrying(url) { fetchOnce(url, target) }
+
+private fun fetchOnce(url: String, target: File): String? {
     target.parentFile.mkdirs()
     val tmp = File(target.path + ".part")
     val response = http.send(request(url), HttpResponse.BodyHandlers.ofFile(tmp.toPath()))

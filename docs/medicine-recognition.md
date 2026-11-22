@@ -77,13 +77,15 @@ same access rules as every other entry.
 | France | BDPM: `CIS_bdpm.txt`, `CIS_COMPO_bdpm.txt`, `CIS_CIP_bdpm.txt` joined by CIS | Products, substances with dosage and reference unit ("un sachet"), CIP13 packs | **imported**: 15,845 products (files of 2026-11-22) |
 | France | BDPM product page `/medicament/{CIS}/extrait` | Official indication sentence | **fetched on demand** by the server, cached in `indications-fr.json` |
 | EU/EEA | EMA Article 57 product data (xlsx) | Name, active substances, route, country of authorisation | **imported**: 153,932 rows, France excluded. **No strength per unit**, so these cards say "check the strength" and never show amounts |
-| Ukraine | Державний реєстр лікарських засобів (drlz.gov.ua) | — | **not covered**: drlz.gov.ua, drlz.com.ua and data.gov.ua did not answer from the import host on 2026-11-22 |
-| Russia | ГРЛС (grls.rosminzdrav.ru) | — | **not covered**: the site answered once, then timed out; the Excel export could not be downloaded or checked |
-| Belarus | rceth.by Refbank | — | **not covered**: HTML search only, no documented download or API |
+| Ukraine | Державний реєстр лікарських засобів: the State Service's `reestr.csv` (Windows-1251), the file behind the MoH open-data set on data.gov.ua | Records with the per-unit composition sentence ("1 таблетка містить парацетамолу 500 мг, …"), pharmacotherapeutic group, registration number, link to the record's official instruction file | **imported**: 13,690 records (amounts split for 6,964; the others show the sentence's parts as written) |
+| Russia | ГРЛС one-file export (`GetGRLS.ashx`, zip of xlsx lists; the link carries a fresh FileGUID and is read from the register page each time) | Valid, EAEU, foreign-pack and pending registrations; release forms with doses paired with the international names in order; pharmacotherapeutic group | **imported**: 41,994 versions (all amounts for 37,067), data of 2026-11-20. **No per-record link**: the card names the registration number and links to the register search |
+| Belarus | rceth.by Refbank public search, paged like its own page (national + EAEU registration, 100 rows a page, one request a second); rows kept in `rceth-rows.tsv` | Trade and international names, release forms with doses, holder, registration number, link to the record page | **imported**: 5,705 versions (all amounts for 4,946). No download or API is offered, so this depends on the page layout; no indication field |
 
-`GET /catalog/coverage` returns the loaded sources with their dates, their load status and the markets not
-covered. Choosing Ukraine, Russia or Belarus in the app says "registry not connected yet". A search there finds
-nothing, or only EU products when "Any country" is chosen.
+`GET /catalog/coverage` returns the loaded sources with their dates and their load status.
+
+Ukraine, Russia and Belarus publish **no barcodes**: packages from these markets are found by the printed name and
+strength only, and Android's on-device text recognition (ML Kit, Latin script) does not read Cyrillic. On these
+packages the patient types the name; the registry search then works as for any other market.
 
 Licences: BDPM allows reuse when the source is named and the data is not altered. Swissmedic lists are public.
 Refdata SAI is used under its terms of use. EMA Article 57 data is public; its pharmacovigilance contacts are not
@@ -93,12 +95,14 @@ stored.
 
 ```bash
 # download the official files and rebuild every source (about 30 s with a fast connection)
-EASYPAPER_CATALOG_DIR=server/data/catalog ./gradlew :server:importCatalog --args="fr ch eu"
+EASYPAPER_CATALOG_DIR=server/data/catalog ./gradlew :server:importCatalog --args="fr ch eu ua ru by"
 # one source, or files already downloaded
 ./gradlew :server:importCatalog --args="fr --from /path/to/dumps"   # expects /path/to/dumps/fr/CIS_*.txt
 ```
 
-- One gzip'd snapshot per source: `fr-bdpm.json.gz`, `ch-swissmedic.json.gz`, `eu-ema-art57.json.gz`. Each holds
+- One gzip'd snapshot per source: `fr-bdpm.json.gz`, `ch-swissmedic.json.gz`, `eu-ema-art57.json.gz`, `ua-drlz.json.gz`,
+  `ru-grls.json.gz`, `by-rceth.json.gz`. The Russian and Ukrainian hosts drop connections now and then: every download
+  is retried up to 6 times. Each holds
   the registry's record id, country, URL, data date and import time.
 - Each run rebuilds a source from its files and replaces its snapshot atomically, keyed by registry ids, so a repeated
   import never duplicates anything. A failed source keeps its previous snapshot; the others are still imported.
@@ -122,6 +126,13 @@ Automated: `server/src/test/.../catalog/CatalogTest.kt` runs the matching on ver
 screens.
 
 ## Not verified on real data
+
+- **Cyrillic packages are not read by the camera**; their markets have no barcodes in the registries (see above).
+- **Belarus depends on the search page's layout** (no download or documented API). The import stops with an error,
+  keeping the previous snapshot, when the columns change. Its terms of use for automated reading were not found.
+- **Russian cards link to the register's search page**, not to the record (the export has no record link).
+- **Ukrainian composition** is split into amounts for 6,964 of 13,690 records; for the rest the card shows each substance
+  part exactly as the registry wrote it.
 
 - **Camera photos of real packages were not taken.** Recognition was tested with the texts and codes a reader
   returns; ML Kit's text quality on foil, curved bottles and small print is not measured.

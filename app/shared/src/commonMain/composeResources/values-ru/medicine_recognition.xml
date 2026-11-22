@@ -22,9 +22,9 @@
     <string name="country_ES">Испания</string>
     <string name="country_NL">Нидерланды</string>
     <string name="country_PL">Польша</string>
-    <string name="country_UA">Украина (реестр пока не подключён)</string>
-    <string name="country_RU">Россия (реестр пока не подключён)</string>
-    <string name="country_BY">Беларусь (реестр пока не подключён)</string>
+    <string name="country_UA">Украина</string>
+    <string name="country_RU">Россия</string>
+    <string name="country_BY">Беларусь</string>
     <string name="rec_card_title">Это ваш препарат?</string>
     <string name="rec_form">Форма</string>
     <string name="rec_substances">Действующие вещества</string>
