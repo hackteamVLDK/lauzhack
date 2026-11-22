@@ -358,6 +358,7 @@
     <string name="dev_server">Serveradresse</string>
     <string name="dev_server_footer">Für ein echtes Telefon: die Adresse des Computers mit dem Server, z. B. http://192.168.1.20:8080, im selben Netz. Leer: der Emulator-Host auf Android, dieser Computer auf dem Desktop.</string>
     <string name="share_offline_at">Der Server unter %1$s ist nicht erreichbar. Prüfen Sie das Netz und die Serveradresse im Entwicklermenü (Titel lange drücken).</string>
+    <string name="share_local_network">Der Server unter %1$s ist im lokalen Netzwerk, und Easy Paper hat keinen Zugriff darauf. Erlauben Sie Easy Paper in den Einstellungen den Zugriff auf das lokale Netzwerk und versuchen Sie es erneut.</string>
     <string name="clinic_code">Zugangscode der Praxis</string>
     <string name="clinic_code_footer">Für KI-Zusammenfassungen vom Server der Praxis nötig. Er bleibt nur in diesem Fenster und wird nicht gespeichert.</string>
 

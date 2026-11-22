@@ -358,6 +358,7 @@
     <string name="dev_server">Adresse du serveur</string>
     <string name="dev_server_footer">Sur un téléphone : l'adresse de l'ordinateur qui héberge le serveur, par ex. http://192.168.1.20:8080, sur le même réseau. Vide : l'hôte de l'émulateur sur Android, cet ordinateur sur Desktop.</string>
     <string name="share_offline_at">Le serveur à %1$s est inaccessible. Vérifiez le réseau et l'adresse du serveur dans le menu de développement (appui long sur le titre).</string>
+    <string name="share_local_network">Le serveur %1$s est sur le réseau local, et Easy Paper n’y a pas accès. Autorisez l’accès au réseau local pour Easy Paper dans les Réglages, puis réessayez.</string>
     <string name="clinic_code">Code d'accès du cabinet</string>
     <string name="clinic_code_footer">Nécessaire pour les résumés IA du serveur du cabinet. Il reste dans cette fenêtre et n'est pas enregistré.</string>
 

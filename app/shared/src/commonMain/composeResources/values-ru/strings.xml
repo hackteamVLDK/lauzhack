@@ -364,6 +364,7 @@
     <string name="dev_server">Адрес сервера</string>
     <string name="dev_server_footer">На телефоне: адрес компьютера с сервером в той же сети, например http://192.168.1.20:8080. Пусто: хост эмулятора на Android, этот компьютер на Desktop.</string>
     <string name="share_offline_at">Сервер по адресу %1$s недоступен. Проверьте сеть и адрес сервера в меню разработчика (долгое нажатие на заголовок).</string>
+    <string name="share_local_network">Сервер %1$s находится в локальной сети, а у Easy Paper нет к ней доступа. Разрешите Easy Paper доступ к локальной сети в Настройках и попробуйте ещё раз.</string>
     <string name="clinic_code">Код доступа клиники</string>
     <string name="clinic_code_footer">Нужен для сводок ИИ с сервера клиники. Остаётся только в этом окне и не сохраняется.</string>
 

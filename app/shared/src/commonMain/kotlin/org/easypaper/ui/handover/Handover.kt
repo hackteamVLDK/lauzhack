@@ -49,6 +49,7 @@ import easypaper.app.shared.generated.resources.share_new
 import easypaper.app.shared.generated.resources.share_none
 import easypaper.app.shared.generated.resources.share_none_message
 import easypaper.app.shared.generated.resources.share_offline_at
+import easypaper.app.shared.generated.resources.share_local_network
 import easypaper.app.shared.generated.resources.share_qr
 import easypaper.app.shared.generated.resources.share_show
 import easypaper.app.shared.generated.resources.tab_share
@@ -107,6 +108,7 @@ fun ShareScreen(repository: PatientRepository, relayUrl: String, onDeveloper: ((
     var qr by remember { mutableStateOf<String?>(null) }
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<StringResource?>(null) }
+    val askLocalNetwork = rememberLocalNetworkAccess()
     LargeTitleScaffold(title = stringResource(Res.string.tab_share), back = back, onTitleLongPress = onDeveloper, bottomInset = false) {
         item {
             val spacing = EasyPaperTheme.spacing
@@ -122,18 +124,22 @@ fun ShareScreen(repository: PatientRepository, relayUrl: String, onDeveloper: ((
                         modifier = Modifier.fillMaxWidth().busy(busy), onClick = {
                         busy = true
                         error = null
-                        scope.launch {
-                            try {
-                                qr = repository.handover(record, RelayClient(relayUrl, http), Clock.System.now().toEpochMilliseconds())
-                                onCreated?.invoke(record)
-                            } catch (e: CancellationException) {
-                                throw e
-                            } catch (e: IOException) {
-                                error = Res.string.share_offline_at
-                            } catch (e: Exception) {
-                                error = Res.string.share_failed // relay full or refused; the record on the phone is untouched
-                            } finally {
-                                busy = false
+                        // Android 17 asks for the local network here (the relay is on the clinic's or demo laptop);
+                        // a refusal still tries, since the server may be on the internet, and explains a failure.
+                        askLocalNetwork { granted ->
+                            scope.launch {
+                                try {
+                                    qr = repository.handover(record, RelayClient(relayUrl, http), Clock.System.now().toEpochMilliseconds())
+                                    onCreated?.invoke(record)
+                                } catch (e: CancellationException) {
+                                    throw e
+                                } catch (e: IOException) {
+                                    error = if (granted) Res.string.share_offline_at else Res.string.share_local_network
+                                } catch (e: Exception) {
+                                    error = Res.string.share_failed // relay full or refused; the record on the phone is untouched
+                                } finally {
+                                    busy = false
+                                }
                             }
                         }
                     })
