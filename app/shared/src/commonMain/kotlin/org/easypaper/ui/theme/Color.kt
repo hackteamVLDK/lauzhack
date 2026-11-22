@@ -2,6 +2,7 @@ package org.easypaper.ui.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.luminance
 
 /**
@@ -97,6 +98,18 @@ enum class Category(val tile: Color, private val textLight: Color, private val t
 
     /** Category accents are for white cells; pastel surfaces use the high-contrast primary label. */
     fun softText(colors: EasyPaperColors): Color = colors.label
+
+    /** Browse keeps dark ink on bright surfaces in both themes. */
+    val browseText: Color get() = Color.Black
+
+    fun browseGradient(colors: EasyPaperColors): List<Color> {
+        // The original violet tile is below 4.5:1 even against black. Lift this surface only;
+        // icon tiles, accents and pastel widgets keep their existing colors.
+        val start = if (this == Questionnaire) Color.White.copy(alpha = 0.16f).compositeOver(tile) else tile
+        val end = if (colors.isDark) Color.Black.copy(alpha = 0.06f).compositeOver(start)
+            else Color.White.copy(alpha = 0.24f).compositeOver(start)
+        return listOf(start, end)
+    }
 }
 
 /** WCAG 2.1 contrast ratio of two opaque colors (1..21). */

@@ -2,6 +2,7 @@
     <string name="p2_summary">Сводка</string>
     <string name="p2_sharing">Передача</string>
     <string name="p2_browse">Обзор</string>
+    <string name="p2_browse_categories">Категории</string>
     <string name="p2_pressure">Артериальное давление</string>
     <string name="p2_water">Вода</string>
     <string name="p2_food">Еда</string>
@@ -85,7 +86,6 @@
     <string name="p2_finished">Завершён</string>
     <string name="p2_upcoming">Предстоящий</string>
     <string name="p2_add_request">Добавить запрос от врача</string>
-    <string name="p2_share">Поделиться с врачом…</string>
     <string name="p2_shared">Передано</string>
     <string name="p2_no_shared">Здесь появятся отчёты, которыми вы решите поделиться.</string>
     <string name="p2_what_share">Чем поделиться</string>
@@ -100,6 +100,13 @@
     <string name="p2_share_count">Будет передано записей: %1$d, фото: %2$d</string>
     <string name="p2_next">Далее</string>
     <string name="p2_how_share">Как поделиться</string>
+    <string name="p2_sharing_doctor_title">Поделиться со своим врачом</string>
+    <string name="p2_sharing_decide_title">Вы решаете</string>
+    <string name="p2_sharing_decide_body">Выберите период и данные для передачи. Ничего не покидает ваш телефон без вашего согласия.</string>
+    <string name="p2_sharing_summary_title">Ваш врач видит сводку</string>
+    <string name="p2_sharing_summary_body">Каждая строка ссылается на вашу исходную запись.</string>
+    <string name="p2_sharing_private_title">Конфиденциально и безопасно</string>
+    <string name="p2_sharing_private_body">Сквозное шифрование. QR-код или шестизначный код действует только один раз.</string>
     <string name="p2_show_qr">Показать QR-код</string>
     <string name="p2_qr_body">Зашифрованная однократная передача. Ключ есть только в QR-коде.</string>
     <string name="p2_save_encrypted">Сохранить зашифрованный файл</string>

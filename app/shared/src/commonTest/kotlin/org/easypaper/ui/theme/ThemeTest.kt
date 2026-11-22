@@ -4,6 +4,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
@@ -52,6 +53,25 @@ class ThemeTest {
                 assertContrast(4.5f, colors.label, category.soft(colors), "$name ${category.name} widget label")
                 assertContrast(4.5f, category.softText(colors), category.soft(colors), "$name ${category.name} widget text")
                 assertTrue(category.soft(LightColors) != category.soft(DarkColors))
+            }
+        }
+    }
+
+    @Test
+    fun browseTileTextMeetsWcagAaAtBothGradientEndsInBothThemes() {
+        for ((name, colors) in themes) {
+            Category.entries.forEach { category ->
+                val gradient = category.browseGradient(colors)
+                assertEquals(2, gradient.size)
+                gradient.forEachIndexed { index, background ->
+                    assertEquals(1f, background.alpha, "$name ${category.name} gradient $index is opaque")
+                    assertContrast(4.5f, category.browseText, background,
+                        "$name ${category.name} browse text and icon at gradient end $index")
+                }
+                val start = gradient.first().luminance()
+                val end = gradient.last().luminance()
+                assertTrue(if (colors.isDark) end < start else end > start,
+                    "$name ${category.name} gradient should become ${if (colors.isDark) "darker" else "lighter"}")
             }
         }
     }

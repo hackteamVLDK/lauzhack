@@ -2,6 +2,7 @@
     <string name="p2_summary">Огляд</string>
     <string name="p2_sharing">Поширення</string>
     <string name="p2_browse">Категорії</string>
+    <string name="p2_browse_categories">Категорії</string>
     <string name="p2_pressure">Артеріальний тиск</string>
     <string name="p2_water">Вода</string>
     <string name="p2_food">Їжа</string>
@@ -85,7 +86,6 @@
     <string name="p2_finished">Завершений</string>
     <string name="p2_upcoming">Майбутній</string>
     <string name="p2_add_request">Додати запит від лікаря</string>
-    <string name="p2_share">Поділитися з лікарем…</string>
     <string name="p2_shared">Історія передач</string>
     <string name="p2_no_shared">Тут з’являться звіти, якими ви поділилися.</string>
     <string name="p2_what_share">Чим поділитися</string>
@@ -100,6 +100,13 @@
     <string name="p2_share_count">Буде передано записів: %1$d, фото: %2$d</string>
     <string name="p2_next">Далі</string>
     <string name="p2_how_share">Як передати</string>
+    <string name="p2_sharing_doctor_title">Поділитися зі своїм лікарем</string>
+    <string name="p2_sharing_decide_title">Ви вирішуєте</string>
+    <string name="p2_sharing_decide_body">Виберіть період і дані для передачі. Нічого не залишає ваш телефон без вашої згоди.</string>
+    <string name="p2_sharing_summary_title">Ваш лікар бачить зведення</string>
+    <string name="p2_sharing_summary_body">Кожен рядок містить посилання на ваш початковий запис.</string>
+    <string name="p2_sharing_private_title">Приватно й безпечно</string>
+    <string name="p2_sharing_private_body">Наскрізне шифрування. QR-код або шестизначний код діє лише один раз.</string>
     <string name="p2_show_qr">Показати QR-код</string>
     <string name="p2_qr_body">Зашифрована одноразова передача. Ключ лише у QR-коді.</string>
     <string name="p2_save_encrypted">Зберегти зашифрований файл</string>

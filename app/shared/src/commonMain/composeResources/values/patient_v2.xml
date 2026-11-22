@@ -2,6 +2,7 @@
     <string name="p2_summary">Summary</string>
     <string name="p2_sharing">Sharing</string>
     <string name="p2_browse">Browse</string>
+    <string name="p2_browse_categories">Categories</string>
     <string name="p2_pressure">Blood pressure</string>
     <string name="p2_water">Water</string>
     <string name="p2_food">Food</string>
@@ -85,7 +86,6 @@
     <string name="p2_finished">Finished</string>
     <string name="p2_upcoming">Upcoming</string>
     <string name="p2_add_request">Add a request from a doctor</string>
-    <string name="p2_share">Share with a doctor…</string>
     <string name="p2_shared">Shared</string>
     <string name="p2_no_shared">Reports you choose to share will appear here.</string>
     <string name="p2_what_share">What to share</string>
@@ -100,6 +100,13 @@
     <string name="p2_share_count">%1$d entries, %2$d photos will be shared</string>
     <string name="p2_next">Next</string>
     <string name="p2_how_share">How to share</string>
+    <string name="p2_sharing_doctor_title">Share with your doctor</string>
+    <string name="p2_sharing_decide_title">You decide</string>
+    <string name="p2_sharing_decide_body">Choose the period and what to share. Nothing leaves your phone without you.</string>
+    <string name="p2_sharing_summary_title">Your doctor sees a summary</string>
+    <string name="p2_sharing_summary_body">Every line links to your original entry.</string>
+    <string name="p2_sharing_private_title">Private and secure</string>
+    <string name="p2_sharing_private_body">Encrypted end to end. A QR code or a 6-digit code works once.</string>
     <string name="p2_show_qr">Show QR code</string>
     <string name="p2_qr_body">Encrypted, one-time transfer. The key is only in the QR code.</string>
     <string name="p2_save_encrypted">Save encrypted file</string>

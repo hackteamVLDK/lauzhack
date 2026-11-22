@@ -2,6 +2,7 @@
     <string name="p2_summary">Übersicht</string>
     <string name="p2_sharing">Teilen</string>
     <string name="p2_browse">Entdecken</string>
+    <string name="p2_browse_categories">Kategorien</string>
     <string name="p2_pressure">Blutdruck</string>
     <string name="p2_water">Wasser</string>
     <string name="p2_food">Essen</string>
@@ -85,7 +86,6 @@
     <string name="p2_finished">Abgeschlossen</string>
     <string name="p2_upcoming">Bevorstehend</string>
     <string name="p2_add_request">Anfrage einer Arztpraxis hinzufügen</string>
-    <string name="p2_share">Mit einer Arztpraxis teilen…</string>
     <string name="p2_shared">Geteilt</string>
     <string name="p2_no_shared">Hier erscheinen Berichte, die Sie bewusst teilen.</string>
     <string name="p2_what_share">Was möchten Sie teilen?</string>
@@ -100,6 +100,13 @@
     <string name="p2_share_count">%1$d Einträge und %2$d Fotos werden geteilt</string>
     <string name="p2_next">Weiter</string>
     <string name="p2_how_share">Wie möchten Sie teilen?</string>
+    <string name="p2_sharing_doctor_title">Mit Ihrer Arztpraxis teilen</string>
+    <string name="p2_sharing_decide_title">Sie entscheiden</string>
+    <string name="p2_sharing_decide_body">Wählen Sie den Zeitraum und die Daten aus. Ohne Ihre Zustimmung verlässt nichts Ihr Smartphone.</string>
+    <string name="p2_sharing_summary_title">Ihre Arztpraxis sieht eine Übersicht</string>
+    <string name="p2_sharing_summary_body">Jede Zeile verweist auf Ihren ursprünglichen Eintrag.</string>
+    <string name="p2_sharing_private_title">Privat und sicher</string>
+    <string name="p2_sharing_private_body">Ende-zu-Ende-verschlüsselt. Ein QR-Code oder ein sechsstelliger Code ist nur einmal gültig.</string>
     <string name="p2_show_qr">QR-Code anzeigen</string>
     <string name="p2_qr_body">Verschlüsselte, einmalige Übertragung. Der Schlüssel steht nur im QR-Code.</string>
     <string name="p2_save_encrypted">Verschlüsselte Datei speichern</string>

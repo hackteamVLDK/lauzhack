@@ -2,6 +2,7 @@
     <string name="p2_summary">Résumé</string>
     <string name="p2_sharing">Partage</string>
     <string name="p2_browse">Parcourir</string>
+    <string name="p2_browse_categories">Catégories</string>
     <string name="p2_pressure">Tension artérielle</string>
     <string name="p2_water">Eau</string>
     <string name="p2_food">Repas</string>
@@ -85,7 +86,6 @@
     <string name="p2_finished">Terminé</string>
     <string name="p2_upcoming">À venir</string>
     <string name="p2_add_request">Ajouter une demande de médecin</string>
-    <string name="p2_share">Partager avec un médecin…</string>
     <string name="p2_shared">Partagé</string>
     <string name="p2_no_shared">Les rapports que vous partagez apparaîtront ici.</string>
     <string name="p2_what_share">Quoi partager</string>
@@ -100,6 +100,13 @@
     <string name="p2_share_count">%1$d entrées et %2$d photos seront partagées</string>
     <string name="p2_next">Suivant</string>
     <string name="p2_how_share">Comment partager</string>
+    <string name="p2_sharing_doctor_title">Partager avec votre médecin</string>
+    <string name="p2_sharing_decide_title">Vous décidez</string>
+    <string name="p2_sharing_decide_body">Choisissez la période et les données à partager. Rien ne quitte votre téléphone sans votre accord.</string>
+    <string name="p2_sharing_summary_title">Votre médecin voit un résumé</string>
+    <string name="p2_sharing_summary_body">Chaque ligne renvoie à votre entrée d’origine.</string>
+    <string name="p2_sharing_private_title">Privé et sécurisé</string>
+    <string name="p2_sharing_private_body">Chiffrement de bout en bout. Un QR code ou un code à 6 chiffres ne fonctionne qu’une fois.</string>
     <string name="p2_show_qr">Afficher le QR code</string>
     <string name="p2_qr_body">Transfert chiffré à usage unique. La clé est uniquement dans le QR code.</string>
     <string name="p2_save_encrypted">Enregistrer un fichier chiffré</string>

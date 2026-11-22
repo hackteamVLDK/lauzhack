@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
@@ -17,6 +18,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
 import kotlinx.coroutines.runBlocking
 import org.easypaper.ui.shell.PatientApp
@@ -71,7 +73,25 @@ class PatientScreensUiTest {
     }
 
     @Test
-    fun medicinesRowOpensTheMedicinesScreen() = runComposeUiTest {
+    fun sharingPrimaryActionOpensTheExistingWhatToShareSheet() = runComposeUiTest {
+        val state = ShellState(Role.Patient)
+        val settings = ShellSettings(dark = false)
+        val patient = settingsWithoutOnboarding()
+        setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
+        waitForText("What do you want to track?")
+        onNodeWithText("Sharing").performClick()
+        waitForText("You decide")
+        val share = hasText("Share with your doctor") and hasClickAction()
+        onNode(hasScrollAction()).performScrollToNode(share)
+        onNode(share).performClick()
+        waitForText("What to share")
+        onNodeWithText("Record to share").assertExists()
+        onNodeWithText("Personal diary").assertExists()
+        onNodeWithText("Next").assertIsNotEnabled()
+    }
+
+    @Test
+    fun medicinesTileOpensTheMedicinesScreen() = runComposeUiTest {
         val state = ShellState(Role.Patient)
         runBlocking { state.fillWithDemoData() }
         val settings = ShellSettings(dark = false)
@@ -80,8 +100,9 @@ class PatientScreensUiTest {
 
         waitForText("Browse")
         onNodeWithText("Browse").performClick()
+        waitForText("Categories")
+        onNodeWithContentDescription("Search categories").performTextInput("med")
         waitForText("Medicines")
-        onNode(hasScrollAction()).performScrollToNode(hasText("Medicines"))
         onNodeWithText("Medicines").performClick()
         waitForText("Add Data")
         onNodeWithText("Add Data").performClick()

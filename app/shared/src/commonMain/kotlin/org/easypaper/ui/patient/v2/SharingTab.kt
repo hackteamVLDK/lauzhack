@@ -1,10 +1,17 @@
 package org.easypaper.ui.patient.v2
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import easypaper.app.shared.generated.resources.*
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -16,6 +23,8 @@ import org.easypaper.ui.components.*
 import org.easypaper.ui.format.dateRange
 import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 fun sharedHistory(value: String?): List<String> = runCatching {
@@ -37,26 +46,73 @@ fun PatientSettings.addSharedHistory(line: String) {
 fun SharingTab(records: List<PatientRecord>, settings: PatientSettings, today: LocalDate,
                onProfile: () -> Unit, onDeveloper: () -> Unit, onRequest: (String) -> Unit,
                onInvite: () -> Unit, onShare: () -> Unit) {
+    val spacing = EasyPaperTheme.spacing
     val doctors = records.filter { it.request.id != PERSONAL_REQUEST_ID }.sortedWith(
         compareByDescending<PatientRecord> { it.requestPeriod()?.contains(today) == true }.thenByDescending { it.request.createdAt })
     LargeTitleScaffold(stringResource(Res.string.p2_sharing), bottomInset = false,
         actions = { AvatarButton(initials(settings.name.value), onProfile) }, onTitleLongPress = onDeveloper) {
-        item { PatientMessage(stringResource(Res.string.p2_requests)) }
+        item { SharingIntroduction() }
+        item {
+            Box(Modifier.fillMaxWidth().padding(vertical = spacing.sectionGap), contentAlignment = Alignment.Center) {
+                Column(Modifier.widthIn(max = spacing.patientMaxWidth).fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(spacing.s)) {
+                    CapsuleButton(stringResource(Res.string.p2_sharing_doctor_title), onShare,
+                        prominent = true, enabled = records.isNotEmpty())
+                    TintedButton(stringResource(Res.string.p2_add_request), onInvite,
+                        Modifier.fillMaxWidth().heightIn(min = spacing.prominentButtonHeight))
+                }
+            }
+        }
+        item {
+            Text(stringResource(Res.string.p2_requests), style = EasyPaperTheme.typography.title2,
+                color = EasyPaperTheme.colors.label,
+                modifier = Modifier.padding(bottom = spacing.s).semantics { heading() })
+        }
         if (doctors.isEmpty()) item { GroupedSection { PatientMessage(stringResource(Res.string.p2_no_requests)) } }
         doctors.forEach { record -> item(key = record.request.id) {
             PlanCard(record, today, onClick = { onRequest(record.request.id) })
-            Spacer(Modifier.height(EasyPaperTheme.spacing.s))
+            Spacer(Modifier.height(spacing.s))
         } }
         item {
-            PlainButton(stringResource(Res.string.p2_add_request), onInvite)
-            Spacer(Modifier.height(EasyPaperTheme.spacing.sectionGap))
-            ProminentButton(stringResource(Res.string.p2_share), onShare, Modifier.fillMaxWidth(), enabled = records.isNotEmpty())
-            Spacer(Modifier.height(EasyPaperTheme.spacing.sectionGap))
+            Spacer(Modifier.height(spacing.sectionGap))
             GroupedSection(header = stringResource(Res.string.p2_shared)) {
                 val history = sharedHistory(settings.history.value)
                 if (history.isEmpty()) PatientMessage(stringResource(Res.string.p2_no_shared))
                 history.forEach { ListRow(it, chevron = false) }
             }
+        }
+    }
+}
+
+@Composable
+private fun SharingIntroduction() {
+    val spacing = EasyPaperTheme.spacing
+    val colors = EasyPaperTheme.colors
+    Column(Modifier.fillMaxWidth().clip(EasyPaperTheme.shapes.widget).background(colors.cell).padding(spacing.xl),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(spacing.xl)) {
+        Icon(painterResource(Res.drawable.ic_share_doctor), null, Modifier.size(spacing.sharingHeroIcon), tint = colors.tint)
+        WordFitText(stringResource(Res.string.p2_sharing_doctor_title), style = EasyPaperTheme.typography.title1,
+            color = colors.label, textAlign = TextAlign.Center, modifier = Modifier.semantics { heading() })
+        SharingBenefit(Res.drawable.ic_calendar_today, stringResource(Res.string.p2_sharing_decide_title),
+            stringResource(Res.string.p2_sharing_decide_body))
+        SharingBenefit(Res.drawable.ic_checklist, stringResource(Res.string.p2_sharing_summary_title),
+            stringResource(Res.string.p2_sharing_summary_body))
+        SharingBenefit(Res.drawable.ic_check_circle, stringResource(Res.string.p2_sharing_private_title),
+            stringResource(Res.string.p2_sharing_private_body))
+    }
+}
+
+@Composable
+private fun SharingBenefit(icon: DrawableResource, title: String, body: String) {
+    val spacing = EasyPaperTheme.spacing
+    val colors = EasyPaperTheme.colors
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacing.m), verticalAlignment = Alignment.Top) {
+        Icon(painterResource(icon), null, Modifier.size(spacing.rowIcon), tint = colors.tint)
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacing.xxs)) {
+            Text(title, style = EasyPaperTheme.typography.headline, color = colors.label)
+            Text(body, style = EasyPaperTheme.typography.subheadline, color = colors.secondaryLabel)
         }
     }
 }
