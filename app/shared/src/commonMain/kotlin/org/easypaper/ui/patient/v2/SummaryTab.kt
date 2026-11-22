@@ -8,6 +8,12 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -74,7 +80,7 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
             contentPadding = PaddingValues(start = spacing.screenMargin, end = spacing.screenMargin,
                 top = spacing.s, bottom = spacing.xxl), verticalArrangement = Arrangement.spacedBy(spacing.l)) {
             item(key = "greeting") {
-                SummaryHeader(settings.name.value, greeting, onProfile, onDeveloper, onGallery)
+                SummaryHeader(settings.name.value, greeting, onProfile, onDeveloper)
             }
             item(key = "counts") {
                 val entriesToday = records.sumOf { record -> record.entries.count { it.localDate(timeZone) == today } }
@@ -106,10 +112,15 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
                         PlainButton(stringResource(if (editing) Res.string.p2_done else Res.string.p2_edit_widgets), { editing = !editing })
                     }
                 }
-                items(pinned.chunked(2), key = { row -> row.joinToString { it.name } }) { row ->
+                // The add tile is the next free place in the grid (one way to add, no separate button); hidden while
+                // editing and when every category is already a widget.
+                val showAdd = !editing && pinned.size < Category.entries.size
+                val cells: List<Category?> = pinned + if (showAdd) listOf(null) else emptyList()
+                items(cells.chunked(2), key = { row -> row.joinToString { it?.name ?: "add" } }) { row ->
                     Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(spacing.s)) {
                         row.forEach { category ->
-                            key(category) {
+                            if (category == null) AddWidgetTile(onGallery, Modifier.weight(1f).fillMaxHeight())
+                            else key(category) {
                                 SummaryWidget(category, records, today, timeZone, editing,
                                     onOpen = { onCategory(category) }, onAdd = { onAdd(category) }, onEdit = { editing = true },
                                     onRemove = { settings.removeWidget(category) },
@@ -122,10 +133,6 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
                         if (row.size == 1) Spacer(Modifier.weight(1f))
                     }
                 }
-                item(key = "add-widgets") {
-                    TintedButton(stringResource(Res.string.p2_add_widgets), onGallery,
-                        Modifier.fillMaxWidth(), icon = Res.drawable.ic_add)
-                }
             }
         }
     }
@@ -133,8 +140,7 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun SummaryHeader(name: String?, greeting: String, onProfile: () -> Unit,
-                          onDeveloper: () -> Unit, onGallery: () -> Unit) {
+private fun SummaryHeader(name: String?, greeting: String, onProfile: () -> Unit, onDeveloper: () -> Unit) {
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
     Column(verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
@@ -143,10 +149,39 @@ private fun SummaryHeader(name: String?, greeting: String, onProfile: () -> Unit
                 else stringResource(Res.string.p2_hi_name, name.trim()), style = EasyPaperTheme.typography.title3,
                 color = colors.secondaryLabel, modifier = Modifier.weight(1f))
             AvatarButton(initials(name), onProfile)
-            RoundIconButton(Res.drawable.ic_add, stringResource(Res.string.p2_add_widgets), onGallery)
         }
         WordFitText(greeting, style = EasyPaperTheme.typography.largeTitle, color = colors.label,
             modifier = Modifier.combinedClickable(onClick = {}, onLongClick = onDeveloper).semantics { heading() })
+    }
+}
+
+/**
+ * The place for the next widget: same size as a widget, a dashed outline and a round "+" (like an empty slot on an
+ * iOS home screen). Opens the widget gallery; the whole tile is one button for screen readers.
+ */
+@Composable
+private fun AddWidgetTile(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val spacing = EasyPaperTheme.spacing
+    val colors = EasyPaperTheme.colors
+    val shape = EasyPaperTheme.shapes.widget
+    val label = stringResource(Res.string.p2_add_widgets)
+    Column(modifier.heightIn(min = spacing.widgetMinHeight).clip(shape)
+        .background(colors.fill.copy(alpha = 0.35f))
+        .drawBehind {
+            val dash = spacing.xs.toPx()
+            drawOutline(shape.createOutline(size, layoutDirection, this), colors.separator,
+                style = Stroke(spacing.glyphStroke.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(dash, dash / 2))))
+        }
+        .clickable(role = Role.Button, onClick = onClick)
+        .semantics(mergeDescendants = true) { contentDescription = label }
+        .padding(spacing.s),
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        Box(Modifier.size(spacing.emptyAddSize).clip(EasyPaperTheme.shapes.capsule).background(colors.tint.copy(alpha = 0.15f)),
+            contentAlignment = Alignment.Center) {
+            Icon(painterResource(Res.drawable.ic_add), null, Modifier.size(spacing.xxl), tint = colors.tint)
+        }
+        Spacer(Modifier.height(spacing.s))
+        Text(label, style = EasyPaperTheme.typography.subheadline, color = colors.link, textAlign = TextAlign.Center)
     }
 }
 
