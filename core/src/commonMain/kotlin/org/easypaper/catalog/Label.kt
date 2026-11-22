@@ -72,7 +72,7 @@ private fun normalizeStrength(number: Double, rawUnit: String): Strength? {
 val VARIANT_WORDS: Set<String> = setOf(
     "FORTE", "MAX", "MAXI", "JUNIOR", "ADULTES", "ADULTE", "ADULTS", "ADULT", "ERWACHSENE", "ENFANTS", "ENFANT", "KINDER",
     "NOURRISSONS", "BEBE", "SANS SUCRE", "ZUCKERFREI", "RETARD", "LP", "SR", "XR", "CR", "MR", "ER", "DEPOT", "DUO", "PLUS",
-    "EXTRA", "RAPID", "RAPIDE", "LIBERATION PROLONGEE", "PROLONGED RELEASE", "ДЕТСКИЙ", "ФОРТЕ", "МАКС", "РЕТАРД", "ПЛЮС",
+    "EXTRA", "RAPID", "RAPIDE", "LIBERATION PROLONGEE", "PROLONGED RELEASE", "FORT", "COCUK", "PEDIATRIK", "BEBEK", "ДЕТСКИЙ", "ФОРТЕ", "МАКС", "РЕТАРД", "ПЛЮС",
 )
 
 private val PHRASE_VARIANTS = VARIANT_WORDS.filter { ' ' in it }

@@ -80,6 +80,7 @@ same access rules as every other entry.
 | Ukraine | Державний реєстр лікарських засобів: the State Service's `reestr.csv` (Windows-1251), the file behind the MoH open-data set on data.gov.ua | Records with the per-unit composition sentence ("1 таблетка містить парацетамолу 500 мг, …"), pharmacotherapeutic group, registration number, link to the record's official instruction file | **imported**: 13,690 records (amounts split for 6,964; the others show the sentence's parts as written) |
 | Russia | ГРЛС one-file export (`GetGRLS.ashx`, zip of xlsx lists; the link carries a fresh FileGUID and is read from the register page each time) | Valid, EAEU, foreign-pack and pending registrations; release forms with doses paired with the international names in order; pharmacotherapeutic group | **imported**: 41,994 versions (all amounts for 37,067), data of 2026-11-20. **No per-record link**: the card names the registration number and links to the register search |
 | Belarus | rceth.by Refbank public search, paged like its own page (national + EAEU registration, 100 rows a page, one request a second); rows kept in `rceth-rows.tsv` | Trade and international names, release forms with doses, holder, registration number, link to the record page | **imported**: 5,705 versions (all amounts for 4,946). No download or API is offered, so this depends on the page layout; no indication field |
+| Turkey | TİTCK "Ruhsatlı Beşeri Tıbbi Ürünler Listesi" (weekly xlsx; the newest link is read from titck.gov.tr/dinamikmodul/85) | One row per pack with its **barcode** (GTIN 869…), name with strength, form and pack, active substances, ATC, license number, suspension status. Strength per unit is read from the official name and paired with the substances | **imported**: 16,738 versions with 23,049 barcodes (all amounts for 10,261; 598 suspended, kept and marked), list of 2026-11-13. The card links to the agency's KÜB/KT (SmPC / leaflet) search for the product. titck.gov.tr is signed by the Turkish TUBITAK Kamu SM root, which the JDK does not ship: downloads verify against the JDK roots or the operating system's roots |
 
 `GET /catalog/coverage` returns the loaded sources with their dates and their load status.
 
@@ -95,13 +96,13 @@ stored.
 
 ```bash
 # download the official files and rebuild every source (about 30 s with a fast connection)
-EASYPAPER_CATALOG_DIR=server/data/catalog ./gradlew :server:importCatalog --args="fr ch eu ua ru by"
+EASYPAPER_CATALOG_DIR=server/data/catalog ./gradlew :server:importCatalog --args="fr ch eu ua ru by tr"
 # one source, or files already downloaded
 ./gradlew :server:importCatalog --args="fr --from /path/to/dumps"   # expects /path/to/dumps/fr/CIS_*.txt
 ```
 
 - One gzip'd snapshot per source: `fr-bdpm.json.gz`, `ch-swissmedic.json.gz`, `eu-ema-art57.json.gz`, `ua-drlz.json.gz`,
-  `ru-grls.json.gz`, `by-rceth.json.gz`. The Russian and Ukrainian hosts drop connections now and then: every download
+  `ru-grls.json.gz`, `by-rceth.json.gz`, `tr-titck.json.gz`. The Russian and Ukrainian hosts drop connections now and then: every download
   is retried up to 6 times. Each holds
   the registry's record id, country, URL, data date and import time.
 - Each run rebuilds a source from its files and replaces its snapshot atomically, keyed by registry ids, so a repeated

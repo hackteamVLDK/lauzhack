@@ -148,11 +148,11 @@ variable is not automatically exposed to the browser; never embed the token in a
 
 The patient's *Recognise medicine* (barcode or photo of the package) and the doctor's medicine brief use official
 registries imported on the server: Switzerland (Swissmedic + Refdata SAI), France (BDPM), EU names (EMA Article 57),
-Ukraine (Державний реєстр), Russia (ГРЛС), Belarus (rceth.by).
+Ukraine (Державний реєстр), Russia (ГРЛС), Belarus (rceth.by), Turkey (TİTCK, with barcodes).
 Import or update them, then restart the server:
 
 ```
-EASYPAPER_CATALOG_DIR=server/data/catalog ./gradlew :server:importCatalog --args="fr ch eu ua ru by"
+EASYPAPER_CATALOG_DIR=server/data/catalog ./gradlew :server:importCatalog --args="fr ch eu ua ru by tr"
 ```
 
 The import can be repeated without duplicates; `server/data/` is not committed. Flow, sources, real coverage

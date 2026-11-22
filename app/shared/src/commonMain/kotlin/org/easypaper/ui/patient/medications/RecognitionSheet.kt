@@ -59,7 +59,7 @@ val PURCHASE_COUNTRIES: List<Pair<String?, StringResource>> = listOf(
     null to Res.string.rec_country_any, "CH" to Res.string.country_CH, "FR" to Res.string.country_FR, "DE" to Res.string.country_DE,
     "AT" to Res.string.country_AT, "IT" to Res.string.country_IT, "BE" to Res.string.country_BE, "ES" to Res.string.country_ES,
     "NL" to Res.string.country_NL, "PL" to Res.string.country_PL, "UA" to Res.string.country_UA, "RU" to Res.string.country_RU,
-    "BY" to Res.string.country_BY,
+    "BY" to Res.string.country_BY, "TR" to Res.string.country_TR,
 )
 
 /**

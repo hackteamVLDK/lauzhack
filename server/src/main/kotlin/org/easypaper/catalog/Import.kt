@@ -17,7 +17,7 @@ import kotlin.system.exitProcess
 /**
  * The catalog import command (task 71): downloads the official files and writes one snapshot per source.
  *
- *   ./gradlew :server:importCatalog --args="fr ch eu ua ru by"   download and import
+ *   ./gradlew :server:importCatalog --args="fr ch eu ua ru by tr"   download and import
  *   ./gradlew :server:importCatalog --args="fr --from C:/dumps"   import files already downloaded
  *
  * Every run rebuilds a source from its files and replaces its snapshot, keyed by the registry's record ids, so it
@@ -25,7 +25,7 @@ import kotlin.system.exitProcess
  */
 fun main(args: Array<String>) {
     val from = args.indexOf("--from").takeIf { it >= 0 }?.let { File(args[it + 1]) }
-    val wanted = args.filterIndexed { i, a -> !a.startsWith("--") && (i == 0 || args[i - 1] != "--from") }.ifEmpty { listOf("fr", "ch", "eu", "ua", "ru", "by") }
+    val wanted = args.filterIndexed { i, a -> !a.startsWith("--") && (i == 0 || args[i - 1] != "--from") }.ifEmpty { listOf("fr", "ch", "eu", "ua", "ru", "by", "tr") }
     val store = CatalogStore.fromEnv()
     val downloads = from ?: File(store.dir, "downloads")
     var failed = 0
@@ -39,7 +39,8 @@ fun main(args: Array<String>) {
                 "ua" -> importUkraine(File(downloads, "ua"), download = from == null)
                 "ru" -> importRussia(File(downloads, "ru"), download = from == null)
                 "by" -> importBelarus(File(downloads, "by"), download = from == null)
-                else -> error("Unknown source '$source' (fr, ch, eu, ua, ru, by)")
+                "tr" -> importTurkey(File(downloads, "tr"), download = from == null)
+                else -> error("Unknown source '$source' (fr, ch, eu, ua, ru, by, tr)")
             }
             store.write(snapshot)
             println("$source: ${snapshot.info.records} products from ${snapshot.info.dataDate} -> ${store.file(snapshot.info.registry).path} (${(System.currentTimeMillis() - started) / 1000} s)")
@@ -124,10 +125,62 @@ fun importBelarus(dir: File, download: Boolean): SourceSnapshot {
         products)
 }
 
+fun importTurkey(dir: File, download: Boolean): SourceSnapshot {
+    if (download) {
+        // the newest weekly list is the first link on the page; its file name carries the list date
+        val page = String(get(Turkey.PAGE))
+        val link = Regex("""https://titck\.gov\.tr/storage/[^"]*RuhsatlBeeriTbbirnlerListesi[^"]*\.xlsx""").find(page)?.value
+            ?: error("No licensed products list on ${Turkey.PAGE}")
+        fetch(link, File(dir, link.substringAfterLast('/')))
+    }
+    val xlsx = dir.listFiles { f -> f.name.startsWith("RuhsatlBeeriTbbirnlerListesi") && f.name.endsWith(".xlsx") }
+        ?.maxByOrNull { it.lastModified() } ?: error("No TİTCK list in ${dir.path}")
+    val (products, date) = Turkey.read(xlsx, fileDate(xlsx))
+    return SourceSnapshot(info(Turkey.REGISTRY, Turkey.NAME, listOf("TR"), Turkey.PAGE, date, products.size,
+        "Licensed products with barcodes (GTIN), active substances, strength from the official name, suspension status; link to the KÜB/KT search."),
+        products)
+}
+
 private fun info(registry: String, name: String, countries: List<String>, url: String, date: String, records: Int, note: String) =
     SourceInfo(registry, name, countries, url, date, DateTimeFormatter.ISO_INSTANT.format(Instant.now()), records, note)
 
-private val http: HttpClient = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(30)).build()
+private val http: HttpClient = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(30))
+    .sslContext(systemTrustContext()).build()
+
+/**
+ * TLS that trusts the JDK's root certificates and, in addition, the operating system's own trusted roots: some
+ * registries (titck.gov.tr, under the Turkish TUBITAK Kamu SM root) are trusted by Windows and Linux but are not in
+ * the JDK's list. Every chain is still fully verified against one of the two; nothing is accepted blindly.
+ */
+internal fun systemTrustContext(): javax.net.ssl.SSLContext {
+    fun managerFor(store: java.security.KeyStore?): javax.net.ssl.X509TrustManager =
+        javax.net.ssl.TrustManagerFactory.getInstance(javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm())
+            .apply { init(store) }.trustManagers.filterIsInstance<javax.net.ssl.X509TrustManager>().first()
+    val jdk = managerFor(null)
+    val os = runCatching { osRootStore() }.getOrNull()?.let(::managerFor)
+    val combined = object : javax.net.ssl.X509TrustManager {
+        override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) = jdk.checkClientTrusted(chain, authType)
+        override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {
+            try { jdk.checkServerTrusted(chain, authType) } catch (e: java.security.cert.CertificateException) {
+                os?.checkServerTrusted(chain, authType) ?: throw e
+            }
+        }
+        override fun getAcceptedIssuers() = jdk.acceptedIssuers + (os?.acceptedIssuers ?: emptyArray())
+    }
+    return javax.net.ssl.SSLContext.getInstance("TLS").apply { init(null, arrayOf(combined), null) }
+}
+
+/** Windows' trusted roots, or the Linux CA bundle; null where neither exists. */
+private fun osRootStore(): java.security.KeyStore? {
+    if (System.getProperty("os.name").startsWith("Windows")) return java.security.KeyStore.getInstance("Windows-ROOT").apply { load(null, null) }
+    val bundle = listOf("/etc/ssl/certs/ca-certificates.crt", "/etc/pki/tls/certs/ca-bundle.crt").map(::File).firstOrNull { it.isFile } ?: return null
+    val store = java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType()).apply { load(null, null) }
+    bundle.inputStream().use { input ->
+        java.security.cert.CertificateFactory.getInstance("X.509").generateCertificates(input)
+            .forEachIndexed { i, cert -> store.setCertificateEntry("os-$i", cert) }
+    }
+    return store
+}
 
 private fun request(url: String) = HttpRequest.newBuilder(URI(url)).timeout(Duration.ofMinutes(5))
     .header("User-Agent", "EasyPaper catalog import (open-source medicine diary)").GET().build()
