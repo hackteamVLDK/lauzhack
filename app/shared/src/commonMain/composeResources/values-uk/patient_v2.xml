@@ -176,4 +176,15 @@
     <string name="p2_widget_diary_body">Місце для записів про самопочуття.</string>
     <string name="p2_widget_questions_body">Зберігай запитання до наступного візиту.</string>
     <string name="p2_widget_measurements_body">Вага, зріст та інші вимірювання.</string>
+    <string name="p2_tour_track_title">Відстежуйте важливе</string>
+    <string name="p2_tour_track_body">Додайте віджети для тиску, води, їжі, ліків та іншого. Запис займає кілька секунд.</string>
+    <string name="p2_tour_plan_title">План від вашого лікаря</string>
+    <string name="p2_tour_plan_body">Ваш лікар може надіслати запит: що записувати й протягом якого часу. Він відображається вгорі вашого щоденника.</string>
+    <string name="p2_tour_share_title">Поділіться на прийомі</string>
+    <string name="p2_tour_share_body">Покажіть QR-код на прийомі. Ваш лікар побачить короткий підсумок і зможе відкрити кожен запис, на якому він ґрунтується.</string>
+    <string name="p2_tour_private_title">Приватно на вашому телефоні</string>
+    <string name="p2_tour_private_body">Ваш щоденник зашифрований на цьому телефоні й залишає його, лише коли ви ділитеся даними. Easy Paper записує факти й не дає медичних порад.</string>
+    <string name="p2_tour_page">Сторінка %1$d із %2$d</string>
+    <string name="p2_tour_next">Далі</string>
+    <string name="p2_tour_skip">Пропустити</string>
 </resources>

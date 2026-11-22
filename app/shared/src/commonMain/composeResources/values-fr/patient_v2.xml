@@ -172,4 +172,15 @@
     <string name="p2_widget_diary_body">Un espace pour noter comment vous vous sentez.</string>
     <string name="p2_widget_questions_body">Gardez vos questions pour la prochaine consultation.</string>
     <string name="p2_widget_measurements_body">Poids, taille et autres mensurations.</string>
+    <string name="p2_tour_track_title">Suivez ce qui compte</string>
+    <string name="p2_tour_track_body">Ajoutez des widgets pour la tension, l’eau, les repas, les médicaments et plus encore. Une saisie ne prend que quelques secondes.</string>
+    <string name="p2_tour_plan_title">Un programme de votre médecin</string>
+    <string name="p2_tour_plan_body">Votre médecin peut vous envoyer une demande : quoi noter et pendant combien de temps. Elle apparaît en haut de votre journal.</string>
+    <string name="p2_tour_share_title">Partagez lors de la consultation</string>
+    <string name="p2_tour_share_body">Présentez un code QR lors du rendez-vous. Votre médecin voit un bref résumé et peut consulter chaque saisie qui le compose.</string>
+    <string name="p2_tour_private_title">Privé sur votre téléphone</string>
+    <string name="p2_tour_private_body">Votre journal est chiffré sur ce téléphone et ne le quitte que lorsque vous le partagez. Easy Paper consigne des faits et ne donne aucun conseil médical.</string>
+    <string name="p2_tour_page">Page %1$d sur %2$d</string>
+    <string name="p2_tour_next">Suivant</string>
+    <string name="p2_tour_skip">Passer</string>
 </resources>

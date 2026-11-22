@@ -172,4 +172,15 @@
     <string name="p2_widget_diary_body">A space to write how you feel.</string>
     <string name="p2_widget_questions_body">Keep questions for your next visit.</string>
     <string name="p2_widget_measurements_body">Weight, height and other measurements.</string>
+    <string name="p2_tour_track_title">Track what matters</string>
+    <string name="p2_tour_track_body">Add widgets for blood pressure, water, food, medicines and more. An entry takes a few seconds.</string>
+    <string name="p2_tour_plan_title">A plan from your doctor</string>
+    <string name="p2_tour_plan_body">Your doctor can send a request: what to record and for how long. It sits on top of your diary.</string>
+    <string name="p2_tour_share_title">Share at the visit</string>
+    <string name="p2_tour_share_body">Show a QR code at the appointment. Your doctor sees a short summary with every entry behind it.</string>
+    <string name="p2_tour_private_title">Private on your phone</string>
+    <string name="p2_tour_private_body">Your diary is encrypted on this phone and leaves it only when you share. Easy Paper records facts; it gives no medical advice.</string>
+    <string name="p2_tour_page">Page %1$d of %2$d</string>
+    <string name="p2_tour_next">Next</string>
+    <string name="p2_tour_skip">Skip</string>
 </resources>

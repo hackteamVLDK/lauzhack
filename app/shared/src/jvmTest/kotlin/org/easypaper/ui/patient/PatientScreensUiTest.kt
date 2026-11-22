@@ -1,6 +1,11 @@
 package org.easypaper.ui.patient
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithText
@@ -11,6 +16,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.runComposeUiTest
 import kotlinx.coroutines.runBlocking
 import org.easypaper.ui.shell.PatientApp
@@ -91,6 +97,8 @@ class PatientScreensUiTest {
         waitForText("Your health diary")
         onNode(hasScrollAction()).performScrollToNode(hasText("Get started"))
         onNodeWithText("Get started").performClick()
+        waitForText("Track what matters")
+        onNodeWithText("Skip").performScrollTo().performClick()
         waitForText("Welcome")
         onNodeWithText("Continue with Google").assertIsNotEnabled()
         onNodeWithText("Continue with email").assertIsNotEnabled()
@@ -104,6 +112,25 @@ class PatientScreensUiTest {
         assertEquals(null, patient.pinned.value)
         assertTrue(state.repository.records.value.all { it.entries.isEmpty() })
         onNodeWithText("Hi").assertExists()
+    }
+
+    @Test
+    fun summaryHasAnAddWidgetsButtonWithoutACategoryCarousel() = runComposeUiTest {
+        val state = ShellState(Role.Patient)
+        val settings = ShellSettings(dark = false)
+        val patient = settingsWithoutOnboarding().also { it.pinned.update("Water") }
+        setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
+
+        waitForText("Your widgets")
+        onNode(hasScrollAction()).performScrollToNode(hasText("Add widgets"))
+        val button = SemanticsMatcher.expectValue(SemanticsProperties.Role, androidx.compose.ui.semantics.Role.Button)
+        onNode(hasText("Add widgets") and button).assertIsDisplayed().assertHasClickAction()
+        onNodeWithText("Added").assertDoesNotExist()
+        onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.HorizontalScrollAxisRange)).assertCountEquals(0)
+
+        onNode(hasText("Add widgets") and button).performClick()
+        waitForText("Choose a category to add it to Summary.")
+        onNodeWithText("Added").assertExists() // The gallery still marks the pinned Water widget.
     }
 
     @Test

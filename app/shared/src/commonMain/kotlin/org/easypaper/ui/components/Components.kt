@@ -205,7 +205,8 @@ private fun SmallButton(
         modifier.minimumInteractiveComponentSize().clip(EasyPaperTheme.shapes.capsule).background(container)
             .pressable(onClick, enabled).padding(horizontal = spacing.s + spacing.xxs, vertical = spacing.xs - 1.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(spacing.xxs),
+        // centered when the button is wider than its label (a full-width "+ Add widgets"); no change otherwise
+        horizontalArrangement = Arrangement.spacedBy(spacing.xxs, Alignment.CenterHorizontally),
     ) {
         if (icon != null) Icon(painterResource(icon), contentDescription = null, tint = content, modifier = Modifier.size(16.dp))
         if (text.isNotEmpty()) Text(text, style = EasyPaperTheme.typography.subheadline.copy(fontWeight = FontWeight.SemiBold), color = content)

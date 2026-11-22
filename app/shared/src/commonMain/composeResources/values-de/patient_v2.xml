@@ -172,4 +172,15 @@
     <string name="p2_widget_diary_body">Platz für dein Befinden.</string>
     <string name="p2_widget_questions_body">Fragen für den nächsten Arztbesuch.</string>
     <string name="p2_widget_measurements_body">Gewicht, Größe und weitere Messwerte.</string>
+    <string name="p2_tour_track_title">Halten Sie fest, was zählt</string>
+    <string name="p2_tour_track_body">Fügen Sie Widgets für Blutdruck, Wasser, Essen, Medikamente und mehr hinzu. Ein Eintrag dauert nur wenige Sekunden.</string>
+    <string name="p2_tour_plan_title">Ein Plan von Ihrer Arztpraxis</string>
+    <string name="p2_tour_plan_body">Ihre Arztpraxis kann Ihnen eine Anfrage senden: was Sie wie lange aufzeichnen sollen. Sie steht oben in Ihrem Tagebuch.</string>
+    <string name="p2_tour_share_title">Beim Arztbesuch teilen</string>
+    <string name="p2_tour_share_body">Zeigen Sie beim Termin einen QR-Code. Ihre Arztpraxis sieht eine kurze Zusammenfassung und kann jeden Eintrag dahinter öffnen.</string>
+    <string name="p2_tour_private_title">Privat auf Ihrem Telefon</string>
+    <string name="p2_tour_private_body">Ihr Tagebuch ist auf diesem Telefon verschlüsselt und verlässt es nur, wenn Sie es teilen. Easy Paper hält Fakten fest und gibt keine medizinischen Ratschläge.</string>
+    <string name="p2_tour_page">Seite %1$d von %2$d</string>
+    <string name="p2_tour_next">Weiter</string>
+    <string name="p2_tour_skip">Überspringen</string>
 </resources>

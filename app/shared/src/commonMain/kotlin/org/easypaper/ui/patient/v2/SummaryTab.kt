@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -123,16 +122,9 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
                         if (row.size == 1) Spacer(Modifier.weight(1f))
                     }
                 }
-                item(key = "gallery-title") {
-                    PlainButton(stringResource(Res.string.p2_add_widgets), onGallery)
-                }
-                item(key = "categories") {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.s)) {
-                        items(Category.entries, key = { it.name }) { category ->
-                            PastelCategoryCard(category, { settings.addWidget(category) }, Modifier.width(spacing.categoryCardWidth),
-                                added = category in pinned)
-                        }
-                    }
+                item(key = "add-widgets") {
+                    TintedButton(stringResource(Res.string.p2_add_widgets), onGallery,
+                        Modifier.fillMaxWidth(), icon = Res.drawable.ic_add)
                 }
             }
         }

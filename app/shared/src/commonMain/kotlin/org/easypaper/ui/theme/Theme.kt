@@ -45,6 +45,8 @@ data class EasyPaperSpacing(
     val widgetMinHeight: Dp = 208.dp,
     val collageTall: Dp = 164.dp,
     val collageShort: Dp = 120.dp,
+    val tourIllustrationHeight: Dp = 224.dp,
+    val tourPageIndicatorSize: Dp = 8.dp,
     val heroIcon: Dp = 64.dp,
     val emptyAddSize: Dp = 80.dp,
     val floatingBarMaxWidth: Dp = 440.dp,
