@@ -362,7 +362,7 @@
     <string name="doc_field_procedure">Процедура</string>
     <string name="doc_field_lab">Аналіз</string>
     <string name="dev_server">Адреса сервера</string>
-    <string name="dev_server_footer">Для справжнього телефона: адреса комп’ютера з сервером, напр. http://192.168.1.20:8080, у тій самій мережі. Порожньо: хост емулятора на Android, цей комп’ютер на Desktop.</string>
+    <string name="dev_server_footer">Порожньо: сервер команди https://74-148-56-1.sslip.io. Натомість локальний сервер: його адреса, напр. http://192.168.1.20:8090 (емулятор: http://10.0.2.2:8090).</string>
     <string name="share_offline_at">Сервер за адресою %1$s недоступний. Перевірте мережу та адресу сервера в меню розробника (довге натискання на заголовок).</string>
     <string name="share_local_network">Сервер %1$s у локальній мережі, а Easy Paper не має до неї доступу. Дозвольте Easy Paper доступ до локальної мережі в Налаштуваннях і спробуйте ще раз.</string>
     <string name="clinic_code">Код доступу клініки</string>

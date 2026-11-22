@@ -10,6 +10,13 @@ import org.easypaper.ai.AiClient
  */
 expect fun defaultServerUrl(): String?
 
+/**
+ * The team's public Easy Paper server (#63): relay, AI routes behind the clinic token, the doctor's web app, on the
+ * hub VM behind Caddy with a Let's Encrypt certificate. A local server is set in the developer menu (or
+ * EASYPAPER_SERVER on Desktop).
+ */
+const val PUBLIC_SERVER = "https://74-148-56-1.sslip.io"
+
 /** The AI summary takes one model call on the server; give it time, but not forever. */
 private const val AI_TIMEOUT_MILLIS = 120_000L
 

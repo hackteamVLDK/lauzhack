@@ -56,9 +56,8 @@ as second reviewer; agents built most code; humans reviewed and merged. Show one
 ## 6. Before the demo
 
 - [ ] `git pull --ff-only hub main`; `python test.py --all` green.
-- [ ] Server: set `EASYPAPER_CLINIC_TOKEN`, the same token in the doctor app settings; cloud: `OPENROUTER_API_KEY` (or `TOGETHER_API_KEY`) only in the server environment; clinic: `EASYPAPER_AI=clinic`, Ollama running with `gemma4:12b` warmed up (daytime).
-- [ ] On mykhailo's laptop port 8080 is taken by an Apache service: run the server with `$env:PORT = "8090"` and use `http://<laptop-ip>:8090` (emulator: `http://10.0.2.2:8090`) in the apps. Checked: web app, `/ai/status` 401 without token, JSON with token.
-- [ ] Phone and laptop on the same network; set the server address in the patient app.
+- [ ] Cloud server (default in all apps): `https://74-148-56-1.sslip.io` on the hub VM - relay, AI (OpenRouter, Claude Haiku, budget $3), the doctor's web app. systemd `easypaper` (127.0.0.1:8090, secrets only in `/etc/easypaper/env`, root 600) behind Caddy with a Let's Encrypt certificate; Azure NSG opens 80/443 only. The clinic token for the doctor app is in `~/.config/easypaper/clinic-token.txt` on mykhailo's laptop (never in Git). Update: `:server:installDist` + web dist -> `/opt/easypaper/{server,web}` -> `sudo systemctl restart easypaper`.
+- [ ] Clinic module instead (daytime only): run the server locally with `EASYPAPER_AI=clinic` and Ollama `gemma4:12b` warmed up; on mykhailo's laptop 8080 is Apache, so `$env:PORT = "8090"`; set `http://<laptop-ip>:8090` (emulator: `http://10.0.2.2:8090`) in the developer menu. Android 17 then asks for local network access when the patient creates a code - tap Allow.
 - [ ] Desktop: `.\gradlew.bat :app:desktopApp:run` starts with demo data; Android: "Load demo diary" on an empty Today.
 - [ ] Prepare one food photo without text and one medicine box from the local list.
 - [ ] Offline fallback: AI off still gives the facts with links; the relay needs the network.

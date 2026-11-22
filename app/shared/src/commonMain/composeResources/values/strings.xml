@@ -356,7 +356,7 @@
     <string name="doc_field_procedure">Procedure</string>
     <string name="doc_field_lab">Lab value</string>
     <string name="dev_server">Server address</string>
-    <string name="dev_server_footer">For a real phone: the address of the computer running the server, e.g. http://192.168.1.20:8080, on the same network. Empty: the emulator’s host on Android, this computer on Desktop.</string>
+    <string name="dev_server_footer">Empty: the team's server at https://74-148-56-1.sslip.io. A local server instead: its address, e.g. http://192.168.1.20:8090 (emulator: http://10.0.2.2:8090).</string>
     <string name="share_offline_at">The server at %1$s could not be reached. Check the network and the server address in the developer menu (long-press the title).</string>
     <string name="share_local_network">The server at %1$s is on the local network, and Easy Paper has no access to it. Allow local network access for Easy Paper in Settings, then try again.</string>
     <string name="clinic_code">Clinic access code</string>

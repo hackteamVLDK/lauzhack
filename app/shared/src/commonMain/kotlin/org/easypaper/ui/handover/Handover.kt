@@ -55,6 +55,7 @@ import easypaper.app.shared.generated.resources.share_show
 import easypaper.app.shared.generated.resources.tab_share
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import io.ktor.client.HttpClient
+import org.easypaper.ui.shell.PUBLIC_SERVER
 import kotlinx.io.IOException
 import kotlinx.coroutines.launch
 import org.easypaper.report.ReceivedReport
@@ -80,11 +81,8 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 
-/** The relay the apps use: the developer setting, the platform's server, or the computer running the emulator. */
-fun relayUrl(setting: String?, platformDefault: String?): String = (setting ?: platformDefault ?: EMULATOR_HOST).trimEnd('/')
-
-// the host computer as seen from the Android emulator; a real phone gets the address in the developer menu
-private const val EMULATOR_HOST = "http://10.0.2.2:8080"
+/** The relay the apps use: the developer setting, the platform's server, or the team's public server. */
+fun relayUrl(setting: String?, platformDefault: String?): String = (setting ?: platformDefault ?: PUBLIC_SERVER).trimEnd('/')
 
 /** One HTTP client per screen, closed when the screen goes; the platform's Ktor engine is found on the classpath. */
 @Composable
@@ -126,7 +124,8 @@ fun ShareScreen(repository: PatientRepository, relayUrl: String, onDeveloper: ((
                         error = null
                         // Android 17 asks for the local network here (the relay is on the clinic's or demo laptop);
                         // a refusal still tries, since the server may be on the internet, and explains a failure.
-                        askLocalNetwork { granted ->
+                        val ask: ((Boolean) -> Unit) -> Unit = if (isLocalNetworkUrl(relayUrl)) askLocalNetwork else { go -> go(true) }
+                        ask { granted ->
                             scope.launch {
                                 try {
                                     qr = repository.handover(record, RelayClient(relayUrl, http), Clock.System.now().toEpochMilliseconds())
