@@ -370,14 +370,15 @@ fun Sidebar(
     }
 }
 
-/** A row of the [Sidebar]: the selected row is filled with tint, its text on tint. */
+/** A row of the [Sidebar]: the selected row is filled with tint, its text on tint; [icon] leads the text. */
 @Composable
-fun SidebarRow(title: String, subtitle: String?, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun SidebarRow(title: String, subtitle: String?, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier,
+               icon: DrawableResource? = null) {
     val colors = EasyPaperTheme.colors
     val spacing = EasyPaperTheme.spacing
     val text = if (selected) colors.selectedRowLabel else colors.label
     val secondary = if (selected) colors.selectedRowLabel else colors.secondaryLabel
-    Column(
+    Row(
         modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight)
             .clip(EasyPaperTheme.shapes.small)
             .background(if (selected) colors.selectedRowBackground else colors.cell)
@@ -389,10 +390,15 @@ fun SidebarRow(title: String, subtitle: String?, selected: Boolean, onClick: () 
                 onClick = onClick,
             )
             .padding(horizontal = spacing.s, vertical = spacing.xs),
-        verticalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(spacing.s),
     ) {
-        Text(title, style = EasyPaperTheme.typography.headline, color = text)
-        if (subtitle != null) Text(subtitle, style = EasyPaperTheme.typography.footnote, color = secondary)
+        if (icon != null) Icon(painterResource(icon), contentDescription = null, tint = if (selected) text else colors.tint,
+            modifier = Modifier.size(spacing.xl))
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
+            Text(title, style = EasyPaperTheme.typography.headline, color = text)
+            if (subtitle != null) Text(subtitle, style = EasyPaperTheme.typography.footnote, color = secondary)
+        }
     }
 }
 

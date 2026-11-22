@@ -1,5 +1,18 @@
 package org.easypaper.ui.shell
 
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import easypaper.app.shared.generated.resources.app_name
+import org.easypaper.ui.components.SidebarRow
+import org.easypaper.ui.components.Sidebar
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -60,6 +73,13 @@ sealed interface PatientScreen {
 }
 
 private val TAB_ROOTS = listOf(PatientScreen.Summary, PatientScreen.Sharing, PatientScreen.Browse)
+
+
+/** From this width (a desktop or tablet window) the patient's tabs are a sidebar; below it, the floating tab bar. */
+private val WIDE_PATIENT_LAYOUT = 840.dp
+
+/** True in the wide (sidebar) layout: screens may use more columns. */
+val LocalWidePatientLayout = staticCompositionLocalOf { false }
 
 @Composable
 fun PatientApp(state: ShellState, settings: ShellSettings, onSwitchRole: (() -> Unit)? = null,
@@ -149,8 +169,24 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
     val spacing = EasyPaperTheme.spacing
     val density = LocalDensity.current
     var tabBarHeight by remember { mutableStateOf(spacing.rowMinHeight + spacing.xxl * 2) }
-    Box(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background)) {
-        Box(Modifier.fillMaxSize().padding(bottom = tabBarHeight)) {
+    val tabItems = listOf(TabItem(stringResource(Res.string.p2_summary), Res.drawable.ic_calendar_today),
+        TabItem(stringResource(Res.string.p2_sharing), Res.drawable.ic_qr_code_2),
+        TabItem(stringResource(Res.string.p2_browse), Res.drawable.ic_checklist))
+    val selectTab: (Int) -> Unit = { index -> if (index == tab) navigators[index].popToRoot() else tab = index }
+    BoxWithConstraints(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background)) {
+        // A desktop or tablet window: the tabs become a sidebar (as in the doctor's app), not a phone's bottom bar.
+        val wide = maxWidth >= WIDE_PATIENT_LAYOUT
+        CompositionLocalProvider(LocalWidePatientLayout provides wide) {
+        Row(Modifier.fillMaxSize().then(if (wide) Modifier.windowInsetsPadding(WindowInsets.navigationBars) else Modifier)) {
+          if (wide) {
+            Sidebar(stringResource(Res.string.app_name), onTitleLongPress = { navigator.presentSheet(PatientScreen.Developer) }) {
+                items(tabItems.size) { index ->
+                    SidebarRow(tabItems[index].label, null, index == tab, { selectTab(index) },
+                        Modifier.padding(bottom = spacing.xxs), icon = tabItems[index].icon)
+                }
+            }
+          }
+          Box(Modifier.weight(1f).fillMaxHeight().padding(bottom = if (wide) 0.dp else tabBarHeight)) {
             TabNavigation(tab, Modifier.fillMaxSize()) { shownTab ->
                 val navigator = navigators[shownTab]
                 val back = BackAction(stringResource(Res.string.p2_back)) { navigator.back() }
@@ -226,10 +262,9 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
                 }
             }
         }
-        FloatingTabBar(listOf(TabItem(stringResource(Res.string.p2_summary), Res.drawable.ic_calendar_today),
-            TabItem(stringResource(Res.string.p2_sharing), Res.drawable.ic_qr_code_2),
-            TabItem(stringResource(Res.string.p2_browse), Res.drawable.ic_checklist)), tab,
-            { index -> if (index == tab) navigators[index].popToRoot() else tab = index },
+        }
+        }
+        if (!wide) FloatingTabBar(tabItems, tab, selectTab,
             Modifier.align(Alignment.BottomCenter).onSizeChanged { size ->
                 tabBarHeight = with(density) { size.height.toDp() }
             })

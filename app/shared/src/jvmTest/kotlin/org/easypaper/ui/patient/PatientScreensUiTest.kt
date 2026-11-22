@@ -1,5 +1,9 @@
 package org.easypaper.ui.patient
 
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -56,7 +60,7 @@ class PatientScreensUiTest {
         runBlocking { state.fillWithDemoData() }
         val settings = ShellSettings(dark = false)
         val patient = settingsWithoutOnboarding()
-        setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
+        setContent { Box(Modifier.width(400.dp)) { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } } } // a phone
 
         waitForText("Dr. Demo")
         onNodeWithText("Dr. Demo").performClick()
@@ -79,7 +83,7 @@ class PatientScreensUiTest {
         val state = ShellState(Role.Patient)
         val settings = ShellSettings(dark = false)
         val patient = settingsWithoutOnboarding()
-        setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
+        setContent { Box(Modifier.width(400.dp)) { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } } } // a phone
         waitForText("What do you want to track?")
         onNodeWithText("Sharing").performClick()
         waitForText("You decide")
@@ -98,7 +102,7 @@ class PatientScreensUiTest {
         runBlocking { state.fillWithDemoData() }
         val settings = ShellSettings(dark = false)
         val patient = settingsWithoutOnboarding()
-        setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
+        setContent { Box(Modifier.width(400.dp)) { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } } } // a phone
 
         waitForText("Browse")
         onNodeWithText("Browse").performClick()
@@ -118,7 +122,7 @@ class PatientScreensUiTest {
         val state = ShellState(Role.Patient)
         val settings = ShellSettings(dark = false)
         val patient = settingsWithoutOnboarding().also { it.onboarding.update(null) }
-        setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
+        setContent { Box(Modifier.width(400.dp)) { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } } } // a phone
         waitForText("Your health diary")
         onNode(hasScrollAction()).performScrollToNode(hasText("Get started"))
         onNodeWithText("Get started").performClick()
@@ -149,7 +153,7 @@ class PatientScreensUiTest {
         val state = ShellState(Role.Patient)
         val settings = ShellSettings(dark = false)
         val patient = settingsWithoutOnboarding().also { it.pinned.update("Water") }
-        setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
+        setContent { Box(Modifier.width(400.dp)) { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } } } // a phone
 
         waitForText("Pinned")
         onNode(hasScrollAction()).performScrollToNode(hasText("Add to Summary"))
@@ -168,7 +172,7 @@ class PatientScreensUiTest {
         val state = ShellState(Role.Patient)
         val settings = ShellSettings(dark = false)
         val patient = settingsWithoutOnboarding()
-        setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
+        setContent { Box(Modifier.width(400.dp)) { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } } } // a phone
         waitForText("What do you want to track?")
         onAllNodes(hasContentDescription("Add to Summary")).onFirst().performClick()
         waitForText("Choose a category to add it to Summary.")

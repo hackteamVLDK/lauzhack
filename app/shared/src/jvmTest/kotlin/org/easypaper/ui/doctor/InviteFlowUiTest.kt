@@ -1,5 +1,9 @@
 package org.easypaper.ui.doctor
 
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasContentDescription
@@ -63,7 +67,7 @@ class InviteFlowUiTest {
             fun setting(value: String? = null) = org.easypaper.ui.shell.SavedSetting(value) {}
             val patient = org.easypaper.ui.patient.v2.PatientSettings(setting("true"), setting("en"), setting(), setting(),
                 setting(), setting(), setting(), setting(), setting(), setting(), setting())
-            setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
+            setContent { Box(Modifier.width(400.dp)) { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } } } // a phone
             waitForText("What do you want to track?")
             assertTrue(patient.pinnedCategories.isEmpty())
             onNodeWithText("Sharing").performClick()

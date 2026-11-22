@@ -1,5 +1,6 @@
 package org.easypaper.ui.patient.v2
 
+import org.easypaper.ui.shell.LocalWidePatientLayout
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +30,8 @@ fun BrowseTab(settings: PatientSettings, onProfile: () -> Unit, onDeveloper: () 
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
     val categories = Category.entries.map { it to categoryTitle(it) }.filter { it.second.contains(query.trim(), ignoreCase = true) }
+    // a phone has two tiles per row; the wide (sidebar) layout of a desktop or tablet window three
+    val columns = if (LocalWidePatientLayout.current) 3 else 2
     LargeTitleScaffold(stringResource(Res.string.p2_browse), bottomInset = false,
         actions = { AvatarButton(initials(settings.name.value), onProfile) }, onTitleLongPress = onDeveloper) {
         item {
@@ -42,7 +45,7 @@ fun BrowseTab(settings: PatientSettings, onProfile: () -> Unit, onDeveloper: () 
         if (categories.isEmpty()) {
             item { PatientMessage(stringResource(Res.string.p2_no_results)) }
         } else {
-            items(categories.chunked(2), key = { row -> row.first().first.name }) { row ->
+            items(categories.chunked(columns), key = { row -> row.first().first.name }) { row ->
                 Row(Modifier.fillMaxWidth().padding(bottom = spacing.s).height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(spacing.s)) {
                     row.forEach { (category, title) ->
@@ -51,7 +54,7 @@ fun BrowseTab(settings: PatientSettings, onProfile: () -> Unit, onDeveloper: () 
                                 Modifier.weight(1f).fillMaxHeight())
                         }
                     }
-                    if (row.size == 1) Spacer(Modifier.weight(1f))
+                    repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
                 }
             }
         }
