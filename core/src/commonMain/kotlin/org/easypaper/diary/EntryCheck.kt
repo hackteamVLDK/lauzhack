@@ -15,6 +15,8 @@ import org.easypaper.model.FoodWidget
 import org.easypaper.model.Measurement
 import org.easypaper.model.MeasurementsWidget
 import org.easypaper.model.Medication
+import org.easypaper.model.SideEffectCheck
+import org.easypaper.scan.SIDE_EFFECTS_BY_KEY
 import org.easypaper.model.MedicationsWidget
 import org.easypaper.model.QuestionKind
 import org.easypaper.model.QuestionnaireWidget
@@ -50,6 +52,7 @@ fun CareRequest.check(entry: Entry): List<EntryProblem> {
         is DiaryNote -> widget is DiaryWidget
         is DoctorQuestion -> widget is DoctorQuestionsWidget
         is Measurement -> widget is MeasurementsWidget
+        is SideEffectCheck -> widget is MedicationsWidget
     }
     if (!fits) return listOf(EntryProblem.WRONG_WIDGET_TYPE)
     return p.problems(widget as? QuestionnaireWidget)
@@ -74,6 +77,14 @@ fun EntryPayload.problems(questionnaire: QuestionnaireWidget? = null): List<Entr
             is DiaryNote -> if (p.text.isBlank() && p.photoRef == null) add(EntryProblem.EMPTY_TEXT)
             is DoctorQuestion -> if (p.text.isBlank()) add(EntryProblem.EMPTY_TEXT)
             is Medication -> if (p.name.isBlank()) add(EntryProblem.EMPTY_MEDICATION_NAME)
+            is SideEffectCheck -> {
+                if (p.medication.isBlank()) add(EntryProblem.EMPTY_MEDICATION_NAME)
+                if (p.answers.isEmpty()) add(EntryProblem.BAD_ANSWER)
+                for ((key, value) in p.answers) {
+                    if (key !in SIDE_EFFECTS_BY_KEY) add(EntryProblem.UNKNOWN_QUESTION)
+                    else if (value != "yes" && value != "no") add(EntryProblem.BAD_ANSWER)
+                }
+            }
             is Measurement -> {
                 if (p.name.isBlank()) add(EntryProblem.EMPTY_MEASUREMENT_NAME)
                 val limit = if (p.loinc == Measurement.WEIGHT_LOINC) WEIGHT_KG else ANY_MEASUREMENT

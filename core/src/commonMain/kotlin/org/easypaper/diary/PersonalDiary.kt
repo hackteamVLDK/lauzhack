@@ -16,6 +16,7 @@ import org.easypaper.model.FoodWidget
 import org.easypaper.model.Measurement
 import org.easypaper.model.MeasurementsWidget
 import org.easypaper.model.Medication
+import org.easypaper.model.SideEffectCheck
 import org.easypaper.model.MedicationsWidget
 import org.easypaper.model.PatientRecord
 import org.easypaper.model.QuestionnaireWidget
@@ -38,6 +39,7 @@ fun EntryPayload.category(): EntryCategory = when (this) {
     is DiaryNote -> EntryCategory.DIARY
     is DoctorQuestion -> EntryCategory.QUESTIONS
     is Measurement -> EntryCategory.MEASUREMENTS
+    is SideEffectCheck -> EntryCategory.MEDICINES
 }
 
 fun WidgetSpec.category(): EntryCategory = when (this) {

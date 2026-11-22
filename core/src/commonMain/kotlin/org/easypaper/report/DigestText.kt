@@ -1,5 +1,7 @@
 package org.easypaper.report
 
+import org.easypaper.scan.SIDE_EFFECTS_BY_KEY
+
 /** Facts for display without AI. Only labels are translated; patient text and references stay verbatim. */
 fun FactDigest.toLocalizedText(language: String): String {
     if (language !in listOf("de", "uk", "fr", "ru")) return toText()
@@ -52,5 +54,13 @@ fun FactDigest.toLocalizedText(language: String): String {
         }
         // the name is the person's own word (or the app's preset in their language); only the frame is translated
         for (m in measurements) appendLine("${m.name} (${m.unit}): " + m.values.joinToString("; ") { "${it.date} ${it.value} [${it.ref}]" })
+        for (f in sideEffects) {
+            val name = SIDE_EFFECTS_BY_KEY[f.key]?.name(language) ?: f.key
+            fun answer(v: String) = when (v) { "yes" -> label("ja", "так", "oui", "да"); "no" -> label("nein", "ні", "non", "нет"); else -> v }
+            appendLine(
+                "${label("Nebenwirkung gefragt", "Побічна дія, запитано", "Effet indésirable demandé", "Побочный эффект, спрошено")} (${f.medication}), $name: " +
+                    f.answers.joinToString("; ") { "${it.date} ${answer(it.value)} [${it.ref}]" },
+            )
+        }
     }.trimEnd()
 }

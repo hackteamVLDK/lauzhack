@@ -80,3 +80,28 @@ class MedicationsModelTest {
         assertEquals(null, list().last().dose)
     }
 }
+
+class SideEffectQuestionsTest {
+    @Test
+    fun confirmedMedicinesWithLeafletDataGetThreeQuestionsOnceADay() = kotlinx.coroutines.test.runTest {
+        val repo = inMemoryPatientRepository()
+        repo.start(Demo.request)
+        val id = Demo.request.id
+        val day = LocalDate(2026, 11, 21)
+        val at = Demo.record.entries.maxOf { it.at }
+        val db = MedicationDb()
+        // the demo: DOLO SPEDIFEN (ibuprofen) confirmed, PANTOPRAZOL scanned but not confirmed
+        for (e in Demo.record.entries.filter { it.widgetId == "m" }) repo.add(id, e)
+        fun questions() = repo.records.value.single().let { r -> sideEffectQuestions(r, "m", medicinesFor(r, "m", day, TimeZone.UTC), db, day, TimeZone.UTC) }
+
+        val q = questions().single()
+        assertEquals("7680567200025", q.item.code)
+        assertEquals(listOf("stomach_pain", "heartburn", "nausea"), q.effects.map { it.key })
+        assertFalse(q.answeredToday)
+
+        assertEquals(emptyList(), repo.saveSideEffects(id, "m", q.item, mapOf("stomach_pain" to true, "heartburn" to false, "nausea" to false), at))
+        assertTrue(questions().single().answeredToday)
+        val saved = repo.records.value.single().entries.last().payload as org.easypaper.model.SideEffectCheck
+        assertEquals(mapOf("stomach_pain" to "yes", "heartburn" to "no", "nausea" to "no"), saved.answers)
+    }
+}

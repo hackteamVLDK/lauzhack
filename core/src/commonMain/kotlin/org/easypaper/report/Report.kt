@@ -17,6 +17,8 @@ import org.easypaper.model.Entry
 import org.easypaper.model.Food
 import org.easypaper.model.Measurement
 import org.easypaper.model.Medication
+import org.easypaper.model.SideEffectCheck
+import org.easypaper.scan.SIDE_EFFECTS_BY_KEY
 import org.easypaper.model.PatientRecord
 import org.easypaper.model.Question
 import org.easypaper.model.QuestionKind
@@ -134,6 +136,15 @@ private fun Entry.toFhir(questions: Map<String, Question>): JsonObject = buildJs
         is Food -> observation(time, null, "Food intake") { p.text?.let { put("valueString", it) }; photo(p.photoRef) }
         is DiaryNote -> observation(time, null, "Patient diary note") { put("valueString", p.text); photo(p.photoRef) }
         is DoctorQuestion -> observation(time, null, "Question to the doctor") { put("valueString", p.text) }
+        // what the person noticed while taking a medicine: one yes/no component per side effect asked about
+        is SideEffectCheck -> observation(time, null, "Patient-reported side effects: " + p.medication) {
+            putJsonArray("component") {
+                for ((key, answer) in p.answers) addJsonObject {
+                    code(null, SIDE_EFFECTS_BY_KEY[key]?.en ?: key)
+                    put("valueBoolean", answer == "yes")
+                }
+            }
+        }
         // the person's own measurement; a known kind (weight) carries its LOINC code and a UCUM unit
         is Measurement -> observation(time, p.loinc, p.name) {
             putJsonObject("valueQuantity") {

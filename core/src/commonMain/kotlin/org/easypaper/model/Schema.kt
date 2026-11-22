@@ -183,6 +183,14 @@ data class DoctorQuestion(val text: String) : EntryPayload
  * A number the person measured themselves (#52): weight, waist, blood sugar from their own meter… [name] as they
  * call it, [unit] as written; [loinc] for a known kind (weight: 29463-7), so the report can code it.
  */
+/**
+ * The person's answers about side effects listed for a medicine they take (#53): side effect key -> "yes"/"no".
+ * Asked once a day for confirmed medicines; a record of what was noticed, never a judgement.
+ */
+@Serializable
+@SerialName("side_effects")
+data class SideEffectCheck(val medication: String, val gtin: String? = null, val answers: Map<String, String>) : EntryPayload
+
 @Serializable
 @SerialName("measurement")
 data class Measurement(val name: String, val value: Double, val unit: String, val loinc: String? = null) : EntryPayload {

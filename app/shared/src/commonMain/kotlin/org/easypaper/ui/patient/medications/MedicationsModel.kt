@@ -1,5 +1,9 @@
 package org.easypaper.ui.patient.medications
 
+import org.easypaper.scan.sideEffectsFor
+import org.easypaper.scan.SideEffect
+import org.easypaper.scan.MedicationDb
+import org.easypaper.model.SideEffectCheck
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -79,3 +83,22 @@ suspend fun PatientRepository.confirm(requestId: String, widgetId: String, item:
 /** "Taken now": one more intake of a confirmed medicine. */
 suspend fun PatientRepository.takeNow(requestId: String, widgetId: String, item: MedicineItem, at: Long): List<EntryProblem> =
     addMedication(requestId, widgetId, Medication(item.name, item.code, item.dose, item.source, confirmed = true), at)
+
+/** A confirmed medicine with the side effects its leaflet lists as common, and whether they were answered today (#53). */
+data class SideEffectQuestions(val item: MedicineItem, val effects: List<SideEffect>, val answeredToday: Boolean)
+
+@OptIn(ExperimentalTime::class)
+fun sideEffectQuestions(
+    record: PatientRecord, widgetId: String, items: List<MedicineItem>, db: MedicationDb, today: LocalDate, timeZone: TimeZone,
+): List<SideEffectQuestions> {
+    val answered = record.entries.filter { it.widgetId == widgetId && it.payload is SideEffectCheck }
+        .filter { Instant.fromEpochMilliseconds(it.at).toLocalDateTime(timeZone).date == today }
+        .map { (it.payload as SideEffectCheck).medication }.toSet()
+    return items.filter { !it.isDraft }.mapNotNull { item ->
+        db.sideEffectsFor(item.code).takeIf { it.isNotEmpty() }?.let { SideEffectQuestions(item, it, item.name in answered) }
+    }
+}
+
+/** Saves what the person noticed today: side effect key -> "yes"/"no". */
+suspend fun PatientRepository.saveSideEffects(requestId: String, widgetId: String, item: MedicineItem, answers: Map<String, Boolean>, at: Long) =
+    add(requestId, Entry(newEntryId(), widgetId, at, SideEffectCheck(item.name, item.code, answers.mapValues { if (it.value) "yes" else "no" })))

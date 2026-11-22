@@ -19,6 +19,8 @@ import org.easypaper.model.Entry
 import org.easypaper.model.Food
 import org.easypaper.model.Measurement
 import org.easypaper.model.Medication
+import org.easypaper.model.SideEffectCheck
+import org.easypaper.scan.SIDE_EFFECTS_BY_KEY
 import org.easypaper.model.QuestionnaireWidget
 import org.easypaper.model.Water
 import org.jetbrains.compose.resources.stringResource
@@ -37,6 +39,14 @@ fun entryText(entry: Entry, request: CareRequest?): String = when (val p = entry
     is Food -> withPhoto(p.text, p.photoRef)
     is DiaryNote -> withPhoto(p.text, p.photoRef)
     is DoctorQuestion -> p.text
+    is SideEffectCheck -> {
+        val yes = stringResource(Res.string.yes)
+        val no = stringResource(Res.string.no)
+        val language = androidx.compose.ui.text.intl.Locale.current.language
+        p.medication + ": " + p.answers.entries.joinToString(", ") { (key, answer) ->
+            (SIDE_EFFECTS_BY_KEY[key]?.name(language) ?: key) + " — " + if (answer == "yes") yes else no
+        }
+    }
     is Measurement -> "${p.name}: ${measurementNumber(p.value, decimalSeparator())} ${p.unit}"
     // The scanned package name often contains the strength already ("… 20 mg 15 Stk"): show the dose once.
     is Medication -> listOfNotNull(p.name, p.dose?.takeIf { it !in p.name }).joinToString(", ") +

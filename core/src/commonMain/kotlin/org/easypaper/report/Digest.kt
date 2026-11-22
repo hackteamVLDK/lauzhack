@@ -8,6 +8,8 @@ import org.easypaper.model.DoctorQuestion
 import org.easypaper.model.Food
 import org.easypaper.model.Measurement
 import org.easypaper.model.Medication
+import org.easypaper.model.SideEffectCheck
+import org.easypaper.scan.SIDE_EFFECTS_BY_KEY
 import org.easypaper.model.PatientRecord
 import org.easypaper.model.QuestionnaireWidget
 import org.easypaper.model.Water
@@ -33,7 +35,12 @@ data class FactDigest(
     val notes: List<NoteFact>,
     /** The person's own measurements (#52), one series per name and unit, e.g. weight in kg. */
     val measurements: List<MeasurementFact> = emptyList(),
+    /** Side effects asked about per medicine (#53): every answer with its day and entry. */
+    val sideEffects: List<SideEffectFact> = emptyList(),
 )
+
+@Serializable
+data class SideEffectFact(val medication: String, val key: String, val answers: List<DatedValue>)
 
 @Serializable
 data class MeasurementFact(val name: String, val unit: String, val values: List<DatedValue>)
@@ -120,9 +127,13 @@ fun PatientRecord.factDigest(utcOffsetMinutes: Int = 0): FactDigest {
             val first = list.first().payload as Measurement
             MeasurementFact(first.name.trim(), first.unit.trim(), list.map { DatedValue(day(it.at), number((it.payload as Measurement).value), it.id) })
         }
+    val sideEffects = sorted.filter { it.payload is SideEffectCheck }
+        .flatMap { e -> (e.payload as SideEffectCheck).let { c -> c.answers.map { (k, v) -> Triple(c.medication, k, DatedValue(day(e.at), v, e.id)) } } }
+        .groupBy({ it.first to it.second }, { it.third })
+        .map { (key, values) -> SideEffectFact(key.first, key.second, values) }
     return FactDigest(
         request.id, request.complaint, sorted.firstOrNull()?.let { day(it.at) }, sorted.lastOrNull()?.let { day(it.at) },
-        entries.size, bp, water, meds, questions, notes, measurements,
+        entries.size, bp, water, meds, questions, notes, measurements, sideEffects,
     )
 }
 
@@ -158,4 +169,8 @@ fun FactDigest.toText(): String = buildString {
         appendLine("$label ${n.date}: ${n.text ?: ""}$photo [${n.ref}]")
     }
     for (m in measurements) appendLine("${m.name} (${m.unit}): " + m.values.joinToString("; ") { "${it.date} ${it.value} [${it.ref}]" })
+    for (f in sideEffects) {
+        val name = SIDE_EFFECTS_BY_KEY[f.key]?.en ?: f.key
+        appendLine("Side effect asked (${f.medication}), $name: " + f.answers.joinToString("; ") { "${it.date} ${it.value} [${it.ref}]" })
+    }
 }.trimEnd()

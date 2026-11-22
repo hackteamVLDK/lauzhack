@@ -8,6 +8,7 @@ import org.easypaper.model.Entry
 import org.easypaper.model.Food
 import org.easypaper.model.Measurement
 import org.easypaper.model.Medication
+import org.easypaper.model.SideEffectCheck
 import org.easypaper.model.PatientRecord
 import org.easypaper.model.Water
 import kotlin.time.ExperimentalTime
@@ -49,6 +50,9 @@ private fun Entry.cells(): List<Map<String, String>> = when (val p = payload) {
         ),
     )
     is Answers -> p.values.map { (q, a) -> mapOf("type" to "answers", "question_id" to q, "answer" to a) }
+    is SideEffectCheck -> p.answers.map { (key, answer) ->
+        mapOf("type" to "side_effect", "medication" to p.medication, "gtin" to (p.gtin ?: ""), "question_id" to key, "answer" to answer)
+    }
     is Measurement -> listOf(
         mapOf("type" to "measurement", "measurement" to p.name, "value" to "${p.value}", "unit" to p.unit, "loinc" to (p.loinc ?: "")),
     )
