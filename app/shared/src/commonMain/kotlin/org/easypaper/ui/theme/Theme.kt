@@ -39,6 +39,17 @@ data class EasyPaperSpacing(
     val prominentButtonHeight: Dp = 50.dp,
     val sidebarWidth: Dp = 260.dp,     // doctor app
     val contentMaxWidth: Dp = 720.dp,  // doctor content column
+    val patientMaxWidth: Dp = 520.dp,
+    val categoryCardWidth: Dp = 156.dp,
+    val categoryCardMinHeight: Dp = 176.dp,
+    val widgetMinHeight: Dp = 208.dp,
+    val collageTall: Dp = 164.dp,
+    val collageShort: Dp = 120.dp,
+    val heroIcon: Dp = 64.dp,
+    val emptyAddSize: Dp = 80.dp,
+    val floatingBarMaxWidth: Dp = 440.dp,
+    val floatingBarShadow: Dp = 6.dp,
+    val glyphStroke: Dp = 2.dp,
 )
 
 private val LocalColors = staticCompositionLocalOf { LightColors }

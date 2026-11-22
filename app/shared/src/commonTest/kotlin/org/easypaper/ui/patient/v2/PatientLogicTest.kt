@@ -6,6 +6,7 @@ import kotlinx.datetime.TimeZone
 import org.easypaper.model.*
 import org.easypaper.ui.components.category
 import org.easypaper.ui.shell.inMemoryPatientRepository
+import org.easypaper.ui.shell.SavedSetting
 import org.easypaper.ui.theme.Category
 import kotlin.test.*
 import kotlin.time.Instant
@@ -17,6 +18,49 @@ class PatientLogicTest {
     private fun request() = personalRequest(today, "uk", 123L, titles)
     private fun entry(id: String, category: Category, at: String, payload: EntryPayload) =
         Entry(id, request().widgets.first { it.category == category }.id, Instant.parse(at).toEpochMilliseconds(), payload)
+
+    private fun patientSettings(pinned: SavedSetting = SavedSetting(null) {}): PatientSettings {
+        val empty = { SavedSetting(null) {} }
+        return PatientSettings(empty(), empty(), pinned, empty(), empty(), empty(), empty(), empty(), empty(), empty(), empty())
+    }
+
+    @Test
+    fun summaryStartsEmptyAndWidgetsPersistInTheChosenOrder() {
+        var persisted: String? = null
+        val settings = patientSettings(SavedSetting(null) { persisted = it })
+        assertTrue(settings.pinnedCategories.isEmpty())
+        assertNull(persisted)
+        settings.addWidget(Category.Water)
+        settings.addWidget(Category.BloodPressure)
+        settings.addWidget(Category.Measurements)
+        settings.addWidget(Category.Water) // duplicate additions must not move a widget
+        assertEquals("Water,BloodPressure,Measurements", persisted)
+        settings.moveWidget(Category.Measurements, -1)
+        assertEquals("Water,Measurements,BloodPressure", persisted)
+        settings.moveWidget(Category.Water, 1)
+        assertEquals("Measurements,Water,BloodPressure", persisted)
+        settings.moveWidget(Category.Measurements, -1) // first cannot move left
+        settings.moveWidget(Category.BloodPressure, 1) // last cannot move right
+        settings.moveWidget(Category.Food, 1) // an absent widget cannot move
+        assertEquals("Measurements,Water,BloodPressure", persisted)
+        settings.removeWidget(Category.Water)
+        assertEquals("Measurements,BloodPressure", persisted)
+        val restored = patientSettings(SavedSetting(persisted) {})
+        assertEquals(listOf(Category.Measurements, Category.BloodPressure), restored.pinnedCategories)
+        restored.removeWidget(Category.Measurements)
+        restored.removeWidget(Category.BloodPressure)
+        assertEquals("", restored.pinned.value)
+        assertTrue(patientSettings(SavedSetting(restored.pinned.value) {}).pinnedCategories.isEmpty())
+        settings.reset()
+        assertNull(persisted)
+        assertTrue(settings.pinnedCategories.isEmpty())
+    }
+
+    @Test
+    fun pinnedRestoresLegacyOrderAndIgnoresUnknownOrDuplicateCategories() {
+        val restored = patientSettings(SavedSetting("Food,Unknown,Water,Food,Measurements") {})
+        assertEquals(listOf(Category.Food, Category.Water, Category.Measurements), restored.pinnedCategories)
+    }
 
     @Test
     fun personalRequestHasOneOptionalWidgetPerCategoryAndNoDoctor() {

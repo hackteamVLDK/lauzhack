@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.intl.Locale
 import easypaper.app.shared.generated.resources.*
 import kotlinx.coroutines.CancellationException
@@ -93,7 +96,7 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
     }
 
     if (!completed) {
-        Onboarding(patient, today, finishing, failed) { invite ->
+        Onboarding(patient, finishing, failed) { invite ->
             finishing = true; failed = false
             scope.launch {
                 try {
@@ -134,10 +137,13 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
         }
     }
 
+    val spacing = EasyPaperTheme.spacing
+    val density = LocalDensity.current
+    var tabBarHeight by remember { mutableStateOf(spacing.rowMinHeight + spacing.xxl * 2) }
     Box(Modifier.fillMaxSize().background(EasyPaperTheme.colors.background)) {
-        Column(Modifier.fillMaxSize()) {
+        Box(Modifier.fillMaxSize().padding(bottom = tabBarHeight)) {
             key(tab) {
-                PushNavigation(navigator.stack, Modifier.weight(1f).fillMaxWidth()) { screen ->
+                PushNavigation(navigator.stack, Modifier.fillMaxSize()) { screen ->
                     when (screen) {
                         PatientScreen.Summary -> SummaryTab(records, patient, today, timeZone, openProfile, openDeveloper,
                             { navigator.push(PatientScreen.Plan(it)) }, openCategory, { addCategory(it, true) },
@@ -186,17 +192,18 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
                     }
                 }
             }
-            TabBar(listOf(TabItem(stringResource(Res.string.p2_summary), Res.drawable.ic_calendar_today),
-                TabItem(stringResource(Res.string.p2_sharing), Res.drawable.ic_qr_code_2),
-                TabItem(stringResource(Res.string.p2_browse), Res.drawable.ic_checklist)), tab,
-                { index -> if (index == tab) navigators[index].popToRoot() else tab = index })
         }
+        FloatingTabBar(listOf(TabItem(stringResource(Res.string.p2_summary), Res.drawable.ic_calendar_today),
+            TabItem(stringResource(Res.string.p2_sharing), Res.drawable.ic_qr_code_2),
+            TabItem(stringResource(Res.string.p2_browse), Res.drawable.ic_checklist)), tab,
+            { index -> if (index == tab) navigators[index].popToRoot() else tab = index },
+            Modifier.align(Alignment.BottomCenter).onSizeChanged { size ->
+                tabBarHeight = with(density) { size.height.toDp() }
+            })
         PatientEntrySheet(state, records, navigator)
         ProfileSheet(navigator.sheet == PatientScreen.Profile, patient, state.repository, today, navigator::dismissSheet,
             onDeleted = { navigators.forEach { it.popToRoot() }; tab = 0; selection = null })
-        Sheet(navigator.sheet == PatientScreen.Pinned, stringResource(Res.string.p2_edit_pinned), stringResource(Res.string.p2_done), navigator::dismissSheet) {
-            CategorySwitches(patient.pinnedCategories, patient::pin)
-        }
+        WidgetGallery(navigator.sheet == PatientScreen.Pinned, patient, navigator::dismissSheet)
         Sheet(navigator.sheet == PatientScreen.OpenInvite, stringResource(Res.string.p2_add_request), stringResource(Res.string.p2_cancel),
             { state.pendingInvite = null; navigator.dismissSheet() }) {
             OpenInviteForm(state.pendingInvite) { request ->

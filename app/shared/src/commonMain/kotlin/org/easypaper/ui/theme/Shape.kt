@@ -89,6 +89,7 @@ data class EasyPaperShapes(
     val capsule: Shape = RoundedCornerShape(50),          // buttons in a row, badges, steppers
     val sheet: Shape = ContinuousRoundedShape(16.dp, bottom = false),
     val small: Shape = ContinuousRoundedShape(6.dp),      // thumbnails, source links
+    val widget: Shape = ContinuousRoundedShape(24.dp),    // pastel widgets and onboarding collage
 )
 
 /** Stock Material components need corner-based shapes; same radii, circular arcs. */

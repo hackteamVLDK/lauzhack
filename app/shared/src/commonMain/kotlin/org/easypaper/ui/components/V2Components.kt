@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,6 +45,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
@@ -69,14 +71,20 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-/** iOS capsule, 32 dp visually at the default font size, with separate 48 dp tab targets. */
+/**
+ * iOS capsule, 32 dp visually at the default font size, with separate 48 dp tab targets.
+ * [descriptions] are spoken instead of short labels ("W" -> "Week"); [role] is Tab for a view
+ * switch (period) and RadioButton when the control answers a question.
+ */
 @Composable
 fun SegmentedControl(
     options: List<String>,
     selected: Int,
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
-) = V2SegmentedControl(options, selected, onSelect, modifier)
+    descriptions: List<String>? = null,
+    role: Role = Role.Tab,
+) = V2SegmentedControl(options, selected, onSelect, modifier, descriptions, role)
 
 /** Nullable selection also supports existing forms whose question has not been answered yet. */
 @Composable
@@ -85,6 +93,8 @@ internal fun V2SegmentedControl(
     selected: Int?,
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    descriptions: List<String>? = null,
+    role: Role = Role.Tab,
 ) {
     if (options.isEmpty()) return
     val colors = EasyPaperTheme.colors
@@ -92,10 +102,13 @@ internal fun V2SegmentedControl(
     val shape = EasyPaperTheme.shapes.capsule
     val motion = EasyPaperTheme.motion
     val selectedIndex = segmentSelection(options.size, selected)
+    // In dark mode fill and cellRaised are the same grey and a shadow is invisible, so the thumb
+    // is a lighter grey there (like UISegmentedControl's dark thumb); light keeps the white card.
+    val thumb = segmentThumb(colors)
     Box(modifier.fillMaxWidth()) {
         // The vertical inset reserves touch space outside the visible track. As labels grow,
         // the row and track grow together, rather than clipping Dynamic Type text.
-        BoxWithConstraints(Modifier.matchParentSize().padding(vertical = SEGMENT_TOUCH_INSET)) {
+        BoxWithConstraints(Modifier.matchParentSize().padding(vertical = spacing.xs)) {
             val segmentWidth = maxWidth / options.size
             Box(Modifier.fillMaxSize().background(colors.fill, shape))
             if (selectedIndex != null) {
@@ -109,24 +122,26 @@ internal fun V2SegmentedControl(
                     Modifier.offset(x = segmentWidth * position).width(segmentWidth)
                         .fillMaxSize().padding(SEGMENT_INSET)
                         .shadow(SEGMENT_SHADOW, shape, ambientColor = colors.scrim, spotColor = colors.scrim)
-                        .background(colors.cellRaised, shape),
+                        .background(thumb, shape),
                 )
             }
         }
         Row(Modifier.fillMaxWidth().selectableGroup()) {
             options.forEachIndexed { index, option ->
                 val isSelected = index == selectedIndex
+                val description = descriptions?.getOrNull(index)
                 Box(
                     Modifier.weight(1f).minimumInteractiveComponentSize().heightIn(min = spacing.rowMinHeight)
                         .clip(shape)
                         .selectable(
-                            selected = isSelected, role = Role.Tab,
+                            selected = isSelected, role = role,
                             interactionSource = remember { MutableInteractionSource() },
                             indication = LocalIndication.current,
                             onClick = { onSelect(index) },
                         )
+                        .then(if (description != null) Modifier.semantics { contentDescription = description } else Modifier)
                         .heightIn(min = SEGMENT_HEIGHT)
-                        .padding(horizontal = spacing.xs, vertical = SEGMENT_TOUCH_INSET),
+                        .padding(horizontal = spacing.xs, vertical = spacing.xs),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -140,6 +155,10 @@ internal fun V2SegmentedControl(
         }
     }
 }
+
+/** Selected segment: the raised white cell in light mode, a lighter grey than the track in dark. */
+internal fun segmentThumb(colors: org.easypaper.ui.theme.EasyPaperColors): androidx.compose.ui.graphics.Color =
+    if (colors.isDark) colors.label.copy(alpha = 0.35f).compositeOver(colors.fill) else colors.cellRaised
 
 /** An invalid or missing index means no selection, including an empty options list. */
 internal fun segmentSelection(optionCount: Int, selected: Int?): Int? =
@@ -307,9 +326,80 @@ fun AvatarButton(initials: String, onClick: () -> Unit, modifier: Modifier = Mod
     ) {
         Box(Modifier.size(AVATAR_SIZE).background(colors.fill, EasyPaperTheme.shapes.capsule),
             contentAlignment = Alignment.Center) {
-            Text(initials, style = EasyPaperTheme.typography.caption1.copy(fontWeight = FontWeight.SemiBold),
-                color = colors.label, modifier = Modifier.clearAndSetSemantics {})
+            if (initials.isNotBlank()) {
+                Text(initials, style = EasyPaperTheme.typography.caption1.copy(fontWeight = FontWeight.SemiBold),
+                    color = colors.label, modifier = Modifier.clearAndSetSemantics {})
+            } else {
+                val spacing = EasyPaperTheme.spacing
+                Canvas(Modifier.size(spacing.rowIcon)) {
+                    val stroke = Stroke(spacing.glyphStroke.toPx(), cap = StrokeCap.Round)
+                    drawCircle(colors.label, size.minDimension * 0.16f,
+                        Offset(size.width * 0.5f, size.height * 0.25f), style = stroke)
+                    drawArc(colors.label, 180f, 180f, false,
+                        topLeft = Offset(size.width * 0.15f, size.height * 0.52f),
+                        size = Size(size.width * 0.7f, size.height * 0.65f), style = stroke)
+                }
+            }
         }
+    }
+}
+
+/** Floating capsule. The shell measures its full height to reserve space, including Dynamic Type. */
+@Composable
+fun FloatingTabBar(items: List<TabItem>, selected: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
+    val colors = EasyPaperTheme.colors
+    val spacing = EasyPaperTheme.spacing
+    val shape = EasyPaperTheme.shapes.capsule
+    Box(modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars)
+        .padding(horizontal = spacing.screenMargin, vertical = spacing.s), contentAlignment = Alignment.Center) {
+        Row(Modifier.widthIn(max = spacing.floatingBarMaxWidth).fillMaxWidth()
+            .shadow(spacing.floatingBarShadow, shape, ambientColor = colors.scrim, spotColor = colors.scrim)
+            .background(colors.cellRaised, shape).padding(spacing.xxs).selectableGroup()) {
+            items.forEachIndexed { index, item ->
+                val isSelected = index == selected
+                val foreground = if (isSelected) colors.onTint else colors.label
+                Column(Modifier.weight(1f).clip(shape)
+                    .background(if (isSelected) colors.tint else colors.cellRaised)
+                    .selectable(isSelected, role = Role.Tab, onClick = { onSelect(index) })
+                    .heightIn(min = spacing.rowMinHeight).padding(horizontal = spacing.xxs, vertical = spacing.xs),
+                    horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacing.xxs)) {
+                    Icon(painterResource(item.icon), null, Modifier.size(spacing.rowIcon), tint = foreground)
+                    Text(item.label, style = EasyPaperTheme.typography.caption1, color = foreground, textAlign = TextAlign.Center)
+                }
+            }
+        }
+    }
+}
+
+/** Large, wrapping capsule label; disabled account options retain readable text and explicit status. */
+@Composable
+fun CapsuleButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier,
+                  prominent: Boolean = false, enabled: Boolean = true, badge: String? = null) {
+    val colors = EasyPaperTheme.colors
+    val spacing = EasyPaperTheme.spacing
+    Column(modifier.fillMaxWidth().clip(EasyPaperTheme.shapes.capsule)
+        .background(if (prominent) colors.tint else colors.fill)
+        .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+        .semantics(mergeDescendants = true) { if (!enabled) disabled() }
+        .heightIn(min = spacing.prominentButtonHeight).padding(horizontal = spacing.l, vertical = spacing.s),
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacing.xxs)) {
+        val foreground = if (prominent) colors.onTint else colors.label
+        Text(text, style = EasyPaperTheme.typography.headline, color = foreground, textAlign = TextAlign.Center)
+        if (badge != null) Text(badge, style = EasyPaperTheme.typography.footnote, color = foreground)
+    }
+}
+
+@Composable
+fun RoundIconButton(icon: DrawableResource, label: String, onClick: () -> Unit,
+                    modifier: Modifier = Modifier, large: Boolean = false, enabled: Boolean = true) {
+    val spacing = EasyPaperTheme.spacing
+    val colors = EasyPaperTheme.colors
+    Box(modifier.size(if (large) spacing.emptyAddSize else spacing.rowMinHeight)
+        .clip(EasyPaperTheme.shapes.capsule).background(colors.cellRaised)
+        .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+        .semantics { contentDescription = label; if (!enabled) disabled() }, contentAlignment = Alignment.Center) {
+        Icon(painterResource(icon), null, Modifier.size(if (large) spacing.xxl else spacing.rowIcon),
+            tint = if (enabled) colors.link else colors.secondaryLabel)
     }
 }
 
@@ -368,7 +458,6 @@ fun OnboardingPage(
 }
 
 private val SEGMENT_HEIGHT = 32.dp
-private val SEGMENT_TOUCH_INSET = 8.dp
 private val SEGMENT_INSET = 2.dp
 private val SEGMENT_SHADOW = 2.dp
 private val SEARCH_STROKE = 2.dp

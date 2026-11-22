@@ -5,6 +5,10 @@ import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.runComposeUiTest
@@ -19,6 +23,8 @@ import org.easypaper.ui.patient.v2.PatientSettings
 import java.util.Locale
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /** Taps through the real patient screens on the desktop target (English strings). */
 @OptIn(ExperimentalTestApi::class)
@@ -66,11 +72,57 @@ class PatientScreensUiTest {
         val patient = settingsWithoutOnboarding()
         setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
 
+        waitForText("Browse")
+        onNodeWithText("Browse").performClick()
         waitForText("Medicines")
         onNode(hasScrollAction()).performScrollToNode(hasText("Medicines"))
         onNodeWithText("Medicines").performClick()
         waitForText("Add Data")
         onNodeWithText("Add Data").performClick()
         waitForText("Type it in") // only the medicines screen of task 31 has this action
+    }
+
+    @Test
+    fun onboardingCreatesLocalProfileAndLeavesSummaryEmpty() = runComposeUiTest {
+        val state = ShellState(Role.Patient)
+        val settings = ShellSettings(dark = false)
+        val patient = settingsWithoutOnboarding().also { it.onboarding.update(null) }
+        setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
+        waitForText("Your health diary")
+        onNode(hasScrollAction()).performScrollToNode(hasText("Get started"))
+        onNodeWithText("Get started").performClick()
+        waitForText("Welcome")
+        onNodeWithText("Continue with Google").assertIsNotEnabled()
+        onNodeWithText("Continue with email").assertIsNotEnabled()
+        onNodeWithText("Continue").performClick()
+        waitForText("Privacy & data")
+        onNode(hasScrollAction()).performScrollToNode(hasText("Continue"))
+        onNodeWithText("Continue").performClick()
+        waitForText("What do you want to track?")
+        assertEquals("true", patient.onboarding.value)
+        assertTrue(patient.pinnedCategories.isEmpty())
+        assertEquals(null, patient.pinned.value)
+        assertTrue(state.repository.records.value.all { it.entries.isEmpty() })
+        onNodeWithText("Hi").assertExists()
+    }
+
+    @Test
+    fun galleryAddsAWidgetAndEditingRemovesIt() = runComposeUiTest {
+        val state = ShellState(Role.Patient)
+        val settings = ShellSettings(dark = false)
+        val patient = settingsWithoutOnboarding()
+        setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
+        waitForText("What do you want to track?")
+        onAllNodes(hasContentDescription("Add widgets")).onFirst().performClick()
+        waitForText("Choose a category to add it to Summary.")
+        onNodeWithText("Water").performClick()
+        waitForText("Your widgets")
+        assertEquals("Water", patient.pinned.value)
+        onAllNodes(hasScrollAction()).onFirst().performScrollToNode(hasText("Edit"))
+        onNodeWithText("Edit").performClick()
+        onAllNodes(hasScrollAction()).onFirst().performScrollToNode(hasContentDescription("Remove Water widget"))
+        onNodeWithContentDescription("Remove Water widget").performClick()
+        waitForText("What do you want to track?")
+        assertEquals("", patient.pinned.value)
     }
 }

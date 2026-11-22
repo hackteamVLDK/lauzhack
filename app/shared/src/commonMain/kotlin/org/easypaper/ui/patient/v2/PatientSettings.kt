@@ -23,10 +23,21 @@ class PatientSettings(
     val height: SavedSetting, val weight: SavedSetting, val allergies: SavedSetting,
     val reminders: SavedSetting, val history: SavedSetting,
 ) {
-    val pinnedCategories: Set<Category> get() = pinned.value?.split(',')?.mapNotNull { name ->
+    val pinnedCategories: List<Category> get() = pinned.value?.split(',')?.mapNotNull { name ->
         Category.entries.firstOrNull { it.name == name }
-    }?.toSet() ?: defaultPinned
-    fun pin(categories: Set<Category>) = pinned.update(categories.joinToString(",") { it.name })
+    }?.distinct() ?: defaultPinned
+    fun pin(categories: Collection<Category>) = pinned.update(categories.distinct().joinToString(",") { it.name })
+    fun addWidget(category: Category) = pin(pinnedCategories + category)
+    fun removeWidget(category: Category) = pin(pinnedCategories - category)
+    fun moveWidget(category: Category, offset: Int) {
+        val ordered = pinnedCategories.toMutableList()
+        val from = ordered.indexOf(category)
+        val to = from + offset
+        if (from >= 0 && to in ordered.indices) {
+            ordered.add(to, ordered.removeAt(from))
+            pin(ordered)
+        }
+    }
     fun reset() {
         listOf(onboarding, language, pinned, name, birth, sex, height, weight, allergies, reminders, history)
             .forEach { it.update(null) }

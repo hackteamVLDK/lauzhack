@@ -61,6 +61,10 @@ import easypaper.app.shared.generated.resources.v2_period_day
 import easypaper.app.shared.generated.resources.v2_period_week
 import easypaper.app.shared.generated.resources.v2_period_month
 import easypaper.app.shared.generated.resources.v2_period_half_year
+import easypaper.app.shared.generated.resources.p2_period_day_full
+import easypaper.app.shared.generated.resources.p2_period_week_full
+import easypaper.app.shared.generated.resources.p2_period_month_full
+import easypaper.app.shared.generated.resources.p2_period_six_full
 import easypaper.app.shared.generated.resources.v2_show_options
 import easypaper.app.shared.generated.resources.v2_options_title
 import easypaper.app.shared.generated.resources.v2_option_qr
@@ -322,6 +326,10 @@ private fun V2CatalogSection(onShowOptions: () -> Unit, onShowOnboarding: () -> 
                     stringResource(Res.string.v2_period_month), stringResource(Res.string.v2_period_half_year),
                 ),
                 selected = selected, onSelect = { selected = it },
+                descriptions = listOf(
+                    stringResource(Res.string.p2_period_day_full), stringResource(Res.string.p2_period_week_full),
+                    stringResource(Res.string.p2_period_month_full), stringResource(Res.string.p2_period_six_full),
+                ),
             )
             SearchField(query, { query = it }, stringResource(Res.string.v2_search_placeholder))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.m)) {

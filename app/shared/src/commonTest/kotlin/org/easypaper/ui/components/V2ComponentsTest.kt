@@ -2,6 +2,9 @@ package org.easypaper.ui.components
 
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.ic_qr_code_2
+import org.easypaper.ui.theme.DarkColors
+import org.easypaper.ui.theme.LightColors
+import org.easypaper.ui.theme.contrastRatio
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -51,5 +54,15 @@ class V2ComponentsTest {
         assertEquals(1, calls)
         assertTrue(option.performClick())
         assertEquals(2, calls)
+    }
+
+    @Test
+    fun selectedSegmentIsVisibleInBothThemesAndKeepsItsLabelReadable() {
+        for (colors in listOf(LightColors, DarkColors)) {
+            val thumb = segmentThumb(colors)
+            assertTrue(contrastRatio(colors.label, thumb) >= 4.5f, "label on thumb, dark=${colors.isDark}")
+        }
+        // dark: fill and cellRaised are the same grey, so the thumb must stand out from the track itself
+        assertTrue(contrastRatio(segmentThumb(DarkColors), DarkColors.fill) >= 3f, "dark thumb vs track")
     }
 }

@@ -25,6 +25,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 /** Task 5 criterion: the patient opens the invite and sees exactly the widgets the doctor chose. */
 @OptIn(ExperimentalTestApi::class)
@@ -63,7 +64,8 @@ class InviteFlowUiTest {
             val patient = org.easypaper.ui.patient.v2.PatientSettings(setting("true"), setting("en"), setting(), setting(),
                 setting(), setting(), setting(), setting(), setting(), setting(), setting())
             setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
-            waitForText("Sharing")
+            waitForText("What do you want to track?")
+            assertTrue(patient.pinnedCategories.isEmpty())
             onNodeWithText("Sharing").performClick()
             waitForText("Add a request from a doctor")
             onNodeWithText("Add a request from a doctor").performClick()
@@ -76,6 +78,8 @@ class InviteFlowUiTest {
             // the plan from Dr. Weber opens its checklist with exactly the requested widgets
             onNodeWithText("Summary").performClick()
             waitForText("Dr. Weber")
+            // A doctor's plan comes first without silently pinning its categories as personal widgets.
+            assertTrue(patient.pinnedCategories.isEmpty())
             onAllNodesWithText("Dr. Weber", substring = true).onFirst().performClick()
             for (widget in request.widgets) {
                 onNode(hasScrollAction()).performScrollToNode(hasText(widget.title))

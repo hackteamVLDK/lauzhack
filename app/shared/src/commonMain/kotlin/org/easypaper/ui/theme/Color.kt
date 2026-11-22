@@ -65,7 +65,7 @@ val DarkColors = EasyPaperColors(
     selectedRowBackground = Color(0xFF0066CC),
     selectedRowLabel = Color(0xFFFFFFFF),
     scrim = Color(0x66000000),
-    tint = Color(0xFF0A84FF),
+    tint = Color(0xFF0070E0), // white caption labels on the floating tabs also need 4.5:1
     link = Color(0xFF409CFF),
     onTint = Color(0xFFFFFFFF),
     confirmed = Color(0xFF30DB5B),
@@ -78,18 +78,25 @@ val DarkColors = EasyPaperColors(
 /**
  * Kinds of patient data, colored like Apple Health. [tile] is only the background of the 29 dp icon
  * tile (white glyph); the category name as text uses [text], darker in light mode for contrast.
+ * Large widget surfaces use [soft] with [softText] in both themes.
  */
-enum class Category(val tile: Color, private val textLight: Color, private val textDark: Color) {
-    BloodPressure(Color(0xFFFF2D55), Color(0xFFC9184A), Color(0xFFFF6482)),
-    Water(Color(0xFF00C0E8), Color(0xFF00739C), Color(0xFF5CD7F5)),
-    Food(Color(0xFF34C759), Color(0xFF1F7A35), Color(0xFF30DB5B)),
-    Medicines(Color(0xFF00C3D0), Color(0xFF00727A), Color(0xFF40DCE6)),
-    Questionnaire(Color(0xFF6155F5), Color(0xFF5E5CE6), Color(0xFF9391FF)),
-    Diary(Color(0xFFFF8D28), Color(0xFFB25000), Color(0xFFFFB340)),
-    DoctorQuestion(Color(0xFF8E8E93), Color(0xFF6C6C70), Color(0xFF98989F)),
-    Measurements(Color(0xFFAF52DE), Color(0xFF8944AB), Color(0xFFDA8FFF)); // systemPurple, as Body Measurements in Health
+enum class Category(val tile: Color, private val textLight: Color, private val textDark: Color,
+                    private val softLight: Color, private val softDark: Color) {
+    BloodPressure(Color(0xFFFF2D55), Color(0xFFC9184A), Color(0xFFFF6482), Color(0xFFFFDAD8), Color(0xFF3D252B)),
+    Water(Color(0xFF00C0E8), Color(0xFF00739C), Color(0xFF5CD7F5), Color(0xFFCEEDF3), Color(0xFF18343D)),
+    Food(Color(0xFF34C759), Color(0xFF1F7A35), Color(0xFF30DB5B), Color(0xFFDFEDD2), Color(0xFF263724)),
+    Medicines(Color(0xFF00C3D0), Color(0xFF00727A), Color(0xFF40DCE6), Color(0xFFCDEAE4), Color(0xFF1B3633)),
+    Questionnaire(Color(0xFF6155F5), Color(0xFF5E5CE6), Color(0xFF9391FF), Color(0xFFE2DFF7), Color(0xFF2D2942)),
+    Diary(Color(0xFFFF8D28), Color(0xFFB25000), Color(0xFFFFB340), Color(0xFFFFDFC1), Color(0xFF3D3023)),
+    DoctorQuestion(Color(0xFF8E8E93), Color(0xFF6C6C70), Color(0xFF98989F), Color(0xFFE4E7EB), Color(0xFF303338)),
+    Measurements(Color(0xFFAF52DE), Color(0xFF8944AB), Color(0xFFDA8FFF), Color(0xFFEEDDF2), Color(0xFF37293C));
 
     fun text(colors: EasyPaperColors): Color = if (colors.isDark) textDark else textLight
+
+    fun soft(colors: EasyPaperColors): Color = if (colors.isDark) softDark else softLight
+
+    /** Category accents are for white cells; pastel surfaces use the high-contrast primary label. */
+    fun softText(colors: EasyPaperColors): Color = colors.label
 }
 
 /** WCAG 2.1 contrast ratio of two opaque colors (1..21). */

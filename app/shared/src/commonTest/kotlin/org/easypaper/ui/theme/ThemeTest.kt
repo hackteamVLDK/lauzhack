@@ -46,10 +46,21 @@ class ThemeTest {
     }
 
     @Test
+    fun pastelWidgetTextMeetsWcagAaInBothThemes() {
+        for ((name, colors) in themes) {
+            Category.entries.forEach { category ->
+                assertContrast(4.5f, colors.label, category.soft(colors), "$name ${category.name} widget label")
+                assertContrast(4.5f, category.softText(colors), category.soft(colors), "$name ${category.name} widget text")
+                assertTrue(category.soft(LightColors) != category.soft(DarkColors))
+            }
+        }
+    }
+
+    @Test
     fun buttonLabelsOnTint() {
-        // Prominent button labels are 17 sp semibold (large text): 3:1 is the AA minimum, light reaches 4.5.
+        // Tint is also used by floating tabs with small white labels, so both themes need 4.5:1.
         assertContrast(4.5f, LightColors.onTint, LightColors.tint, "light onTint")
-        assertContrast(3f, DarkColors.onTint, DarkColors.tint, "dark onTint")
+        assertContrast(4.5f, DarkColors.onTint, DarkColors.tint, "dark onTint")
     }
 
     @Test

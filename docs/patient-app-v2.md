@@ -24,11 +24,13 @@ sharing is a deliberate action with options.
 
 ## Structure (phone)
 
-Bottom tab bar, three tabs like Health; the profile avatar sits top-right on every tab.
+Floating capsule tab bar: Summary / Sharing / Browse. The selected tab is a tint capsule with white
+text and icon. Content reserves the measured bar height, including safe area and large text.
+The profile avatar sits top-right; an unnamed profile shows a person glyph.
 
 | Tab | Purpose |
 |---|---|
-| **Summary** | Today at a glance: active doctor plans (progress), due reminders, pinned categories with latest value, highlights ("Pressure this week 128–142/82–90 mmHg") |
+| **Summary** | Ordered widgets with latest values and quick actions; an active doctor plan comes first. No widgets are pinned by default. |
 | **Browse** | All categories (search on top) -> category detail: chart, "Add Data", all entries |
 | **Sharing** | Doctor requests (active / finished), "Share with a doctor…", sharing history |
 
@@ -38,32 +40,22 @@ Account (optional: sign in with a passkey for backup — later), About.
 
 ## Screens
 
-Summary (first launch after onboarding, no doctor yet):
-```
-┌──────────────────────────────────────┐
-│ Summary                         (MT) │ large title, avatar -> profile
-│ ╭──────────────────────────────────╮ │
-│ │ ▣ Blood pressure          08:10 ›│ │ pinned categories, latest value
-│ │   128/84 mmHg                    │ │
-│ │ ▣ Water today       1.25 of 2 l  │ │ quick +250 ml right in the row
-│ ╰──────────────────────────────────╯ │
-│ Highlights                            │
-│ ╭──────────────────────────────────╮ │
-│ │ Pressure this week 128–142/82–90 │ │ facts, never advice
-│ ╰──────────────────────────────────╯ │
-│ [ Edit pinned ]                       │
-│   Summary      Sharing      Browse    │
-└──────────────────────────────────────┘
-```
+Summary:
 
-Summary with an active doctor request — the plan card comes first:
-```
-│ ╭──────────────────────────────────╮ │
-│ │ Dr. Weber · headache       Day 3/7│ │ progress ring/bar, due items
-│ │ Left today: evening pressure,    │ │
-│ │ how you feel                   › │ │ -> plan checklist for today
-│ ╰──────────────────────────────────╯ │
-```
+- Header: "Hi, <name>" (or "Hi"), a Large Title greeting for the local time of day, avatar and circular +.
+- Two large counters with separate labels: widgets, entries today (all records, local calendar day).
+- New profiles have no pinned widgets: "What do you want to track?" and a large circular +.
+- + opens the widget gallery: large pastel cards with outline icons and descriptions for every
+  `Category.entries` category, including Measurements. Tap to add; already added cards are marked.
+- Pinned widgets form an ordered two-column grid. Pressure and water use large numeric values;
+  other categories show the latest entry or "No data yet". Each has a quick Add Data action
+  (water: Add 250 ml); tapping the card opens the existing category detail.
+- Edit or long press enters editing: remove with minus, move left/right in reading order, then Done.
+  Removing a widget never deletes entries. The existing `p2_pinned` setting persists the ordered list;
+  old saved lists keep their order. A missing or empty setting means no widgets.
+- A horizontal strip of pastel category cards offers quick widget additions below the grid.
+- The active doctor plan is the first card above the widgets, when present; it never auto-pins categories.
+- New widgets appear with an EasyPaperMotion spring; Reduce Motion uses a fade.
 
 Browse:
 ```
@@ -125,14 +117,18 @@ Step 2 (share options sheet, like an action sheet):
 
 ## Onboarding (first launch, under a minute; HIG: Onboarding)
 
-1. **Welcome** — what Easy Paper does in three lines with icons (record, see trends, share with your doctor) -> Continue.
-2. **Language** — preselected from the system (EN/DE/UK).
-3. **About you** — name, date of birth, sex: all optional, "only on this phone and in what you share".
-4. **Privacy** — encrypted on the phone; nothing leaves without Share; delete everything any time.
-5. **Reminders** — explain before the system permission: "Allow reminders" / "Not now".
-6. **Choose what to track** — preselected common categories, pinned to Summary; "Have a request from your doctor?" -> scan/paste, or "Later".
+1. **Welcome** — four large rounded pastel tiles (pressure, water, food, medicines), bundled outline
+   icons only; "Your health diary", a short one-line subtitle and a Get started capsule.
+2. **Local profile / sign-in choice** — "Welcome", optional name, vertical capsules. Continue works
+   locally; Continue with Google and Continue with email are disabled with an explicit Soon label.
+   Privacy copy explains that an account is unnecessary and sharing is deliberate.
+3. **Privacy & reminders** — local encryption, explicit sharing, deletion; optional reminder preference
+   (system notifications are not enabled yet). Language follows the system and can be changed here
+   or in Profile. Continue creates the local diary and opens an empty Summary.
 
-No account step. Account = later, optional, from Profile (passkey; backup and second device).
+No category-selection step. Widgets are added from Summary. Birth date, sex and other health
+information remain optional in Profile. Invites opened during onboarding are presented afterwards.
+Account = later, optional, from Profile (passkey; backup and second device).
 
 ## What changes vs. today
 
@@ -146,8 +142,8 @@ No account step. Account = later, optional, from Profile (passkey; backup and se
 
 ## Proposed tasks (after approval)
 
-- **Onboarding + Profile** (welcome, language, about you, privacy, reminders, choose categories; profile sheet with health details, privacy & data, export, delete all) — pavlo.
-- **Summary + Browse + category detail** (pinned categories, highlights, plan card; category list with search; chart D/W/M/6M, Add Data, all data) — pavlo.
+- **Onboarding + Profile** (welcome collage, local profile, privacy/reminders; profile sheet with health details, privacy & data, export, delete all) — pavlo.
+- **Summary + Browse + category detail** (ordered widgets, gallery, plan card; category list with search; chart D/W/M/6M, Add Data, all data) — pavlo.
 - **Data independent of requests** (core: entries without a request, plans = requests on top, report = categories + period) — vlad.
 - **Sharing tab + share flow** (requests list, add request, "What to share" sheet, options sheet with QR; Bluetooth/file shown as "Later") — vlad.
 - **Account (later)**: passkey sign-in for backup — not for the demo.

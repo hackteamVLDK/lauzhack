@@ -174,10 +174,10 @@ fun TextAreaRow(value: String, onValueChange: (String) -> Unit, placeholder: Str
     )
 }
 
-/** Compatibility for form questions that can still have no answer. */
+/** A form answer (Yes/No, question kind) that can still be unanswered: read as radio buttons, not tabs. */
 @Composable
 fun SegmentedControl(options: List<String>, selected: Int?, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) =
-    V2SegmentedControl(options, selected, onSelect, modifier)
+    V2SegmentedControl(options, selected, onSelect, modifier, role = androidx.compose.ui.semantics.Role.RadioButton)
 
 /** A list of options in a grouped section with a check on the chosen one (iOS picker in a form). */
 @Composable

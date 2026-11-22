@@ -11,7 +11,7 @@ import org.easypaper.ui.patient.localDate
 import org.easypaper.ui.theme.Category
 
 const val PERSONAL_REQUEST_ID = "personal"
-val defaultPinned = setOf(Category.BloodPressure, Category.Water, Category.Food, Category.Medicines)
+val defaultPinned: List<Category> = emptyList()
 
 /** Temporary adapter until entries can exist independently of requests (#47). */
 fun personalRequest(today: LocalDate, locale: String, now: Long, titles: Map<Category, String>): CareRequest {

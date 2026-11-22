@@ -42,7 +42,9 @@ fun CategoryDetail(category: Category, records: List<PatientRecord>, today: Loca
         actions = { PlainButton(stringResource(Res.string.p2_add_data), onAdd) }) {
         item {
             SegmentedControl(listOf(stringResource(Res.string.p2_period_day), stringResource(Res.string.p2_period_week),
-                stringResource(Res.string.p2_period_month), stringResource(Res.string.p2_period_six)), segment, { segment = it })
+                stringResource(Res.string.p2_period_month), stringResource(Res.string.p2_period_six)), segment, { segment = it },
+                descriptions = listOf(stringResource(Res.string.p2_period_day_full), stringResource(Res.string.p2_period_week_full),
+                    stringResource(Res.string.p2_period_month_full), stringResource(Res.string.p2_period_six_full)))
             PatientMessage(dateRange(period.from, period.to))
             GroupedSection {
                 val range = pressureRange(entries.map { it.entry })

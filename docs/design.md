@@ -37,14 +37,15 @@ for small text we take Apple's own "Increase Contrast" value.
 | `secondaryLabel` | `#6C6C70` | `#98989F` | Dates, units, footers (Apple default `#8A8A8E` is 3.4:1, too low) |
 | `separator` | `#C6C6C8` | `#38383A` | Hairlines between rows (opaqueSeparator), decoration only |
 | `fill` | `#E5E5EA` | `#2C2C2E` | Gray buttons, badges, steppers (systemGray5) |
-| `tint` | `#0066CC` | `#0A84FF` | The one accent as a fill: prominent buttons, selection |
+| `tint` | `#0066CC` | `#0070E0` | The one accent as a fill: prominent buttons, selection |
 | `link` | `#0066CC` | `#409CFF` | The accent as text: plain and tinted buttons, source links |
 | `confirmed` | `#1F7A35` | `#30DB5B` | "Confirmed" text next to a check icon |
 | `destructive` | `#D70015` | `#FF6961` | Delete, errors (with an icon and a sentence) |
 | `review` | `#FFF4CC` | `#3A3000` | Background of a field the doctor still has to confirm |
 
-Category colors, like Apple Health, used **only** as the background of 29 dp icon tiles (white glyph)
-and for the category name above a value. Never for body text, never as the only signal:
+Category accents, like Apple Health, are used as the background of 29 dp icon tiles (white glyph)
+and for the category name above a value. Pastel widget surfaces are the exception described below.
+Accent colors never carry body text and are never the only signal:
 
 | Category | Color | Health equivalent |
 |---|---|---|
@@ -59,9 +60,38 @@ and for the category name above a value. Never for body text, never as the only 
 Category names drawn as text use the accessible darker shade in light mode (e.g. pink text
 `#C9184A`); the implementation keeps both values per category.
 
-Measured contrast: `label`, `secondaryLabel`, `tint`, `confirmed`, `destructive` on `cell` and on
-`background` ≥ 4.5:1 in both themes; white on `tint` 5.6:1 light, 3.7:1 dark (button labels are
-semibold 17, large text, ≥ 3:1). Rule from HIG: one accent color, color never the only signal.
+Measured contrast: `label`, `secondaryLabel`, `link`, `confirmed`, `destructive` on `cell` and on
+`background` ≥ 4.5:1 in both themes. White on `tint`: 5.57:1 light, 4.78:1 dark, including small
+selected-tab labels. Rule from HIG: one accent color, color never the only signal.
+
+### Patient v2.1 widget surfaces
+
+Category `soft` tokens in `Color.kt` provide light pastels and muted dark surfaces. Text and outline
+icons use `softText` (the primary `label`), tested at ≥ 4.5:1 on every surface in both themes.
+Use these on onboarding collage tiles, gallery cards, the horizontal category strip and Summary
+widgets; ordinary grouped lists keep `cell`. No photos, emoji, gradients or shadows on widget cards.
+
+| Category | Soft light | Soft dark |
+|---|---|---|
+| Blood pressure | `#FFDAD8` | `#3D252B` |
+| Water | `#CEEDF3` | `#18343D` |
+| Food | `#DFEDD2` | `#263724` |
+| Medicines | `#CDEAE4` | `#1B3633` |
+| Symptoms | `#E2DFF7` | `#2D2942` |
+| Diary | `#FFDFC1` | `#3D3023` |
+| Doctor questions | `#E4E7EB` | `#303338` |
+| Measurements | `#EEDDF2` | `#37293C` |
+
+Use continuous 24 dp corners for large pastel tiles, `largeTitle` for greetings and large readings,
+and capsules for onboarding actions. New widgets spring into place via EasyPaperMotion; Reduce
+Motion fades. The gallery and grid grow with text rather than clipping labels.
+
+`FloatingTabBar` uses a `cellRaised` capsule, a light 6 dp shadow and a `tint` capsule with white
+`onTint` text/icon for the selected tab. Its three equal touch targets grow with text. The shell
+reserves its measured height and navigation safe area so the last action remains reachable.
+Patient layout tokens: content width 520 dp for onboarding, category strip width 156 dp, gallery
+minimum height 176 dp, widget minimum height 208 dp, collage tiles 164/120 dp, hero icons 64 dp,
+empty-state + 80 dp and tab-bar maximum width 440 dp. All dimensions live in the theme.
 
 ## Type
 
@@ -98,11 +128,11 @@ system font size up to 200 %; rows grow, text never truncates at large sizes.
   corners ("squircle", not plain circular arcs), hairline separators inset to the text start.
   Section header: Subheadline semibold `label`; footer: Footnote `secondaryLabel`.
 - Navigation: patient app has a large title that collapses into a 17 sp semibold inline title on
-  scroll, and a bottom tab bar (Today, History, Share). Doctor app: sidebar 260 dp (requests), content
+  scroll, and a floating capsule tab bar (Summary, Sharing, Browse). Doctor app: sidebar 260 dp (requests), content
   column max 720 dp, the clinic form as a grouped form (label left, value right) like macOS Settings.
 - Shapes: icon tiles 29 dp / 7 dp radius; grouped sections 12; buttons in vertical stacks rounded
-  rectangle 12, buttons in a row capsule; sheets 16 top corners. Shadows: none on sections; sheets
-  and popovers only.
+  rectangle 12, buttons in a row capsule; sheets 16 top corners. Shadows: none on sections; sheets,
+  popovers and the floating patient tab bar only.
 - Buttons (HIG roles): **prominent** (filled `tint`, white semibold label, 50 dp high) at most one per
   view; **tinted** (`tint` 15 % fill, `tint` label); **gray** (`fill`, `label`); **plain** (`tint` text).
   Rank by style, not size. Delayed actions show a progress indicator in the button and change the
