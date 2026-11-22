@@ -85,6 +85,35 @@ class LocalizationResourcesTest {
     }
 
     @Test
+    fun sharingCountsHaveIndependentPluralsInEveryLocale() {
+        val expected = mapOf(
+            "values" to listOf("%1\$d entry", "%1\$d entries", "%1\$d photo", "%1\$d photos"),
+            "values-de" to listOf("%1\$d Eintrag", "%1\$d Einträge", "%1\$d Foto", "%1\$d Fotos"),
+            "values-fr" to listOf("%1\$d entrée", "%1\$d entrées", "%1\$d photo", "%1\$d photos"),
+            "values-uk" to listOf("%1\$d запис", "%1\$d записів", "%1\$d фото", "%1\$d фото"),
+            "values-ru" to listOf("%1\$d запись", "%1\$d записей", "%1\$d фото", "%1\$d фото"),
+        )
+        for (folder in folders) {
+            val resources = read(folder)
+            val entries = resources.getValue("plurals/p2_share_entries")
+            val photos = resources.getValue("plurals/p2_share_photos")
+            val entryForms = entries.quantities.zip(entries.texts).toMap()
+            val photoForms = photos.quantities.zip(photos.texts).toMap()
+            val plural = if (folder in listOf("values-ru", "values-uk")) "many" else "other"
+            assertEquals(expected.getValue(folder),
+                listOf(entryForms.getValue("one"), entryForms.getValue(plural),
+                    photoForms.getValue("one"), photoForms.getValue(plural)), folder)
+            if (folder in listOf("values-ru", "values-uk")) {
+                assertEquals(setOf("one", "few", "many", "other"), entryForms.keys, folder)
+                assertEquals(setOf("one", "few", "many", "other"), photoForms.keys, folder)
+                assertEquals("%1\$d записи", entryForms.getValue("few"), folder)
+            }
+            assertEquals(mapOf("%1\$s" to 1, "%2\$s" to 1),
+                placeholders(resources.getValue("string/p2_share_count").texts.single()), folder)
+        }
+    }
+
+    @Test
     fun languageNamesAreNativeInEveryLocale() {
         for (folder in folders) {
             val resources = read(folder)

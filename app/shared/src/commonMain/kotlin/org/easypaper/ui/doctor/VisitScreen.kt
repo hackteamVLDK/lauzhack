@@ -14,18 +14,11 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.foundation.layout.heightIn
-import org.jetbrains.compose.resources.decodeToImageBitmap
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.easypaper.report.jpegRotationDegrees
+import org.easypaper.ui.components.UprightJpeg
 import org.easypaper.model.Food
 import org.easypaper.model.DiaryNote
 import easypaper.app.shared.generated.resources.entry_photo
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
@@ -541,21 +534,9 @@ private fun DocumentSheet(document: DocumentSource?, onDismiss: () -> Unit) {
     }
 }
 
-/** A stored JPEG shown upright: photos keep the EXIF orientation tag instead of rotated pixels (shrinkPhoto). */
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun EntryPhoto(jpeg: ByteArray, modifier: Modifier = Modifier) {
-    val bitmap = remember(jpeg) { runCatching { jpeg.decodeToImageBitmap() }.getOrNull() } ?: return
-    val turn = remember(jpeg) { if (decoderTurnsPhotosUpright) 0 else jpegRotationDegrees(jpeg) }
-    val sideways = turn == 90 || turn == 270
-    val ratio = if (sideways) bitmap.height.toFloat() / bitmap.width else bitmap.width.toFloat() / bitmap.height
-    BoxWithConstraints(modifier.fillMaxWidth().aspectRatio(ratio).clip(EasyPaperTheme.shapes.group), contentAlignment = Alignment.Center) {
-        Image(
-            bitmap, contentDescription = stringResource(Res.string.entry_photo), contentScale = ContentScale.FillBounds,
-            modifier = Modifier.requiredSize(if (sideways) maxHeight else maxWidth, if (sideways) maxWidth else maxHeight)
-                .graphicsLayer { rotationZ = turn.toFloat() },
-        )
-    }
+    UprightJpeg(jpeg, stringResource(Res.string.entry_photo), modifier.fillMaxWidth().clip(EasyPaperTheme.shapes.group))
 }
 
 @Composable

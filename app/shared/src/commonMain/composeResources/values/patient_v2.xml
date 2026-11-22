@@ -76,6 +76,7 @@
     <string name="p2_category_average">Average</string>
     <string name="p2_category_total">Total</string>
     <string name="p2_category_pressure_value">%1$d–%2$d / %3$d–%4$d</string>
+    <string name="p2_category_pressure_single">%1$d/%2$d</string>
     <string name="p2_category_ml_unit">ml</string>
     <string name="p2_category_about">About %1$s</string>
     <string name="p2_category_pressure_fact">Blood pressure records contain upper and lower readings and an optional pulse, with the time recorded.</string>
@@ -116,7 +117,15 @@
     <string name="p2_personal_diary">Personal diary</string>
     <string name="p2_source">Record to share</string>
     <string name="p2_include_photos">Include photos</string>
-    <string name="p2_share_count">%1$d entries, %2$d photos will be shared</string>
+    <string name="p2_share_count">To be shared: %1$s, %2$s</string>
+    <plurals name="p2_share_entries">
+        <item quantity="one">%1$d entry</item>
+        <item quantity="other">%1$d entries</item>
+    </plurals>
+    <plurals name="p2_share_photos">
+        <item quantity="one">%1$d photo</item>
+        <item quantity="other">%1$d photos</item>
+    </plurals>
     <string name="p2_next">Next</string>
     <string name="p2_how_share">How to share</string>
     <string name="p2_sharing_doctor_title">Share with your doctor</string>

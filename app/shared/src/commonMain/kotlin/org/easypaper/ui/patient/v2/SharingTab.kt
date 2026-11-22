@@ -25,6 +25,7 @@ import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 fun sharedHistory(value: String?): List<String> = runCatching {
@@ -152,7 +153,11 @@ fun WhatToShareSheet(visible: Boolean, records: List<PatientRecord>, today: Loca
             val photoLabel = stringResource(Res.string.p2_include_photos)
             ListRow(photoLabel, trailing = { IosSwitch(photos, { photos = it }, Modifier.semantics { contentDescription = photoLabel }) })
         }
-        PatientMessage(stringResource(Res.string.p2_share_count, selection?.entryCount ?: 0, selection?.photoCount ?: 0))
+        val entryCount = selection?.entryCount ?: 0
+        val photoCount = selection?.photoCount ?: 0
+        PatientMessage(stringResource(Res.string.p2_share_count,
+            pluralStringResource(Res.plurals.p2_share_entries, entryCount, entryCount),
+            pluralStringResource(Res.plurals.p2_share_photos, photoCount, photoCount)))
         ProminentButton(stringResource(Res.string.p2_next), { selection?.let(onNext) }, Modifier.fillMaxWidth(),
             enabled = selection != null && selection.entryCount > 0)
     }

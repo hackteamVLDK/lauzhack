@@ -76,6 +76,7 @@
     <string name="p2_category_average">Moyenne</string>
     <string name="p2_category_total">Total</string>
     <string name="p2_category_pressure_value">%1$d–%2$d / %3$d–%4$d</string>
+    <string name="p2_category_pressure_single">%1$d/%2$d</string>
     <string name="p2_category_ml_unit">ml</string>
     <string name="p2_category_about">À propos de « %1$s »</string>
     <string name="p2_category_pressure_fact">Les relevés de tension contiennent les valeurs haute et basse, le pouls facultatif et l’heure enregistrée.</string>
@@ -116,7 +117,15 @@
     <string name="p2_personal_diary">Journal personnel</string>
     <string name="p2_source">Dossier à partager</string>
     <string name="p2_include_photos">Inclure les photos</string>
-    <string name="p2_share_count">%1$d entrées et %2$d photos seront partagées</string>
+    <string name="p2_share_count">À partager : %1$s, %2$s</string>
+    <plurals name="p2_share_entries">
+        <item quantity="one">%1$d entrée</item>
+        <item quantity="other">%1$d entrées</item>
+    </plurals>
+    <plurals name="p2_share_photos">
+        <item quantity="one">%1$d photo</item>
+        <item quantity="other">%1$d photos</item>
+    </plurals>
     <string name="p2_next">Suivant</string>
     <string name="p2_how_share">Comment partager</string>
     <string name="p2_sharing_doctor_title">Partager avec votre médecin</string>

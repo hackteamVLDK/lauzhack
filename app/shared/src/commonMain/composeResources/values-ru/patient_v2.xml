@@ -76,6 +76,7 @@
     <string name="p2_category_average">Среднее</string>
     <string name="p2_category_total">Всего</string>
     <string name="p2_category_pressure_value">%1$d–%2$d / %3$d–%4$d</string>
+    <string name="p2_category_pressure_single">%1$d/%2$d</string>
     <string name="p2_category_ml_unit">мл</string>
     <string name="p2_category_about">О категории «%1$s»</string>
     <string name="p2_category_pressure_fact">Записи давления содержат верхнее и нижнее значения, пульс по желанию, а также время записи.</string>
@@ -118,7 +119,19 @@
     <string name="p2_personal_diary">Личный дневник</string>
     <string name="p2_source">Записи для передачи</string>
     <string name="p2_include_photos">Включить фото</string>
-    <string name="p2_share_count">Будет передано записей: %1$d, фото: %2$d</string>
+    <string name="p2_share_count">Будет передано: %1$s, %2$s</string>
+    <plurals name="p2_share_entries">
+        <item quantity="one">%1$d запись</item>
+        <item quantity="few">%1$d записи</item>
+        <item quantity="many">%1$d записей</item>
+        <item quantity="other">%1$d записи</item>
+    </plurals>
+    <plurals name="p2_share_photos">
+        <item quantity="one">%1$d фото</item>
+        <item quantity="few">%1$d фото</item>
+        <item quantity="many">%1$d фото</item>
+        <item quantity="other">%1$d фото</item>
+    </plurals>
     <string name="p2_next">Далее</string>
     <string name="p2_how_share">Как поделиться</string>
     <string name="p2_sharing_doctor_title">Поделиться со своим врачом</string>

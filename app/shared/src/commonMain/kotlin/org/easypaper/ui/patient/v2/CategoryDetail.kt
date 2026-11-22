@@ -131,8 +131,12 @@ private fun CategorySummary(category: Category, entries: List<OwnedEntry>, perio
     })
     val value = when {
         entries.isEmpty() -> stringResource(Res.string.p2_no_data)
-        category == Category.BloodPressure && pressure != null -> stringResource(Res.string.p2_category_pressure_value,
-            pressure.systolicMin, pressure.systolicMax, pressure.diastolicMin, pressure.diastolicMax)
+        category == Category.BloodPressure && pressure != null -> {
+            if (pressure.systolicMin == pressure.systolicMax && pressure.diastolicMin == pressure.diastolicMax)
+                stringResource(Res.string.p2_category_pressure_single, pressure.systolicMin, pressure.diastolicMin)
+            else stringResource(Res.string.p2_category_pressure_value,
+                pressure.systolicMin, pressure.systolicMax, pressure.diastolicMin, pressure.diastolicMax)
+        }
         category == Category.Water -> {
             val days = (period.to.toEpochDays() - period.from.toEpochDays()).toInt() + 1
             (entries.sumOf { (it.entry.payload as? Water)?.ml ?: 0 } / days).toString()

@@ -1,6 +1,5 @@
 package org.easypaper.ui.patient
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -84,7 +83,7 @@ import org.easypaper.ui.components.SegmentedControl
 import org.easypaper.ui.components.TextAreaRow
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.decodeToImageBitmap
+import org.easypaper.ui.components.UprightJpeg
 import org.easypaper.ui.components.GrayButton
 import org.easypaper.ui.capture.rememberPhotoSource
 import easypaper.app.shared.generated.resources.take_photo
@@ -212,10 +211,9 @@ private fun PhotoPicker(photo: ByteArray?, onPhoto: (ByteArray?) -> Unit) {
     val source = rememberPhotoSource { onPhoto(it) }
     if (source.takePhoto == null && source.pickPhoto == null) return
     Column(Modifier.padding(top = spacing.s), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
-        val preview = remember(photo) { photo?.let { runCatching { it.decodeToImageBitmap() }.getOrNull() } }
-        if (preview != null) {
-            Image(
-                preview,
+        if (photo != null) {
+            UprightJpeg(
+                photo,
                 contentDescription = stringResource(Res.string.photo),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(spacing.xxl * 4, spacing.xxl * 3).clip(EasyPaperTheme.shapes.small),

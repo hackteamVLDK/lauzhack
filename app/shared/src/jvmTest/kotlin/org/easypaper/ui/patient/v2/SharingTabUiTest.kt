@@ -2,10 +2,14 @@ package org.easypaper.ui.patient.v2
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import org.easypaper.model.Entry
+import org.easypaper.model.Food
 import org.easypaper.model.PatientRecord
 import org.easypaper.ui.shell.SavedSetting
 import org.easypaper.ui.shell.ShellSettings
@@ -13,6 +17,7 @@ import org.easypaper.ui.shell.ShellTheme
 import org.easypaper.ui.theme.Category
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 
 @OptIn(ExperimentalTestApi::class)
 class SharingTabUiTest {
@@ -46,6 +51,31 @@ class SharingTabUiTest {
         waitUntil(timeoutMillis = 10_000) {
             onAllNodesWithText("You decide").fetchSemanticsNodes().isNotEmpty()
         }
+    }
+
+    @Test
+    fun shareSheetPluralizesEntriesAndPhotosIndependently() = runComposeUiTest {
+        val at = Instant.parse("2026-11-22T10:00:00Z").toEpochMilliseconds()
+        val record = mutableStateOf(personalRecord().copy(entries = listOf(
+            Entry("a", "personal-food", at, Food("Lunch", "photo-a")),
+        )))
+        setContent {
+            ShellTheme(ShellSettings(dark = false)) {
+                PatientLanguage("en") {
+                    WhatToShareSheet(true, listOf(record.value), today, TimeZone.UTC, {}, {})
+                }
+            }
+        }
+        val one = "To be shared: 1 entry, 1 photo"
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithText(one).fetchSemanticsNodes().isNotEmpty() }
+        onNodeWithText(one).assertExists()
+        runOnIdle {
+            record.value = record.value.copy(entries = record.value.entries +
+                Entry("b", "personal-food", at, Food("Dinner")))
+        }
+        val two = "To be shared: 2 entries, 1 photo"
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithText(two).fetchSemanticsNodes().isNotEmpty() }
+        onNodeWithText(two).assertExists()
     }
 
     @Test

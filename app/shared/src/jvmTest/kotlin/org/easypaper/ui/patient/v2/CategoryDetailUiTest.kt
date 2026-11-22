@@ -88,9 +88,47 @@ class CategoryDetailUiTest {
         onNodeWithText("Range").assertIsDisplayed()
         onNodeWithText("15–21 Nov").assertIsDisplayed()
         onNodeWithContentDescription("Day").performClick()
-        waitForText("140–140 / 90–90\u00A0mmHg")
+        waitForText("140/90\u00A0mmHg")
         onNodeWithContentDescription("Day").assertIsSelected()
         onNodeWithText("120–140 / 70–90\u00A0mmHg").assertDoesNotExist()
+    }
+
+    @Test
+    fun onePressureReadingShowsOneValue() = runComposeUiTest {
+        showCategory(Category.BloodPressure, listOf(
+            entry("a", "personal-pressure", "2026-11-21T10:00:00Z", BloodPressure(128, 84)),
+        ))
+        waitForText("128/84\u00A0mmHg")
+        onNodeWithText("128–128 / 84–84\u00A0mmHg").assertDoesNotExist()
+    }
+
+    @Test
+    fun identicalPressureReadingsAlsoShowOneValue() = runComposeUiTest {
+        showCategory(Category.BloodPressure, listOf(
+            entry("a", "personal-pressure", "2026-11-20T10:00:00Z", BloodPressure(128, 84)),
+            entry("b", "personal-pressure", "2026-11-21T10:00:00Z", BloodPressure(128, 84)),
+        ))
+        waitForText("128/84\u00A0mmHg")
+    }
+
+    @Test
+    fun oneWaterReadingKeepsASingleDailyAverage() = runComposeUiTest {
+        showCategory(Category.Water, listOf(
+            entry("a", "personal-water", "2026-11-21T10:00:00Z", Water(700)),
+        ))
+        waitForText("100\u00A0ml")
+        onNodeWithContentDescription("Day").performClick()
+        waitForText("700\u00A0ml")
+        onNodeWithText("700–700\u00A0ml").assertDoesNotExist()
+    }
+
+    @Test
+    fun oneWeightReadingShowsOneValueWithThePatientsDecimalSeparator() = runComposeUiTest {
+        showCategory(Category.Measurements, listOf(
+            entry("a", "personal-measurements", "2026-11-21T10:00:00Z", Measurement.weight(72.5)),
+        ), language = "fr")
+        waitForText("72,5\u00A0kg")
+        onNodeWithText("72,5–72,5\u00A0kg").assertDoesNotExist()
     }
 
     @Test

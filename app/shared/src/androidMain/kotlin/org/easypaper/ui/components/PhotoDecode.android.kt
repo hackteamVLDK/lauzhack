@@ -1,3 +1,3 @@
-package org.easypaper.ui.doctor
+package org.easypaper.ui.components
 
 internal actual val decoderTurnsPhotosUpright: Boolean = false

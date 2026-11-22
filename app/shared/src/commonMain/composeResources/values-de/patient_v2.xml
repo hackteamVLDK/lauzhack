@@ -76,6 +76,7 @@
     <string name="p2_category_average">Durchschnitt</string>
     <string name="p2_category_total">Gesamt</string>
     <string name="p2_category_pressure_value">%1$d–%2$d / %3$d–%4$d</string>
+    <string name="p2_category_pressure_single">%1$d/%2$d</string>
     <string name="p2_category_ml_unit">ml</string>
     <string name="p2_category_about">Über die Kategorie „%1$s“</string>
     <string name="p2_category_pressure_fact">Blutdruckeinträge enthalten den oberen und unteren Messwert sowie optional den Puls, jeweils mit dem erfassten Zeitpunkt.</string>
@@ -116,7 +117,15 @@
     <string name="p2_personal_diary">Persönliches Tagebuch</string>
     <string name="p2_source">Zu teilende Aufzeichnung</string>
     <string name="p2_include_photos">Fotos einschließen</string>
-    <string name="p2_share_count">%1$d Einträge und %2$d Fotos werden geteilt</string>
+    <string name="p2_share_count">Zum Teilen: %1$s, %2$s</string>
+    <plurals name="p2_share_entries">
+        <item quantity="one">%1$d Eintrag</item>
+        <item quantity="other">%1$d Einträge</item>
+    </plurals>
+    <plurals name="p2_share_photos">
+        <item quantity="one">%1$d Foto</item>
+        <item quantity="other">%1$d Fotos</item>
+    </plurals>
     <string name="p2_next">Weiter</string>
     <string name="p2_how_share">Wie möchten Sie teilen?</string>
     <string name="p2_sharing_doctor_title">Mit Ihrer Arztpraxis teilen</string>
