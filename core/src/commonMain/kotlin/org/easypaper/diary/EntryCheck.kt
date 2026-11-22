@@ -87,8 +87,10 @@ fun EntryPayload.problems(questionnaire: QuestionnaireWidget? = null): List<Entr
             }
             is Measurement -> {
                 if (p.name.isBlank()) add(EntryProblem.EMPTY_MEASUREMENT_NAME)
-                val limit = if (p.loinc == Measurement.WEIGHT_LOINC) WEIGHT_KG else ANY_MEASUREMENT
-                if (!p.value.isFinite() || p.value !in limit) add(EntryProblem.MEASUREMENT_OUT_OF_RANGE)
+                val isWeight = p.loinc == Measurement.WEIGHT_LOINC
+                val limit = if (isWeight) WEIGHT_KG else ANY_MEASUREMENT
+                val invalidUnit = p.unit.isBlank() || (isWeight && !p.unit.trim().equals("kg", ignoreCase = true))
+                if (!p.value.isFinite() || p.value !in limit || invalidUnit) add(EntryProblem.MEASUREMENT_OUT_OF_RANGE)
             }
             is Answers -> {
                 val questions = questionnaire?.questions.orEmpty().associateBy { it.id }

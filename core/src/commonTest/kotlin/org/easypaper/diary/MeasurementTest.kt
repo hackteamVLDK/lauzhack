@@ -29,6 +29,9 @@ class MeasurementTest {
         assertEquals(listOf(EntryProblem.MEASUREMENT_OUT_OF_RANGE), diary.check(Entry("x", own, 1, Measurement.weight(725.0))))
         assertEquals(listOf(EntryProblem.MEASUREMENT_OUT_OF_RANGE), diary.check(Entry("n", own, 1, Measurement("Waist", Double.NaN, "cm"))))
         assertEquals(listOf(EntryProblem.EMPTY_MEASUREMENT_NAME), diary.check(Entry("e", own, 1, Measurement(" ", 80.0, "cm"))))
+        assertEquals(listOf(EntryProblem.MEASUREMENT_OUT_OF_RANGE), diary.check(Entry("blank", own, 1, Measurement("Waist", 84.0, ""))))
+        assertEquals(listOf(EntryProblem.MEASUREMENT_OUT_OF_RANGE), diary.check(Entry("lb", own, 1, Measurement("Weight", 150.0, "lb", Measurement.WEIGHT_LOINC))))
+        assertEquals(emptyList(), diary.check(Entry("kg", own, 1, Measurement("Weight", 72.0, "KG", Measurement.WEIGHT_LOINC))))
     }
 
     @Test
