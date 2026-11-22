@@ -14,7 +14,9 @@ Kotlin Multiplatform project generated with [kmp.jetbrains.com](https://kmp.jetb
 ## Try it
 
 - **Live server:** <https://74-148-56-1.sslip.io> (the team's VM behind Caddy, HTTPS): the doctor's web app, the
-  blind relay for reports, the AI proxy and the medicine catalog.
+  blind relay for reports and the AI proxy. The medicine catalog (`/catalog/resolve`) needs a newer deploy and an
+  import of the registries (`./gradlew :server:importCatalog`); until then, recognising a medicine on the public
+  server ends in "registries can't be reached" and the patient types the name.
 - **Doctor (web):** open it in Chrome or Firefox — *Open patient report* → *Read QR code* (camera), paste the code,
   enter the patient's 6-digit code or open an encrypted report file. Receiving by code needs the clinic token in
   the settings.
@@ -32,8 +34,9 @@ Kotlin Multiplatform project generated with [kmp.jetbrains.com](https://kmp.jetb
 - medicine packs are recognised **without any LLM**: the barcode (DataMatrix/EAN, ML Kit on Android, ZXing on
   Desktop) and the printed text (OCR) are read on the device; then only those codes, the label text and the country
   of purchase — no photo, no patient data — are looked up in official registries on the server (`/catalog/resolve`:
-  Swissmedic/Refdata, French BDPM, EMA Article 57 and more), and the patient confirms the card; three common side
-  effects per active substance are asked as yes/no once a day — facts only, never advice;
+  Swissmedic/Refdata, French BDPM, EMA Article 57 and more), and the patient confirms the card; for the common
+  medicines in the app's side-effect table, three common side effects are asked as yes/no once a day — facts only,
+  never advice;
 - optional account: Google or a code by email, or none; a doctor can invite a patient by name, phone and email,
   and the patient confirms "Is this you?" with a code sent to that email;
 - photos are shrunk to ≤ 1024 px / ≤ 200 KB and stripped of EXIF/GPS before they are stored; everything on the
@@ -80,8 +83,9 @@ Data stays on the phone, encrypted, until the patient shares it. Reports sent by
 encrypted: the server only relays ciphertext and never sees a key. The AI summary is different: the doctor's app
 sends the opened report (and photos without text) to the server's AI proxy and its model — in the cloud mode to the
 provider, in the clinic module to a local model only. An account is optional (Google, or a 6-digit code sent by email;
-Apple is *Soon*): the server keeps only the email, name and phone of the account and hashes of codes and sessions;
-diary records never go to the account. Keys and tokens live only in environment variables, never in the
+Apple is *Soon*): the server keeps the email, name and phone of the account and only hashes of codes and sessions; a doctor's
+invitation (the patient's name, phone and email) is kept up to 14 days under a hash of its link token, until the
+patient confirms it; diary records never go to the account. Keys and tokens live only in environment variables, never in the
 repository.
 
 ## Modules
