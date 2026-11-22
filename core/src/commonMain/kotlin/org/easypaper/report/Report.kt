@@ -156,7 +156,9 @@ private fun Entry.toFhir(questions: Map<String, Question>): JsonObject = buildJs
         is Medication -> {
             put("resourceType", "MedicationStatement")
             put("status", if (p.confirmed) "recorded" else "draft") // unconfirmed scan stays a draft
-            put("effectiveDateTime", time)
+            // a task-71 entry without an intake is on the patient's list only: no time of taking it
+            val listOnly = (p.product != null || p.patientWords != null) && p.intake == null
+            if (!listOnly) put("effectiveDateTime", time)
             putJsonObject("medication") {
                 putJsonObject("concept") {
                     put("text", p.name)
@@ -164,7 +166,9 @@ private fun Entry.toFhir(questions: Map<String, Question>): JsonObject = buildJs
                 }
             }
             // what the patient says they took (task 71); otherwise the dose text they typed
-            (p.intake?.let { "${it.amount} ${it.unit}" } ?: p.dose)?.let { putJsonArray("dosage") { addJsonObject { put("text", it) } } }
+            // only what the patient reports having taken; a registry strength is never presented as a dose
+            val dosage = if (p.product != null || p.patientWords != null) p.intake?.let { "${it.amount} ${it.unit}" } else p.dose
+            dosage?.let { putJsonArray("dosage") { addJsonObject { put("text", it) } } }
             putJsonArray("note") {
                 addJsonObject { put("text", "source: " + p.source.name.lowercase()) }
                 p.product?.let { card ->

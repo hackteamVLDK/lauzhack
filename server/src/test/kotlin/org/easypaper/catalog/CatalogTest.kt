@@ -1,6 +1,7 @@
 package org.easypaper.catalog
 
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -201,5 +202,21 @@ class CatalogTest {
         assertTrue(r.candidates.isNotEmpty())
         assertTrue(r.candidates.all { it.product.card.name.startsWith("Nurofen Junior") }, r.candidates.map { it.product.card.name }.toString())
         assertTrue(r.candidates.none { it.product.card.strengthVerified }) // EU list: substances without amounts
+    }
+
+    // review of #71: behind Caddy each client has its own limit, and a large body is refused before it is read
+    @Test
+    fun theLimitIsPerForwardedClientAndLargeBodiesAreRefused() = testApplication {
+        val dir = Files.createTempDirectory("catalog").toFile()
+        val store = CatalogStore(dir)
+        store.write(SourceSnapshot(SourceInfo(France.REGISTRY, France.NAME, listOf("FR"), France.BASE, "2026-11-22", "", 0, ""), france))
+        application { module(catalog = CatalogService(store, indications = null)) }
+        val body = EasyPaperJson.encodeToString(CatalogQuery.serializer(), CatalogQuery(listOf("3400930316948")))
+        repeat(60) { assertEquals(HttpStatusCode.OK, client.post("/catalog/resolve") { header("X-Forwarded-For", "203.0.113.7"); setBody(body) }.status) }
+        assertEquals(HttpStatusCode.TooManyRequests, client.post("/catalog/resolve") { header("X-Forwarded-For", "203.0.113.7"); setBody(body) }.status)
+        assertEquals(HttpStatusCode.OK, client.post("/catalog/resolve") { header("X-Forwarded-For", "198.51.100.2"); setBody(body) }.status)
+        val big = "{\"text\":\"" + "x".repeat(20_000) + "\"}"
+        assertEquals(HttpStatusCode.PayloadTooLarge, client.post("/catalog/resolve") { header("X-Forwarded-For", "198.51.100.3"); setBody(big) }.status)
+        dir.deleteRecursively()
     }
 }

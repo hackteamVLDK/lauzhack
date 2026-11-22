@@ -47,6 +47,8 @@ fun medicinesFor(record: PatientRecord, widgetId: String, today: LocalDate, time
         .groupBy { (it.payload as Medication).let { m -> m.code ?: m.name.trim().lowercase() } }
         .values.map { entries ->
             val confirmed = entries.filter { (it.payload as Medication).confirmed }
+            // "only add it to my list" is confirmed but not taken (task 71)
+            val taken = confirmed.filter { (it.payload as Medication).isIntake }
             val shown = (confirmed.lastOrNull() ?: entries.last()).payload as Medication
             MedicineItem(
                 name = shown.name,
@@ -54,8 +56,8 @@ fun medicinesFor(record: PatientRecord, widgetId: String, today: LocalDate, time
                 code = shown.code,
                 source = shown.source,
                 draftIds = entries.filterNot { (it.payload as Medication).confirmed }.map { it.id },
-                takenToday = confirmed.filter { Instant.fromEpochMilliseconds(it.at).toLocalDateTime(timeZone).date == today }.map { it.at },
-                lastTaken = confirmed.lastOrNull()?.at,
+                takenToday = taken.filter { Instant.fromEpochMilliseconds(it.at).toLocalDateTime(timeZone).date == today }.map { it.at },
+                lastTaken = taken.lastOrNull()?.at,
                 latest = confirmed.lastOrNull()?.payload as? Medication,
             )
         }

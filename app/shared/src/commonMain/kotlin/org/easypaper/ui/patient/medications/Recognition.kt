@@ -99,7 +99,7 @@ class Recognition(
 
     /** "Confirm" on the card: the medicine is known, the intake is asked next. */
     fun confirm(card: RecognitionStep.Card) {
-        step = RecognitionStep.Intake(confirmedMedication(card.candidate, card.gtin), card.entryId)
+        step = RecognitionStep.Intake(confirmedMedication(card.candidate), card.entryId)
     }
 
     /** The patient's words become a medication without any registry card, then the intake is asked. */
@@ -114,16 +114,17 @@ class Recognition(
  * The confirmed card as a snapshot in the entry: name, version, composition, units and source as the registry gave
  * them today. The pack found by its code is kept as information only; its size never becomes the amount taken.
  */
-fun confirmedMedication(candidate: Candidate, gtin: String?): Medication {
+fun confirmedMedication(candidate: Candidate): Medication {
     val card = candidate.product.card
     val pack = candidate.pack
     return Medication(
         name = card.name,
-        code = pack?.gtin ?: gtin,
+        // only the GTIN of the pack that was found: an unknown barcode next to a card found by its text is not this product's code
+        code = pack?.gtin,
         dose = candidate.product.strengthLabel().ifEmpty { null },
         source = MedicationSource.SCAN,
         confirmed = true,
-        product = card.copy(pack = pack?.description ?: card.pack, gtin = pack?.gtin ?: card.gtin),
+        product = card.copy(pack = pack?.description ?: card.pack, gtin = pack?.gtin),
     )
 }
 

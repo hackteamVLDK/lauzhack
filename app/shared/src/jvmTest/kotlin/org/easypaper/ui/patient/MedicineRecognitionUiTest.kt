@@ -218,7 +218,7 @@ class MedicineRecognitionUiTest {
         val record = state.repository.records.value.first { r -> r.request.widgets.any { it is MedicationsWidget } }
         val widget = record.request.widgets.filterIsInstance<MedicationsWidget>().first()
         val medication = org.easypaper.ui.patient.medications.confirmedMedication(
-            org.easypaper.catalog.Candidate(fervex, pack = fervex.packs[1]), null)
+            org.easypaper.catalog.Candidate(fervex, pack = fervex.packs[1]))
         val intake = org.easypaper.model.Intake("1", "sachet", 1_000L)
         runBlocking {
             repeat(2) { state.repository.recordMedicine(record.request.id, widget.id, "same-entry", medication, intake, 2_000L) }
@@ -228,5 +228,41 @@ class MedicineRecognitionUiTest {
         assertEquals(1_000L, saved.single().at) // the entry's time is the intake time
         // a later catalog change does not touch the stored snapshot
         assertEquals("paracétamol", (saved.single().payload as Medication).product!!.ingredients[1].name)
+    }
+
+    // review of #71: a medicine only added to the list is not an intake, anywhere
+    @Test
+    fun onlyAddedToTheListIsNotAnIntake() = runComposeUiTest {
+        val state = ShellState(Role.Patient)
+        runBlocking { state.fillWithDemoData() }
+        val record = state.repository.records.value.first { r -> r.request.widgets.any { it is MedicationsWidget } }
+        val widget = record.request.widgets.filterIsInstance<MedicationsWidget>().first()
+        val card = org.easypaper.ui.patient.medications.confirmedMedication(org.easypaper.catalog.Candidate(fervex))
+        val now = kotlin.time.Clock.System.now().toEpochMilliseconds()
+        runBlocking { state.repository.recordMedicine(record.request.id, widget.id, "list-only", card, null, now) }
+        val saved = state.repository.records.value.first { it.request.id == record.request.id }
+        val item = org.easypaper.ui.patient.medications.medicinesFor(saved, widget.id, org.easypaper.ui.format.today(), kotlinx.datetime.TimeZone.currentSystemDefault())
+            .single { it.name == fervex.card.name }
+        assertTrue(item.takenToday.isEmpty())
+        assertNull(item.lastTaken)
+        // FHIR: no time of taking and no dose for a medicine that is only on the list
+        fun statements(e: kotlinx.serialization.json.JsonElement): List<kotlinx.serialization.json.JsonObject> = when (e) {
+            is kotlinx.serialization.json.JsonObject -> (if (e["resourceType"]?.toString() == "\"MedicationStatement\"") listOf(e) else emptyList()) +
+                e.values.flatMap { statements(it) }
+            is kotlinx.serialization.json.JsonArray -> e.flatMap { statements(it) }
+            else -> emptyList()
+        }
+        val fhir = org.easypaper.report.Report(id = "r2", createdAt = 0, record = saved).fhir
+        val statement = statements(fhir).single { fervex.card.name in it.toString() }
+        assertNull(statement["dosage"])
+        assertNull(statement["effectiveDateTime"])
+    }
+
+    @Test
+    fun aCardFoundByTextKeepsNoForeignBarcode() {
+        // the card was found by its printed name; the barcode on the photo belongs to no registry pack
+        val medication = org.easypaper.ui.patient.medications.confirmedMedication(org.easypaper.catalog.Candidate(fervex))
+        assertNull(medication.code)
+        assertNull(medication.product?.gtin)
     }
 }

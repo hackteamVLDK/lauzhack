@@ -51,19 +51,22 @@ class CatalogService(private val store: CatalogStore, private val indications: I
  */
 class Indications(dir: File, private val fetchPage: (String) -> String? = ::download) {
     private val file = File(dir, "indications-fr.json")
-    private val cache: MutableMap<String, String> = runCatching {
+    private val cache = java.util.concurrent.ConcurrentHashMap<String, String>(runCatching {
         EasyPaperJson.decodeFromString(MapSerializer(String.serializer(), String.serializer()), file.readText())
-    }.getOrDefault(emptyMap()).toMutableMap()
+    }.getOrDefault(emptyMap()))
+    private val fileLock = Any()
 
-    @Synchronized
+    /** The page is fetched outside any lock (up to 8 s), so other requests never wait for it; only the file write is serialised. */
     fun french(cis: String): String? {
         cache[cis]?.let { return it.ifEmpty { null } }
         val html = fetchPage(France.productUrl(cis)) ?: return null // network failure: try again next time
         val sentence = frenchIndication(html).orEmpty()
         cache[cis] = sentence
-        runCatching {
-            file.parentFile.mkdirs()
-            file.writeText(EasyPaperJson.encodeToString(MapSerializer(String.serializer(), String.serializer()), cache))
+        synchronized(fileLock) {
+            runCatching {
+                file.parentFile.mkdirs()
+                file.writeText(EasyPaperJson.encodeToString(MapSerializer(String.serializer(), String.serializer()), HashMap(cache)))
+            }
         }
         return sentence.ifEmpty { null }
     }

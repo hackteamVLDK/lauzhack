@@ -171,7 +171,13 @@ data class Medication(
     val patientWords: String? = null,
     /** Ingredients copied from the label of a tea or supplement, as printed; never checked against a registry. */
     val labelIngredients: String? = null,
-) : EntryPayload
+) : EntryPayload {
+    /**
+     * Whether this entry records an intake. A task-71 entry (registry card or the patient's words) is an intake only
+     * with [intake]: "only add it to my list" is not one. Older entries keep their meaning: confirmed = taken.
+     */
+    val isIntake: Boolean get() = confirmed && !((product != null || patientWords != null) && intake == null)
+}
 
 @Serializable
 enum class MedicationSource {
