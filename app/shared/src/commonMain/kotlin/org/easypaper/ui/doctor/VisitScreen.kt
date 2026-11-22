@@ -125,6 +125,8 @@ import org.easypaper.ui.format.longDate
 import org.easypaper.ui.patient.entryText
 import org.easypaper.ui.patient.localDate
 import org.easypaper.ui.patient.timeOfDay
+import androidx.compose.ui.text.intl.Locale
+import org.easypaper.ui.patient.v2.supportedLanguage
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.easypaper.ui.theme.tabular
 import org.easypaper.visit.FieldState
@@ -163,12 +165,13 @@ fun VisitScreen(
     documents: (@Composable (VisitState, onShow: (DocumentSource) -> Unit) -> Unit)? = null,
 ) {
     val wording = rememberFormWording()
+    val language = supportedLanguage(Locale.current.language)
     val offset = remember { currentUtcOffsetMinutes() }
-    val state = remember(report.id, wording) {
+    val state = remember(report.id, wording, language) {
         val kept = store?.get(report.id)
         // Keep what the doctor decided; rebuild only an untouched state whose texts were made before the language loaded.
-        if (kept != null && (kept.wording == wording || kept.decided > 0 || kept.saved != null)) kept
-        else VisitState(report, wording, offset).also { store?.put(report.id, it) }
+        if (kept != null && ((kept.wording == wording && kept.language == language) || kept.decided > 0 || kept.saved != null)) kept
+        else VisitState(report, wording, offset, language).also { store?.put(report.id, it) }
     }
     val timeZone = remember { TimeZone.currentSystemDefault() }
     var original by remember { mutableStateOf<Entry?>(null) }

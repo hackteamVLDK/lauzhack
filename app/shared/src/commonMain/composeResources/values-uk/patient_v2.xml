@@ -25,6 +25,8 @@
     <string name="p2_english">English</string>
     <string name="p2_german">Deutsch</string>
     <string name="p2_ukrainian">Українська</string>
+    <string name="p2_french">Français</string>
+    <string name="p2_russian">Русский</string>
     <string name="p2_about_you">Про вас</string>
     <string name="p2_optional_details">Усі дані необов’язкові. Лише на цьому телефоні та у вибраних вами даних для поширення.</string>
     <string name="p2_name">Ім’я</string>

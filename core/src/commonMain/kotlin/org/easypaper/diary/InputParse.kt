@@ -6,9 +6,9 @@ import org.easypaper.model.BloodPressure
 
 private const val NOT_LETTER_BEFORE = """(?<![\p{L}])"""
 private const val NOT_LETTER_AFTER = """(?![\p{L}])"""
-private val SYS_LABEL = Regex("""${NOT_LETTER_BEFORE}(?:SYSTOLISCH|SYSTOLIC|SYST|SYS|СИСТОЛ\p{L}*|СИСТ|СИС)$NOT_LETTER_AFTER""")
-private val DIA_LABEL = Regex("""${NOT_LETTER_BEFORE}(?:DIASTOLISCH|DIASTOLIC|DIAST|DIA|ДИАСТОЛ\p{L}*|ДІАСТОЛ\p{L}*|ДИАСТ|ДІАСТ|ДИА|ДІА)$NOT_LETTER_AFTER""")
-private const val PULSE_WORDS = """(?:${NOT_LETTER_BEFORE}(?:PULSE|PULS|PUL|ПУЛЬС|HR|PR)$NOT_LETTER_AFTER|P\s*/\s*MIN|♥)"""
+private val SYS_LABEL = Regex("""${NOT_LETTER_BEFORE}(?:SYSTOLISCH|SYSTOLIQUE|SYSTOLIC|SYST|SYS|СИСТОЛ\p{L}*|СИСТ|СИС)$NOT_LETTER_AFTER""")
+private val DIA_LABEL = Regex("""${NOT_LETTER_BEFORE}(?:DIASTOLISCH|DIASTOLIQUE|DIASTOLIC|DIAST|DIA|ДИАСТОЛ\p{L}*|ДІАСТОЛ\p{L}*|ДИАСТ|ДІАСТ|ДИА|ДІА)$NOT_LETTER_AFTER""")
+private const val PULSE_WORDS = """(?:${NOT_LETTER_BEFORE}(?:PULSE|POULS|PULS|PUL|ПУЛЬС|HR|PR)$NOT_LETTER_AFTER|P\s*/\s*MIN|♥)"""
 private val PULSE_LABEL = Regex(PULSE_WORDS)
 private val LABELS = listOf(SYS_LABEL, DIA_LABEL, PULSE_LABEL)
 
@@ -17,7 +17,7 @@ private val NUMBER_TOKEN = Regex("""[-+]?\d+(?:[.,:/]\d+)*[.:]?""") // no class 
 
 /**
  * Blood pressure from typed text ("120/80 72", "120 на 80", "120 zu 80") or from OCR of a monitor display
- * ("SYS 128 mmHg DIA 84 PULSE 72 /min", labels in EN/DE/RU/UK, number after or before the label).
+ * ("SYS 128 mmHg DIA 84 PULSE 72 /min", labels in EN/DE/UK/FR/RU, number after or before the label).
  * Null when the text is ambiguous (two readings, conflicting layouts, leftover numbers, signs) or the values are not
  * physically possible with diastolic < systolic.
  */
@@ -56,9 +56,9 @@ private fun labeled(t: String): BloodPressure? {
     return if (a != null && b != null && a != b) null else a ?: b // two different full readings: ambiguous
 }
 
-/** "120/80 [pulse 72]" or "120 на|zu|over 80 [72]": exactly one reading and no other numbers in the text. */
+/** "120/80 [pulse 72]" or "120 на|zu|over|sur 80 [72]": exactly one reading and no other numbers in the text. */
 private fun typed(t: String): BloodPressure? {
-    val pattern = Regex("""(?<![\d.,:/+-])(\d{2,3})(?:\s*/\s*|\s+(?:НА|ZU|OVER|ÜBER|UEBER)\s+)(\d{2,3})(?![\d.,:/])(?:\s*[,;]?\s*(?:$PULSE_WORDS)?\s*[=:]?\s*(?<![\d.,:/+-])(\d{2,3})(?![\d.,:/]))?""")
+    val pattern = Regex("""(?<![\d.,:/+-])(\d{2,3})(?:\s*/\s*|\s+(?:НА|ZU|OVER|ÜBER|UEBER|SUR)\s+)(\d{2,3})(?![\d.:/]|,\d)(?:\s*[,;]?\s*(?:$PULSE_WORDS)?\s*[=:]?\s*(?<![\d.,:/+-])(\d{2,3})(?![\d.:/]|,\d))?""")
     val matches = pattern.findAll(t).toList()
     if (matches.size != 1) return null
     val m = matches.single()
@@ -75,16 +75,16 @@ private fun unlabeled(t: String): BloodPressure? {
 
 private const val GLASS_ML = 250
 private const val MAX_COUNT = 20
-private val UNIT = """(ML|МЛ|MILLILITER\p{L}*|МИЛЛИЛИТР\p{L}*|МІЛІЛІТР\p{L}*|DL|ДЛ|CL|L|Л|LITER\p{L}*|LITRE\p{L}*|ЛИТР\p{L}*|ЛІТР\p{L}*)$NOT_LETTER_AFTER"""
+private val UNIT = """(ML|МЛ|MILLILITER\p{L}*|MILLILITRE\p{L}*|МИЛЛИЛИТР\p{L}*|МІЛІЛІТР\p{L}*|DL|ДЛ|CL|L|Л|LITER\p{L}*|LITRE\p{L}*|ЛИТР\p{L}*|ЛІТР\p{L}*)$NOT_LETTER_AFTER"""
 private const val AMOUNT = """(\d+(?:[.,]\d+)?)"""
 private val WATER_PATTERNS = listOf(
     Regex("""(\d+)\s*[X×*]\s*$AMOUNT\s*$UNIT"""), // 2x250 ml
     Regex("""$AMOUNT\s*$UNIT"""), // 1,5 l
-    Regex("""(?:(\d+)\s*)?${NOT_LETTER_BEFORE}(СТАКАН\p{L}*|СКЛЯНК\p{L}*|GLAS\p{L}*|GLÄSER|CUP\p{L}*|ЧАШК\p{L}*|ЧАШЕК|ЧАШОК|TASSE\p{L}*)"""), // 2 стакана
+    Regex("""(?:(\d+)\s*)?${NOT_LETTER_BEFORE}(СТАКАН\p{L}*|СКЛЯНК\p{L}*|GLAS\p{L}*|GLÄSER|CUP\p{L}*|ЧАШК\p{L}*|ЧАШЕК|ЧАШОК|TASSE\p{L}*|VERRES?)$NOT_LETTER_AFTER"""), // 2 стакана / 2 verres
 )
 
 /**
- * Water in mL from text: "1,5 l", "500ml", "2x250 мл", "3 dl", "2 стакана" / "a glass" / "2 склянки" (250 mL each).
+ * Water in mL from text: "1,5 l", "500ml", "2x250 мл", "3 dl", "2 стакана" / "a glass" / "2 склянки" / "2 verres" (250 mL each).
  * Exactly one amount; a bare number, a bottle, a sign, a fraction or range ("1/2 l", "1-2 l"), a fractional
  * count of glasses or an absurd count -> null. Result 1..5000 mL.
  */

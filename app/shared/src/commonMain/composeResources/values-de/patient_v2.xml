@@ -25,6 +25,8 @@
     <string name="p2_english">English</string>
     <string name="p2_german">Deutsch</string>
     <string name="p2_ukrainian">Українська</string>
+    <string name="p2_french">Français</string>
+    <string name="p2_russian">Русский</string>
     <string name="p2_about_you">Über Sie</string>
     <string name="p2_optional_details">Alle Angaben sind freiwillig. Nur auf diesem Telefon und in bewusst geteilten Daten.</string>
     <string name="p2_name">Name</string>

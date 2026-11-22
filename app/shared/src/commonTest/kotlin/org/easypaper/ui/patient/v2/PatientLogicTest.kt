@@ -12,6 +12,17 @@ import kotlin.test.*
 import kotlin.time.Instant
 
 class PatientLogicTest {
+    @Test
+    fun supportedLanguagesIncludeFrenchRussianAndRegionalLocales() {
+        for (language in listOf("en", "de", "uk", "fr", "ru")) {
+            assertEquals(language, supportedLanguage(language))
+        }
+        assertEquals("fr", supportedLanguage("fr-CH"))
+        assertEquals("ru", supportedLanguage("ru_RU"))
+        assertEquals("fr", supportedLanguage("FR"))
+        assertEquals("en", supportedLanguage("es"))
+    }
+
     private val today = LocalDate.parse("2026-11-21")
     private val utc = TimeZone.UTC
     private val titles = Category.entries.associateWith { it.name }

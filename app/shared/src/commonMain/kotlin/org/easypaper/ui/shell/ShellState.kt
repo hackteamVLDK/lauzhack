@@ -86,12 +86,13 @@ class ShellState(
     }
 
     /** Asks the server for the summary of [report]; on failure the facts-based summary stays. */
-    suspend fun summarize(report: Report) {
+    suspend fun summarize(report: Report, language: String = "en") {
         val ai = server?.ai ?: return
         aiBusy[report.id] = true
         aiFailed.remove(report.id)
         try {
-            val result = ai.summarize(report.record, reportPhotos[report.id].orEmpty(), utcOffsetMinutes = currentUtcOffsetMinutes()) // food photos without text get described (#36)
+            val result = ai.summarize(report.record, reportPhotos[report.id].orEmpty(),
+                utcOffsetMinutes = currentUtcOffsetMinutes(), language = language) // food photos without text get described (#36)
             aiResults[report.id] = result
             aiUsage += result.usage
             refreshAiStatus()

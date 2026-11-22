@@ -30,7 +30,7 @@ internal fun String.fill(vararg args: Any): String {
     return out
 }
 
-/** The clinic form's field texts in the app language (EN/DE/UK); templates are read once per composition. */
+/** The clinic form's field texts in the app language (EN/DE/UK/FR/RU); templates are read once per composition. */
 class ResourceFormWording(
     private val bloodPressure: String,
     private val pulse: String,

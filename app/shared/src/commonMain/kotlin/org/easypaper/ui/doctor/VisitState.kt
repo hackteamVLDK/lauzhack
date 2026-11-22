@@ -9,7 +9,7 @@ import org.easypaper.ai.SummaryResult
 import org.easypaper.model.Entry
 import org.easypaper.report.Report
 import org.easypaper.report.factDigest
-import org.easypaper.report.toText
+import org.easypaper.report.toLocalizedText
 import org.easypaper.visit.ClinicForm
 import org.easypaper.visit.FieldState
 import org.easypaper.visit.FormFieldKey
@@ -46,7 +46,7 @@ private val TRAILING_REFS = Regex("""\s*\[[^\[\]]*\]\s*$""")
  * The summary for [report]: the AI result when there is one, else the report's own summary, else the
  * facts without AI (FactDigest), always split into statements with links to the originals.
  */
-fun visitSummary(report: Report, ai: SummaryResult?, utcOffsetMinutes: Int = 0): VisitSummary {
+fun visitSummary(report: Report, ai: SummaryResult?, utcOffsetMinutes: Int = 0, language: String = "en"): VisitSummary {
     val record = report.record
     val byId = record.entries.associateBy { it.id }
     if (ai != null) {
@@ -61,7 +61,7 @@ fun visitSummary(report: Report, ai: SummaryResult?, utcOffsetMinutes: Int = 0):
     }
     // A summary that came with the report gets the pipeline's check: no advice, no diagnoses, no invented links.
     val (text, source) = report.summary?.takeIf { it.isNotBlank() }?.let { checkedReportSummary(it, record).first to SummarySource.Report }
-        ?: (record.factDigest(utcOffsetMinutes).toText() to SummarySource.Facts)
+        ?: (record.factDigest(utcOffsetMinutes).toLocalizedText(language) to SummarySource.Facts)
     val parsed = parseSummary(text, record)
     return VisitSummary(
         parsed.lines.map { line ->
@@ -82,8 +82,9 @@ class VisitState(
     val wording: FormWording,
     /** The doctor's (and usually the patient's) time zone: days of the facts are local days. */
     private val utcOffsetMinutes: Int = 0,
+    val language: String = "en",
 ) {
-    var summary: VisitSummary by mutableStateOf(visitSummary(report, null, utcOffsetMinutes))
+    var summary: VisitSummary by mutableStateOf(visitSummary(report, null, utcOffsetMinutes, language))
         private set
     var form: ClinicForm by mutableStateOf(
         prefillClinicForm(report, wording, utcOffsetMinutes).let { form ->
@@ -101,7 +102,7 @@ class VisitState(
 
     /** A new AI summary replaces the history draft; other decisions stay. */
     fun applyAi(result: SummaryResult) {
-        summary = visitSummary(report, result, utcOffsetMinutes)
+        summary = visitSummary(report, result, utcOffsetMinutes, language)
         form = form.replaceDraft(FormFieldKey.HISTORY, summary.text, summary.sourceIds)
         confirmedAt.remove(FormFieldKey.HISTORY)
         saved = null

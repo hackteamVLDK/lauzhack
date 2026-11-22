@@ -52,7 +52,8 @@ fun rememberPatientSettings() = PatientSettings(
     rememberSavedSetting("p2_reminders"), rememberSavedSetting("p2_history"),
 )
 
-fun supportedLanguage(language: String): String = language.takeIf { it in listOf("en", "de", "uk") } ?: "en"
+fun supportedLanguage(language: String): String = language.substringBefore('-').substringBefore('_').lowercase()
+    .takeIf { it in listOf("en", "de", "uk", "fr", "ru") } ?: "en"
 
 /**
  * Compose Resources 1.12 has no public per-subtree locale provider. Keep its internal bridge in
@@ -88,8 +89,9 @@ fun categoryTitle(category: Category): String = stringResource(when (category) {
 @Composable
 fun LanguagePicker(settings: PatientSettings) {
     val labels = listOf(stringResource(Res.string.p2_system), stringResource(Res.string.p2_english),
-        stringResource(Res.string.p2_german), stringResource(Res.string.p2_ukrainian))
-    val codes = listOf(null, "en", "de", "uk")
+        stringResource(Res.string.p2_german), stringResource(Res.string.p2_ukrainian),
+        stringResource(Res.string.p2_french), stringResource(Res.string.p2_russian))
+    val codes = listOf(null, "en", "de", "uk", "fr", "ru")
     ChoiceList(labels, labels[codes.indexOf(settings.language.value).coerceAtLeast(0)], onSelect = { selected ->
         settings.language.update(codes[labels.indexOf(selected)])
     })

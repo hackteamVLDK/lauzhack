@@ -25,6 +25,8 @@
     <string name="p2_english">English</string>
     <string name="p2_german">Deutsch</string>
     <string name="p2_ukrainian">Українська</string>
+    <string name="p2_french">Français</string>
+    <string name="p2_russian">Русский</string>
     <string name="p2_about_you">About you</string>
     <string name="p2_optional_details">All details are optional. Only on this phone and in what you choose to share.</string>
     <string name="p2_name">Name</string>

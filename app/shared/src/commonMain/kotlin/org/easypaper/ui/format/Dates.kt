@@ -3,6 +3,7 @@ package org.easypaper.ui.format
 import androidx.compose.runtime.Composable
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.date_long
+import easypaper.app.shared.generated.resources.date_day_month
 import easypaper.app.shared.generated.resources.date_range_one_month
 import easypaper.app.shared.generated.resources.date_range_two_months
 import easypaper.app.shared.generated.resources.months_long
@@ -45,7 +46,7 @@ fun lastDay(start: LocalDate, days: Int): LocalDate = start.plus(DatePeriod(days
 
 /**
  * "Saturday, 21 November" from a locale pattern and name lists; [weekdays] start on Monday,
- * [months] start in January (genitive where the language needs it, e.g. Ukrainian).
+ * [months] start in January (genitive where the language needs it, e.g. Ukrainian or Russian).
  */
 fun formatLongDate(date: LocalDate, pattern: String, weekdays: List<String>, months: List<String>): String =
     pattern.replace("%1\$s", weekdays.getOrElse(date.dayOfWeek.ordinal) { "" })
@@ -79,4 +80,11 @@ fun dateRange(from: LocalDate, to: LocalDate): String = formatDateRange(
     stringResource(Res.string.date_range_one_month),
     stringResource(Res.string.date_range_two_months),
     stringArrayResource(Res.array.months_short),
+)
+
+/** Day before month, with the order and punctuation supplied by the current app language. */
+@Composable
+fun dayMonth(date: LocalDate): String = stringResource(
+    Res.string.date_day_month, date.day,
+    stringArrayResource(Res.array.months_short).getOrElse(date.month.ordinal) { "" },
 )

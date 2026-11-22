@@ -102,4 +102,44 @@ class InputParseTest {
         assertEquals(1500, parseWaterMl("1,5 літра"))
         assertEquals(250, parseWaterMl("250 мл"))
     }
+
+    @Test
+    fun frenchLabelsAndUnits() {
+        assertEquals(BloodPressure(128, 84, 72), parseBloodPressure("Tension artérielle : 128/84, pouls 72"))
+        assertEquals(BloodPressure(120, 80, 64), parseBloodPressure("Tension 120 sur 80 pouls 64"))
+        assertEquals(BloodPressure(133, 86, 71), parseBloodPressure("Systolique 133 Diastolique 86 Pouls 71"))
+        assertEquals(BloodPressure(127, 81, 69), parseBloodPressure("127 systolique 81 diastolique 69 pouls"))
+        assertEquals(250, parseWaterMl("un verre d'eau"))
+        assertEquals(500, parseWaterMl("2 verres d'eau"))
+        assertEquals(1000, parseWaterMl("1 litre d'eau"))
+        assertEquals(1500, parseWaterMl("1,5 litres"))
+        assertEquals(1500, parseWaterMl("1,5 l"))
+        assertEquals(250, parseWaterMl("250 millilitres"))
+        assertEquals(500, parseWaterMl("2x250 ml"))
+        assertNull(parseBloodPressure("tension 120/80 ou 140/90"))
+        assertNull(parseWaterMl("1,5 verres"))
+        assertNull(parseWaterMl("1/2 litre"))
+        assertNull(parseWaterMl("1-2 litres"))
+        assertNull(parseWaterMl("500 ml et 2 verres"))
+        assertNull(parseWaterMl("30 verres"))
+        assertNull(parseWaterMl("un verrement"))
+    }
+
+    @Test
+    fun russianLabelsAndUnits() {
+        assertEquals(BloodPressure(128, 84, 72), parseBloodPressure("Давление 128/84, пульс 72"))
+        assertEquals(BloodPressure(120, 80, 64), parseBloodPressure("Артериальное давление 120 на 80 пульс 64"))
+        assertEquals(BloodPressure(133, 86, 71), parseBloodPressure("Систолическое 133 Диастолическое 86 Пульс 71"))
+        assertEquals(250, parseWaterMl("стакан воды"))
+        assertEquals(500, parseWaterMl("2 стакана"))
+        assertEquals(1250, parseWaterMl("5 стаканов воды"))
+        assertEquals(1000, parseWaterMl("1 литр"))
+        assertEquals(1500, parseWaterMl("1,5 литра"))
+        assertEquals(2000, parseWaterMl("2 литров"))
+        assertEquals(250, parseWaterMl("250 мл"))
+        assertNull(parseBloodPressure("давление 120/80 или 140/90"))
+        assertNull(parseWaterMl("500 мл и 2 стакана"))
+        assertNull(parseWaterMl("1/2 литра"))
+        assertNull(parseWaterMl("-500 мл"))
+    }
 }

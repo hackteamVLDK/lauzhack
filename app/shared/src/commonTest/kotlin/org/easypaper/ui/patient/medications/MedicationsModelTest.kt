@@ -35,6 +35,19 @@ class MedicationsModelTest {
     }
 
     @Test
+    fun scanChoicesUseFrenchNamesOnlyForFrench() {
+        val db = MedicationDb()
+        val match = db.recognize(PhotoReading(listOf("7680623550019"), ""))
+        val info = match.candidates.single()
+        for (locale in listOf("fr", "fr-CH")) {
+            assertEquals(info.nameFr, scanChoices(match, locale).single().name)
+        }
+        for (locale in listOf("en", "de", "uk", "ru")) {
+            assertEquals(info.nameDe, scanChoices(match, locale).single().name)
+        }
+    }
+
+    @Test
     fun scanConfirmTakeAndTypeThroughTheRepository() = runTest {
         val repo = inMemoryPatientRepository()
         repo.start(Demo.request)

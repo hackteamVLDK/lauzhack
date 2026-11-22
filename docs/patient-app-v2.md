@@ -123,7 +123,7 @@ Step 2 (share options sheet, like an action sheet):
    locally; Continue with Google and Continue with email are disabled with an explicit Soon label.
    Privacy copy explains that an account is unnecessary and sharing is deliberate.
 3. **Privacy & reminders** — local encryption, explicit sharing, deletion; optional reminder preference
-   (system notifications are not enabled yet). Language follows the system and can be changed here
+   (system notifications are not enabled yet). Language (EN/DE/UK/FR/RU) follows the system and can be changed here
    or in Profile. Continue creates the local diary and opens an empty Summary.
 
 No category-selection step. Widgets are added from Summary. Birth date, sex and other health

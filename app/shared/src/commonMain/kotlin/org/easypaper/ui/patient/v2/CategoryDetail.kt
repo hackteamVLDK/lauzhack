@@ -20,6 +20,7 @@ import kotlin.time.Instant
 import org.easypaper.model.*
 import org.easypaper.ui.components.*
 import org.easypaper.ui.format.dateRange
+import org.easypaper.ui.format.dayMonth
 import org.easypaper.ui.patient.entryText
 import org.easypaper.ui.patient.localDate
 import org.easypaper.ui.patient.timeOfDay
@@ -93,13 +94,14 @@ private fun RecordChart(entries: List<OwnedEntry>, category: Category, period: P
             val stroke = spacing.xxs.toPx() / 2
             drawLine(colors.separator, Offset(0f, 0f), Offset(0f, size.height), stroke)
             drawLine(colors.separator, Offset(0f, size.height), Offset(size.width, size.height), stroke)
-            fun x(date: LocalDate, fraction: Float = 0.5f) =
+            val x: (LocalDate, Float) -> Float = { date, fraction ->
                 ((date.toEpochDays() - period.from.toEpochDays()).toFloat() + fraction) / totalDays * size.width
-            fun y(value: Float) = size.height * (1f - (value - low) / (high - low))
+            }
+            val y: (Float) -> Float = { value -> size.height * (1f - (value - low) / (high - low)) }
             if (category == Category.Water) daily.forEach { (date, ml) ->
                 val width = (size.width / totalDays * 0.6f).coerceAtLeast(stroke)
                 val top = y(ml.toFloat())
-                drawRect(colors.tint, Offset(x(date) - width / 2, top), Size(width, size.height - top))
+                drawRect(colors.tint, Offset(x(date, 0.5f) - width / 2, top), Size(width, size.height - top))
             } else chronological.forEach { owned ->
                 val value = owned.entry.payload as BloodPressure
                 val local = Instant.fromEpochMilliseconds(owned.entry.at).toLocalDateTime(timeZone)
@@ -115,12 +117,18 @@ private fun RecordChart(entries: List<OwnedEntry>, category: Category, period: P
         }
     }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Column(Modifier.weight(1f)) { PatientMessage(period.from.toString()) }
-        Column(Modifier.weight(1f)) { PatientMessage(period.to.toString()) }
+        Column(Modifier.weight(1f)) { PatientMessage(dayMonth(period.from)) }
+        Column(Modifier.weight(1f)) { PatientMessage(dayMonth(period.to)) }
     }
 }
 
-fun entryDate(owned: OwnedEntry, timeZone: TimeZone) = "${owned.entry.localDate(timeZone)}, ${timeOfDay(owned.entry.at, timeZone)}"
+/** "21 Nov, 08:10"; an entry from another year also shows its year, so two years' readings stay apart. */
+@Composable
+fun entryDate(owned: OwnedEntry, timeZone: TimeZone): String {
+    val date = owned.entry.localDate(timeZone)
+    val day = if (date.year == org.easypaper.ui.format.today().year) dayMonth(date) else "${dayMonth(date)} ${date.year}"
+    return "$day, ${timeOfDay(owned.entry.at, timeZone)}"
+}
 
 @Composable
 fun AllCategoryData(category: Category, records: List<PatientRecord>, timeZone: TimeZone, back: BackAction,

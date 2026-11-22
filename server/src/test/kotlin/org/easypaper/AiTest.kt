@@ -263,6 +263,37 @@ class AiTest {
     }
 
     @Test
+    fun clientAndServerPassSummaryLanguageAndSeparateCachedReplies() {
+        val prompts = mutableListOf<String>()
+        val ex = FakeExecutor { _, prompt ->
+            prompts += prompt.messages.first().textContent()
+            summaryReply
+        }
+        app(cloud(ex = ex)) {
+            val api = AiClient("", createClient { }, token = clinicToken)
+            for ((language, name) in listOf("en" to "English", "de" to "German", "uk" to "Ukrainian", "fr" to "French", "ru" to "Russian")) {
+                val result = api.summarize(Demo.record, language = language)
+                assertTrue(result.usedAi)
+                assertTrue("Plain $name" in prompts.last())
+            }
+            assertEquals(5, ex.calls)
+            assertTrue(api.summarize(Demo.record, language = "fr").usage.all { it.cached })
+            assertEquals(5, ex.calls)
+        }
+    }
+
+    @Test
+    fun aiOffReturnsFrenchAndRussianFactsThroughTheClient() = app(AiService.off()) {
+        val api = AiClient("", createClient { }, token = clinicToken)
+        for ((language, label) in listOf("fr" to "Tension artérielle", "ru" to "Артериальное давление")) {
+            val result = api.summarize(Demo.record, language = language)
+            assertFalse(result.usedAi)
+            assertTrue(result.lines.any { label in it.text && it.supported && it.refs.isNotEmpty() })
+            assertTrue(result.usage.isEmpty())
+        }
+    }
+
+    @Test
     fun spendingCapGivesFactsWithoutAi() {
         val ex = FakeExecutor { _, _ -> summaryReply }
         app(cloud(budget = 0.0, ex = ex)) {

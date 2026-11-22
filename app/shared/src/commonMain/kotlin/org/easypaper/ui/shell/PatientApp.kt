@@ -174,7 +174,7 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
                         is PatientScreen.Medicines -> {
                             val record = records.firstOrNull { it.request.id == screen.requestId }
                             val widget = record?.request?.widgets?.filterIsInstance<MedicationsWidget>()?.firstOrNull { it.id == screen.widgetId }
-                            if (record != null && widget != null) MedicationsScreen(state.repository, record, widget, back)
+                            if (record != null && widget != null) MedicationsScreen(state.repository, record, widget, back, language = language)
                         }
                         is PatientScreen.ShareReport -> {
                             val historyPattern = stringResource(Res.string.p2_history_line, screen.record.request.doctorName.ifBlank {

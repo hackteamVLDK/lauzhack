@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="today">Aujourd'hui</string>
+    <string name="catalog_date">Samedi 21 novembre</string>
+    <string name="catalog_day">Jour 3 sur 7 pour le Dr Weber</string>
+    <string name="appearance_dark">Apparence sombre</string>
+    <string name="cat_blood_pressure">Tension artérielle</string>
+    <string name="cat_water">Eau</string>
+    <string name="cat_food">Repas</string>
+    <string name="cat_medicines">Médicaments</string>
+    <string name="cat_questionnaire">Questionnaire</string>
+    <string name="cat_diary">Comment vous vous sentez</string>
+    <string name="cat_question">Question au médecin</string>
+    <string name="evening_reading">Mesure du soir</string>
+    <string name="unit_mmhg">mmHg</string>
+    <string name="pulse">pouls %1$s</string>
+    <string name="water_amount">%1$s sur %2$s l</string>
+    <string name="sample_food">Porridge à la banane, thé</string>
+    <string name="sample_medicine">Ramipril 5 mg, 1 le matin</string>
+    <string name="taken_at">Pris à %1$s</string>
+    <string name="add">Ajouter</string>
+    <string name="write_feeling">Notez comment vous vous sentez</string>
+    <string name="ask_question">Poser une question</string>
+    <string name="footer_privacy">Enregistré sur ce téléphone. Partagé uniquement quand vous montrez le QR code lors de la consultation.</string>
+    <string name="section_doctor">Pour le médecin</string>
+    <string name="summary">Résumé</string>
+    <string name="draft">Brouillon</string>
+    <string name="written_from">Rédigé à partir de %1$s entrées</string>
+    <string name="sample_summary">Tension artérielle le matin : 128–142/82–90 mmHg.</string>
+    <string name="confirm">Confirmer</string>
+    <string name="confirmed_at">Confirmé à %1$s</string>
+    <string name="edit">Modifier</string>
+    <string name="show_qr">Montrer le QR code au médecin</string>
+    <string name="sample_sources">lun. 08:10   jeu. 07:55</string>
+    <string name="sample_med_form">Ramipril 5 mg 1-0-0</string>
+
+    <!-- App shell (task 26) -->
+    <string name="app_name">Easy Paper</string>
+    <string name="tab_history">Historique</string>
+    <string name="tab_share">Partager</string>
+    <string name="back">Retour</string>
+    <string name="done">Terminé</string>
+    <string name="day_of">Jour %1$d sur %2$d pour %3$s</string>
+    <string name="starts_on">Début le %1$s</string>
+    <string name="ended_on">Terminé le %1$s</string>
+    <string name="today_empty_title">Pas encore de demande de votre médecin</string>
+    <string name="today_empty_message">Ouvrez le lien d'invitation de votre médecin sur ce téléphone. Vous verrez ici quoi noter.</string>
+    <string name="history_empty_title">Pas encore d'entrées</string>
+    <string name="history_empty_message">Vos entrées apparaissent ici, jour après jour.</string>
+    <string name="share_explain">La création d'un code envoie une copie chiffrée. Votre médecin scanne le code pour ouvrir vos entrées.</string>
+    <string name="requests">Demandes</string>
+    <string name="new_request">Nouvelle demande</string>
+    <string name="new_request_message">Choisissez ce que le patient doit noter et pendant combien de jours. Envoyez la demande par lien ou QR code.</string>
+    <string name="doctor_empty_title">Aucun rapport ouvert</string>
+    <string name="doctor_empty_message">Scannez le QR code du patient pour ouvrir son rapport, ou créez une demande.</string>
+    <string name="section_entries">Entrées</string>
+    <string name="developer">Développement</string>
+    <string name="design_catalog">Catalogue de composants</string>
+    <string name="fill_demo">Remplir avec des données de démonstration</string>
+    <string name="open_demo_report">Ouvrir le rapport de démonstration</string>
+    <string name="load_demo_diary">Charger le journal de démonstration</string>
+    <string name="clear_data">Effacer les données</string>
+    <string name="large_text">Texte agrandi (200 %)</string>
+    <string name="switch_to_doctor">Passer à l'application médecin</string>
+    <string name="switch_to_patient">Passer à l'application patient</string>
+    <string name="dev_footer">Menu caché pour les démonstrations et les tests. Appuyez longuement sur le titre pour l'ouvrir.</string>
+    <string name="role_question">Qui utilise cet ordinateur ?</string>
+    <string name="role_patient">Je suis patient</string>
+    <string name="role_patient_detail">Notez ce que votre médecin vous a demandé</string>
+    <string name="role_doctor">Je suis médecin</string>
+    <string name="role_doctor_detail">Créez des demandes et ouvrez les rapports des patients</string>
+    <string name="date_long">%1$s %2$d %3$s</string>
+    <string name="date_range_one_month">%1$d–%2$d %3$s</string>
+    <string name="date_range_two_months">%1$d %2$s – %3$d %4$s</string>
+    <string-array name="weekdays">
+        <item>lundi</item>
+        <item>mardi</item>
+        <item>mercredi</item>
+        <item>jeudi</item>
+        <item>vendredi</item>
+        <item>samedi</item>
+        <item>dimanche</item>
+    </string-array>
+    <string-array name="months_long">
+        <item>janvier</item>
+        <item>février</item>
+        <item>mars</item>
+        <item>avril</item>
+        <item>mai</item>
+        <item>juin</item>
+        <item>juillet</item>
+        <item>août</item>
+        <item>septembre</item>
+        <item>octobre</item>
+        <item>novembre</item>
+        <item>décembre</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>janv.</item>
+        <item>févr.</item>
+        <item>mars</item>
+        <item>avr.</item>
+        <item>mai</item>
+        <item>juin</item>
+        <item>juil.</item>
+        <item>août</item>
+        <item>sept.</item>
+        <item>oct.</item>
+        <item>nov.</item>
+        <item>déc.</item>
+    </string-array>
+    <plurals name="entries">
+        <item quantity="one">%1$d entrée</item>
+        <item quantity="other">%1$d entrées</item>
+    </plurals>
+
+    <!-- Patient Today and History (task 4) -->
+    <string name="add_bp">Ajouter la tension artérielle</string>
+    <string name="bp_progress">%1$d sur %2$d aujourd'hui</string>
+    <string name="unit_per_min">/min</string>
+    <string name="water_today">%1$s l aujourd'hui</string>
+    <string name="add_water">250 ml</string>
+    <string name="undo">Annuler</string>
+    <string name="answer_questions">Répondre aux questions du jour</string>
+    <string name="answered_at">Répondu à %1$s</string>
+    <string name="add_meal">Ajouter un repas</string>
+    <string name="not_confirmed">non confirmé</string>
+    <string name="photo">Photo</string>
+    <string name="nothing_today">Rien pour aujourd'hui</string>
+    <string name="cancel">Annuler</string>
+    <string name="save">Enregistrer</string>
+    <string name="systolic">Valeur du haut</string>
+    <string name="diastolic">Valeur du bas</string>
+    <string name="pulse_optional">Pouls (facultatif)</string>
+    <string name="bp_missing">Saisissez les valeurs du haut et du bas.</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="questions_required">Répondez aux questions oui/non et aux questions avec un nombre.</string>
+    <string name="meal_placeholder">Qu'avez-vous mangé ou bu ?</string>
+    <string name="feeling_placeholder">Comment vous sentez-vous aujourd'hui ?</string>
+    <string name="question_placeholder">Que souhaitez-vous demander à votre médecin ?</string>
+    <string name="problem_systolic">La valeur du haut doit être entre 50 et 300. Vérifiez la saisie.</string>
+    <string name="problem_diastolic">La valeur du bas doit être entre 20 et 200. Vérifiez la saisie.</string>
+    <string name="problem_pulse">Le pouls doit être entre 20 et 250. Vérifiez la saisie.</string>
+    <string name="problem_order">La valeur du bas doit être inférieure à celle du haut.</string>
+    <string name="problem_water">La quantité doit être entre 1 ml et 5 l.</string>
+    <string name="problem_empty">Écrivez quelques mots avant d'enregistrer.</string>
+    <string name="problem_other">Cette entrée n'a pas été enregistrée. Fermez le formulaire et réessayez.</string>
+    <string name="delete">Supprimer</string>
+    <string name="delete_entry_question">Supprimer cette entrée ? Elle sera retirée de ce téléphone et du rapport.</string>
+    <string name="unit_ml">%1$d ml</string>
+    <string name="decimal_separator">,</string>
+    <!-- AI cost screen (task 32) -->
+    <string name="cost_title">Coût de l'IA</string>
+    <string name="cost_report">Ce rapport</string>
+    <string name="cost_no_report_selected">Aucun rapport sélectionné</string>
+    <string name="cost_session">Toute la session</string>
+    <string name="cost_estimated">estimation</string>
+    <string name="cost_demo_capture">Démonstration enregistrée du modèle local. Ces chiffres d'utilisation ne sont pas en direct.</string>
+    <string name="cost_step_photo">Description de photo</string>
+    <string name="cost_step_summary">Résumé</string>
+    <string name="cost_step_document">Extraction de document</string>
+    <string name="cost_tokens">Jetons : %1$d en entrée / %2$d en sortie</string>
+    <string name="cost_cache_hit">Depuis le cache</string>
+    <string name="cost_total">Total</string>
+    <string name="cost_comparison">Comparaison des coûts</string>
+    <string name="cost_cloud">Cloud (OpenRouter)</string>
+    <string name="cost_clinic">Module du cabinet (Ollama)</string>
+    <string name="cost_comparison_footer">Coût des jetons pour les mêmes volumes d'entrée et de sortie. Le cache ne consomme aucun jeton. Le matériel du cabinet n'est pas inclus.</string>
+    <string name="cost_server">Serveur</string>
+    <string name="cost_mode">Mode</string>
+    <string name="cost_mode_cloud">Cloud</string>
+    <string name="cost_mode_clinic">Module du cabinet</string>
+    <string name="cost_mode_off">Désactivé</string>
+    <string name="cost_provider">Fournisseur</string>
+    <string name="cost_small_model">Modèle pour les photos</string>
+    <string name="cost_big_model">Modèle pour les résumés et documents</string>
+    <string name="cost_budget">Budget du serveur utilisé</string>
+    <string name="cost_budget_unlimited">Sans limite</string>
+    <string name="cost_budget_amount">%1$s sur %2$s</string>
+    <string name="cost_key_configured">Clé API configurée</string>
+    <string name="cost_yes">Oui</string>
+    <string name="cost_no">Non</string>
+    <string name="cost_unavailable">Indisponible</string>
+    <string name="cost_empty_title">Aucun appel à l'IA</string>
+    <string name="cost_empty_message">Aucune utilisation de l'IA enregistrée ici.</string>
+    <string name="cost_usd">%1$s $</string>
+    <string name="cost_decimal_separator">,</string>
+
+    <!-- Doctor visit (task 10) -->
+    <string name="facts_without_ai">Faits sans IA</string>
+    <string name="no_source">Aucune source</string>
+    <string name="confirm_summary">Confirmer le résumé</string>
+    <string name="clinic_form">Formulaire du cabinet</string>
+    <string name="fields_decided">Vérifiés : %1$d sur %2$d</string>
+    <string name="remove">Retirer</string>
+    <string name="removed">Retiré</string>
+    <string name="save_record">Enregistrer dans le dossier du cabinet</string>
+    <string name="saved_at">Enregistré à %1$s</string>
+    <string name="save_hint">Confirmez ou retirez chaque champ pour terminer la vérification. Rien n'est conservé avant cela.</string>
+    <string name="original_entry">Entrée d'origine</string>
+    <string name="field_complaint">Motif de consultation</string>
+    <string name="field_history">Historique</string>
+    <string name="field_bp">Tension artérielle</string>
+    <string name="field_meds">Médicaments actuels</string>
+    <string name="field_fluid">Apport hydrique</string>
+    <string name="field_questions">Questions du patient</string>
+    <string name="wording_bp">%1$s : %2$s/%3$s mmHg, mesures : %4$d</string>
+    <string name="wording_pulse">, pouls %1$s/min</string>
+    <string name="wording_fluid">%1$d ml par jour en moyenne, jours : %2$d</string>
+    <string name="med_not_confirmed">non confirmé par le patient</string>
+    <string name="no_entries">Aucune entrée</string>
+    <string-array name="weekdays_short">
+        <item>lun.</item>
+        <item>mar.</item>
+        <item>mer.</item>
+        <item>jeu.</item>
+        <item>ven.</item>
+        <item>sam.</item>
+        <item>dim.</item>
+    </string-array>
+    <string name="date_short">%1$d %2$s</string>
+    <string name="more_sources">%1$d de plus</string>
+    <!-- patient medicines screen (task 31) -->
+    <string name="med_title">Médicaments</string>
+    <string name="med_scan">Scanner la boîte</string>
+    <string name="med_type">Saisir le nom</string>
+    <string name="med_take_now">Pris maintenant</string>
+    <string name="med_taken_today">Aujourd'hui : %1$s</string>
+    <string name="med_empty">Pas encore de médicaments</string>
+    <string name="med_empty_message">Scannez la boîte ou saisissez le nom.</string>
+    <string name="med_footer">Uniquement ce que vous prenez. L'application ne donne pas de conseils sur les médicaments.</string>
+    <string name="med_found">Est-ce votre médicament ?</string>
+    <string name="med_not_found">La boîte n'a pas été reconnue. Saisissez le nom.</string>
+    <string name="med_name">Nom du médicament</string>
+    <string name="med_dose">Dose et fréquence, par ex. 1 comprimé le matin</string>
+    <string name="med_check">Vérifier le résultat</string>
+    <string name="med_reading">Lecture de la photo…</string>
+    <string name="med_other">Absent de la liste ? Saisissez-le</string>
+
+    <!-- Doctor visit, AI and chart (task 10 step 3) -->
+    <string name="ai_write">Rédiger le résumé avec l'IA</string>
+    <string name="ai_writing">Rédaction…</string>
+    <string name="ai_failed">L'IA est inaccessible. Le résumé des faits est conservé ; réessayez plus tard.</string>
+    <string name="ai_not_used">Le serveur a répondu sans IA ; le résumé présente les faits.</string>
+    <string name="chart_title">Tension artérielle</string>
+    <string name="chart_upper">valeur du haut</string>
+    <string name="chart_lower">valeur du bas</string>
+    <string name="chart_description">Graphique de tension artérielle : haut %1$s, bas %2$s mmHg, %3$d mesures.</string>
+    <!-- device storage could not be opened (task 27) -->
+    <string name="storage_error_title">Votre journal n'a pas pu être ouvert</string>
+    <string name="storage_error_message">Rien n'a été modifié ni supprimé sur cet appareil. Fermez puis rouvrez l'application. Si le problème persiste, informez votre cabinet.</string>
+    <!-- visit handover (task 30) -->
+    <string name="share_create">Créer un code pour le médecin</string>
+    <string name="share_show">Montrez ce code à votre médecin. Il s'ouvre une seule fois, sous 72 heures, uniquement sur l'écran du médecin.</string>
+    <string name="share_new">Créer un nouveau code</string>
+    <string name="share_none">Rien à partager pour le moment</string>
+    <string name="share_none_message">La demande de votre médecin et vos entrées apparaissent ici.</string>
+    <string name="share_offline">Le serveur est inaccessible. Vérifiez la connexion internet et réessayez.</string>
+    <string name="share_failed">Le code n'a pas pu être créé. Vérifiez la connexion internet et réessayez.</string>
+    <string name="share_qr">QR code pour le médecin</string>
+    <string name="open_report">Ouvrir le rapport du patient</string>
+    <string name="open_report_hint">Scannez le QR code du patient ou collez le texte commençant par ep1:</string>
+    <string name="open_report_button">Ouvrir</string>
+    <string name="open_used">Ce code a déjà été utilisé ou a expiré. Demandez un nouveau code au patient.</string>
+    <string name="open_not_ours">Ce n'est pas un code Easy Paper. Scannez à nouveau le QR code ou collez le code entier commençant par ep1:</string>
+    <string name="open_failed">Ce code n'a pas permis d'ouvrir le rapport. Vérifiez que le code entier a été collé ou demandez-en un nouveau au patient.</string>
+    <string name="open_offline">Le serveur est inaccessible. Vérifiez le réseau et réessayez ; le code reste dans le champ.</string>
+    <string name="entry_photo">Photo du patient</string>
+    <!-- Patient photos (task 4 step 2) -->
+    <string name="take_photo">Prendre une photo</string>
+    <string name="choose_photo">Choisir une photo</string>
+    <string name="remove_photo">Retirer la photo</string>
+    <string name="photo_optional">La photo est facultative.</string>
+
+    <!-- Request builder and invite (task 5) -->
+    <string name="rb_complaint_placeholder">Par exemple : maux de tête le matin depuis deux semaines</string>
+    <string name="rb_doctor_header">Votre nom pour le patient</string>
+    <string name="rb_doctor_placeholder">Dr Anna Keller</string>
+    <string name="rb_period">Période</string>
+    <string name="rb_start">Début</string>
+    <string name="rb_length">Durée</string>
+    <string name="rb_widgets">Ce que le patient doit noter</string>
+    <string name="rb_widgets_footer">Le patient les voit dans cet ordre, avec ces noms.</string>
+    <string name="rb_times_per_day">Fois par jour : %1$d</string>
+    <string name="rb_water_target">Objectif quotidien : %1$s l</string>
+    <string name="rb_water_no_target">Aucun objectif quotidien</string>
+    <string name="rb_questions">Questions</string>
+    <string name="rb_question_placeholder">Écrivez une question</string>
+    <string name="rb_kind_yesno">Oui ou non</string>
+    <string name="rb_kind_scale">0–10</string>
+    <string name="rb_kind_text">Texte</string>
+    <string name="rb_add_question">Ajouter une question</string>
+    <string name="rb_create">Créer une invitation</string>
+    <string name="rb_invite_title">Invitation</string>
+    <string name="rb_invite_footer">Le patient scanne ce code avec l'appareil photo ou ouvre le lien. Le code ne contient que cette demande.</string>
+    <string name="rb_too_long_for_qr">Trop long pour un seul QR code : envoyez le lien.</string>
+    <string name="rb_copy">Copier le lien</string>
+    <string name="rb_copied">Lien copié</string>
+    <string name="scale_none">aucune</string>
+    <string name="scale_worst">maximale</string>
+    <string name="q_default_1">Avez-vous ressenti ce trouble aujourd'hui ?</string>
+    <string name="q_default_2">Quelle était son intensité ?</string>
+    <string name="err_doctor">Écrivez votre nom tel que le patient doit le voir.</string>
+    <string name="err_complaint">Indiquez le motif de consultation.</string>
+    <string name="err_start">Choisissez une date de début.</string>
+    <string name="err_days">La période doit être de 1 à 30 jours.</string>
+    <string name="err_no_widgets">Choisissez au moins un élément à noter.</string>
+    <string name="err_questionnaire">Ajoutez un texte à chaque question ou retirez-la.</string>
+    <string name="err_other">La demande n'a pas pu être créée. Créez-en une nouvelle.</string>
+    <string name="open_invite">Ouvrir l'invitation</string>
+    <string name="invite_placeholder">Collez le lien ou le code de votre médecin</string>
+    <string name="invite_open">Ouvrir</string>
+    <string name="invite_not">Ce n'est pas une invitation Easy Paper. Vérifiez que le lien a été copié en entier.</string>
+    <string name="invite_newer">Cette invitation nécessite une version plus récente. Mettez Easy Paper à jour et rouvrez-la.</string>
+    <string name="invite_damaged">L'invitation est incomplète ou a été modifiée. Demandez à votre médecin de la renvoyer.</string>
+    <string name="invite_too_large">Ce texte est trop long pour une invitation. Collez uniquement le lien.</string>
+    <plurals name="days">
+        <item quantity="one">%1$d jour</item>
+        <item quantity="other">%1$d jours</item>
+    </plurals>
+    <string name="less">Moins</string>
+    <string name="more">Plus</string>
+    <string name="invite_start">Commencer à noter</string>
+    <string name="invite_summary">%1$s, %2$s à partir du %3$s</string>
+    <string name="invite_preview_footer">Vos entrées restent sur ce téléphone jusqu'à ce que vous montriez le QR code à la consultation.</string>
+    <string name="edited_by_you">Modifié par vous</string>
+    <string name="open_scan">Lire un QR code</string>
+    <string name="open_scan_failed">Aucun code n'a pu être lu. Autorisez l'appareil photo ou collez le code.</string>
+    <!-- documents at the visit (task 41) -->
+    <string name="doc_title">Documents</string>
+    <string name="doc_hint">Collez le texte d'une lettre de sortie ou d'un résultat d'analyse, ou ajoutez sa photo. Les faits sont repris avec les mots du document ; rien n'entre dans le formulaire sans votre confirmation.</string>
+    <string name="doc_paste">Texte du document</string>
+    <string name="doc_read">Lire le document</string>
+    <string name="doc_reading">Lecture du document…</string>
+    <string name="doc_to_form">Ajouter au formulaire</string>
+    <string name="doc_in_form">Dans le formulaire</string>
+    <string name="doc_quote_checked">Citation trouvée dans le document</string>
+    <string name="doc_quote_unchecked">Citation non vérifiée (photo)</string>
+    <string name="doc_from">Extrait du document</string>
+    <string name="doc_clinic_only">Seul le module du cabinet lit les documents. Ce serveur fonctionne dans le cloud, aucun document ne lui est envoyé.</string>
+    <string name="doc_no_server">Connectez-vous au module du cabinet pour lire les documents.</string>
+    <string name="doc_failed">Le document n'a pas pu être lu. Prenez une photo plus nette ou collez le texte.</string>
+    <string name="doc_none">Aucun fait trouvé dans ce document.</string>
+    <string name="doc_field_medication">Médicament</string>
+    <string name="doc_field_allergy">Allergie</string>
+    <string name="doc_field_diagnosis">Diagnostic dans le document</string>
+    <string name="doc_field_procedure">Intervention</string>
+    <string name="doc_field_lab">Valeur d'analyse</string>
+    <string name="dev_server">Adresse du serveur</string>
+    <string name="dev_server_footer">Sur un téléphone : l'adresse de l'ordinateur qui héberge le serveur, par ex. http://192.168.1.20:8080, sur le même réseau. Vide : l'hôte de l'émulateur sur Android, cet ordinateur sur Desktop.</string>
+    <string name="share_offline_at">Le serveur à %1$s est inaccessible. Vérifiez le réseau et l'adresse du serveur dans le menu de développement (appui long sur le titre).</string>
+    <string name="clinic_code">Code d'accès du cabinet</string>
+    <string name="clinic_code_footer">Nécessaire pour les résumés IA du serveur du cabinet. Il reste dans cette fenêtre et n'est pas enregistré.</string>
+
+    <!-- Patient design system v2 (task 50). -->
+    <string name="v2_cancel">Annuler</string>
+    <string name="v2_clear_search">Effacer la recherche</string>
+    <string name="v2_later">Plus tard</string>
+    <string name="v2_open_profile">Ouvrir le profil</string>
+    <string name="v2_catalog_title">Composants patient v2</string>
+    <string name="v2_search_placeholder">Rechercher des catégories de santé</string>
+    <string name="v2_period_day">J</string>
+    <string name="v2_period_week">S</string>
+    <string name="v2_period_month">M</string>
+    <string name="v2_period_half_year">6M</string>
+    <string name="v2_show_options">Afficher les options de partage</string>
+    <string name="v2_options_title">Partager avec votre médecin</string>
+    <string name="v2_option_qr">Afficher le QR code</string>
+    <string name="v2_option_qr_subtitle">Chiffré, à usage unique.</string>
+    <string name="v2_option_nearby">À proximité (Bluetooth)</string>
+    <string name="v2_option_nearby_subtitle">Connectez-vous à l'appareil du médecin à proximité.</string>
+    <string name="v2_option_file">Enregistrer un fichier chiffré</string>
+    <string name="v2_option_file_subtitle">Gardez une copie protégée à partager.</string>
+    <string name="v2_show_onboarding">Aperçu de la présentation</string>
+    <string name="v2_onboarding_title">Votre santé, entre vos mains</string>
+    <string name="v2_onboarding_body">Notez votre journée, suivez les changements et partagez avec votre médecin quand vous le souhaitez.</string>
+    <string name="v2_onboarding_primary">Continuer</string>
+    <string name="v2_onboarding_secondary">Pas maintenant</string>
+    <string name="v2_onboarding_detail">Chiffré sur ce téléphone. Rien n'est transmis sans votre choix de partage. Vous pouvez tout supprimer à tout moment.</string>
+    <string name="v2_progress_label">Programme du jour</string>
+    <string name="v2_change_progress">Modifier la progression</string>
+    <string name="v2_profile_sample">Exemple de profil sélectionné.</string>
+    <string name="v2_qr_selected">Partage par QR code sélectionné.</string>
+    <string name="v2_sample_initials">MT</string>
+    <string name="med_not_in_list">Cette boîte n'est pas dans la liste des médicaments. Nous avons rempli le nom lu sur la boîte : vérifiez-le.</string>
+    <string name="share_creating">Création du code…</string>
+    <string name="open_opening">Ouverture du rapport…</string>
+    <string name="busy">En cours</string>
+    <string name="problem_measurement">Ce nombre ressemble à une faute de frappe. Vérifiez la valeur et l'unité.</string>
+    <!-- Final UI review fixes (task 44) -->
+    <string name="opening_diary">Ouverture de votre journal…</string>
+    <string name="complete_review">Terminer la vérification</string>
+    <string name="review_completed_at">Vérification terminée à %1$s</string>
+    <string name="copy_for_record">Copier pour le dossier du cabinet</string>
+    <string name="copied_for_record">Copié. Collez dans le dossier du cabinet.</string>
+    <string name="report_number">Rapport %1$s</string>
+    <string name="chart_show_values">Afficher les valeurs</string>
+    <string name="chart_hide_values">Masquer les valeurs</string>
+    <string name="rb_start_less">Commencer un jour plus tôt</string>
+    <string name="rb_start_more">Commencer un jour plus tard</string>
+    <string name="rb_days_less">Un jour de suivi en moins</string>
+    <string name="rb_days_more">Un jour de suivi en plus</string>
+    <string name="rb_bp_less">Une mesure par jour en moins</string>
+    <string name="rb_bp_more">Une mesure par jour en plus</string>
+    <string name="rb_water_less">Réduire l'objectif quotidien d'eau</string>
+    <string name="rb_water_more">Augmenter l'objectif quotidien d'eau</string>
+    <string name="doc_show">Afficher le document</string>
+    <string name="doc_source_title">Document</string>
+    <string name="date_day_month">%1$d %2$s</string>
+    <string name="chart_reading">%1$d/%2$d</string>
+</resources>

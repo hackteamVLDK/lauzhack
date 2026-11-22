@@ -202,7 +202,7 @@ class SummaryPipelineTest {
     fun bothPromptsUseTheRequestedLanguageAndCacheIsSeparatedByLanguage() = runTest {
         val ex = executor()
         val pipeline = SummaryPipeline(ex, config)
-        for ((language, name) in listOf("en" to "English", "de" to "German", "uk" to "Ukrainian")) {
+        for ((language, name) in listOf("en" to "English", "de" to "German", "uk" to "Ukrainian", "fr" to "French", "ru" to "Russian")) {
             val result = pipeline.summarize(record, photos, language = language)
             assertTrue(result.usedAi)
             val calls = ex.calls.takeLast(2)
@@ -214,27 +214,63 @@ class SummaryPipelineTest {
             assertTrue(record.factDigest().toText() in calls[1].first.text(), "the facts in the prompt stay in English")
             assertTrue("not food" in calls[0].first.messages.first().textContent())
         }
-        assertEquals(6, ex.calls.size)
-        val cached = pipeline.summarize(record, photos, language = "de")
-        assertEquals(6, ex.calls.size)
-        assertTrue(cached.usage.all { it.cached })
+        assertEquals(10, ex.calls.size)
+        for (language in listOf("en", "de", "uk", "fr", "ru")) {
+            val cached = pipeline.summarize(record, photos, language = language)
+            assertEquals(10, ex.calls.size)
+            assertTrue(cached.usage.all { it.cached })
+        }
     }
 
     @Test
-    fun germanFallbackKeepsReferencesAndPatientTextForBudgetAndProviderFailure() = runTest {
-        for (budget in listOf(true, false)) {
-            val ex = executor().apply { failing = !budget }
-            val pipeline = SummaryPipeline(ex, if (budget) config.copy(budgetUsdPerReport = 0.0) else config)
-            val result = pipeline.summarize(record, photos, language = "de")
+    fun localizedFallbackKeepsReferencesAndPatientTextForBudgetAndProviderFailure() = runTest {
+        for ((language, labels) in mapOf(
+            "de" to ("Blutdruck" to "Tagebuch"),
+            "uk" to ("Артеріальний тиск" to "Щоденник"),
+            "fr" to ("Tension artérielle" to "Journal"),
+            "ru" to ("Артериальное давление" to "Дневник"),
+        )) {
+            for (budget in listOf(true, false)) {
+                val ex = executor().apply { failing = !budget }
+                val pipeline = SummaryPipeline(ex, if (budget) config.copy(budgetUsdPerReport = 0.0) else config)
+                val result = pipeline.summarize(record, photos, language = language)
 
-            assertFalse(result.usedAi)
-            assertEquals(record.factDigest().toLocalizedText("de"), result.summary)
-            assertTrue("Blutdruck" in result.summary)
-            assertTrue("Tagebuch" in result.summary)
-            assertTrue("Headache again after lunch [e4]" in result.summary)
-            assertTrue(result.lines.any { "Blutdruck" in it.text && it.refs == listOf("e1") && it.supported })
-            assertTrue(result.lines.any { it.refs == listOf("e4") && it.supported })
+                assertFalse(result.usedAi)
+                assertEquals(record.factDigest().toLocalizedText(language), result.summary)
+                assertTrue(labels.first in result.summary)
+                assertTrue(labels.second in result.summary)
+                assertTrue("Headache again after lunch [e4]" in result.summary)
+                assertTrue(result.lines.any { labels.first in it.text && it.refs == listOf("e1") && it.supported })
+                assertTrue(result.lines.any { it.refs == listOf("e4") && it.supported })
+            }
         }
+    }
+
+    @Test
+    fun frenchAndRussianPhotoDescriptionsAreMarkedInTheOutputLanguage() = runTest {
+        for ((language, description) in listOf("fr" to "soupe et pain", "ru" to "суп и хлеб")) {
+            val ex = FakeExecutor { model -> if (model == config.small) description else "128/84 mmHg [e1]" }
+            val result = SummaryPipeline(ex, config).summarize(record, photos, language = language)
+            val label = SummaryPipeline.PHOTO_LABEL.getValue(language)
+            assertTrue(result.usedAi)
+            assertEquals(SummaryLine("$label: $description [e2]", listOf("e2"), true), result.lines.last())
+        }
+    }
+
+    @Test
+    fun frenchAdviceIsRemovedAndQuotedPatientQuestionsAreKept() {
+        val (lines, dropped) = SummaryPipeline.checkLines(
+            "Tension artérielle 128/84 mmHg [e1]\n" +
+                "Vous devriez réduire le sel [e1]\n" +
+                "Il faut consulter [e4]\n" +
+                "Diagnostic probable de migraine [e4]\n" +
+                "Question : « Dois-je consulter ? » [e4]",
+            setOf("e1", "e4"),
+        )
+        assertEquals(3, dropped)
+        assertEquals(2, lines.size)
+        assertTrue(lines.all { it.supported })
+        assertTrue("Dois-je consulter" in lines.last().text)
     }
 
     @Test

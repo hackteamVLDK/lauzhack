@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="today">Сегодня</string>
+    <string name="catalog_date">Суббота, 21 ноября</string>
+    <string name="catalog_day">День 3 из 7 для доктора Вебера</string>
+    <string name="appearance_dark">Тёмная тема</string>
+    <string name="cat_blood_pressure">Артериальное давление</string>
+    <string name="cat_water">Вода</string>
+    <string name="cat_food">Еда</string>
+    <string name="cat_medicines">Лекарства</string>
+    <string name="cat_questionnaire">Опросник</string>
+    <string name="cat_diary">Самочувствие</string>
+    <string name="cat_question">Вопрос врачу</string>
+    <string name="evening_reading">Вечернее измерение</string>
+    <string name="unit_mmhg">мм рт. ст.</string>
+    <string name="pulse">пульс %1$s</string>
+    <string name="water_amount">%1$s из %2$s л</string>
+    <string name="sample_food">Овсянка с бананом, чай</string>
+    <string name="sample_medicine">Рамиприл 5 мг, 1 утром</string>
+    <string name="taken_at">Принято в %1$s</string>
+    <string name="add">Добавить</string>
+    <string name="write_feeling">Запишите, как вы себя чувствуете</string>
+    <string name="ask_question">Задать вопрос</string>
+    <string name="footer_privacy">Сохранено на этом телефоне. Передаётся только когда вы показываете QR-код на приёме.</string>
+    <string name="section_doctor">Для врача</string>
+    <string name="summary">Сводка</string>
+    <string name="draft">Черновик</string>
+    <string name="written_from">Составлено по записям: %1$s</string>
+    <string name="sample_summary">Артериальное давление утром: 128–142/82–90 мм рт. ст.</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="confirmed_at">Подтверждено в %1$s</string>
+    <string name="edit">Изменить</string>
+    <string name="show_qr">Показать QR-код врачу</string>
+    <string name="sample_sources">пн 08:10   чт 07:55</string>
+    <string name="sample_med_form">Рамиприл 5 мг 1-0-0</string>
+
+    <!-- App shell (task 26) -->
+    <string name="app_name">Easy Paper</string>
+    <string name="tab_history">История</string>
+    <string name="tab_share">Поделиться</string>
+    <string name="back">Назад</string>
+    <string name="done">Готово</string>
+    <string name="day_of">День %1$d из %2$d для %3$s</string>
+    <string name="starts_on">Начало: %1$s</string>
+    <string name="ended_on">Завершено: %1$s</string>
+    <string name="today_empty_title">Пока нет запроса от врача</string>
+    <string name="today_empty_message">Откройте ссылку-приглашение от врача на этом телефоне. Здесь появится, что нужно записывать.</string>
+    <string name="history_empty_title">Пока нет записей</string>
+    <string name="history_empty_message">Здесь появятся ваши записи по дням.</string>
+    <string name="share_explain">При создании кода загружается зашифрованная копия. Врач сканирует код, чтобы открыть ваши записи.</string>
+    <string name="requests">Запросы</string>
+    <string name="new_request">Новый запрос</string>
+    <string name="new_request_message">Выберите, что и сколько дней пациент будет записывать. Отправьте запрос ссылкой или QR-кодом.</string>
+    <string name="doctor_empty_title">Нет открытого отчёта</string>
+    <string name="doctor_empty_message">Отсканируйте QR-код пациента, чтобы открыть отчёт, или создайте новый запрос.</string>
+    <string name="section_entries">Записи</string>
+    <string name="developer">Для разработчиков</string>
+    <string name="design_catalog">Каталог компонентов</string>
+    <string name="fill_demo">Заполнить демоданными</string>
+    <string name="open_demo_report">Открыть демоотчёт</string>
+    <string name="load_demo_diary">Загрузить демодневник</string>
+    <string name="clear_data">Очистить данные</string>
+    <string name="large_text">Крупный текст (200 %)</string>
+    <string name="switch_to_doctor">Перейти в приложение врача</string>
+    <string name="switch_to_patient">Перейти в приложение пациента</string>
+    <string name="dev_footer">Скрытое меню для демонстраций и тестов. Открывается долгим нажатием на заголовок экрана.</string>
+    <string name="role_question">Кто пользуется этим компьютером?</string>
+    <string name="role_patient">Я пациент</string>
+    <string name="role_patient_detail">Записывайте то, о чём попросил врач</string>
+    <string name="role_doctor">Я врач</string>
+    <string name="role_doctor_detail">Создавайте запросы и открывайте отчёты пациентов</string>
+    <string name="date_long">%1$s, %2$d %3$s</string>
+    <string name="date_range_one_month">%1$d–%2$d %3$s</string>
+    <string name="date_range_two_months">%1$d %2$s – %3$d %4$s</string>
+    <string-array name="weekdays">
+        <item>понедельник</item>
+        <item>вторник</item>
+        <item>среда</item>
+        <item>четверг</item>
+        <item>пятница</item>
+        <item>суббота</item>
+        <item>воскресенье</item>
+    </string-array>
+    <string-array name="months_long">
+        <item>января</item>
+        <item>февраля</item>
+        <item>марта</item>
+        <item>апреля</item>
+        <item>мая</item>
+        <item>июня</item>
+        <item>июля</item>
+        <item>августа</item>
+        <item>сентября</item>
+        <item>октября</item>
+        <item>ноября</item>
+        <item>декабря</item>
+    </string-array>
+    <string-array name="months_short">
+        <item>янв.</item>
+        <item>февр.</item>
+        <item>мар.</item>
+        <item>апр.</item>
+        <item>мая</item>
+        <item>июн.</item>
+        <item>июл.</item>
+        <item>авг.</item>
+        <item>сент.</item>
+        <item>окт.</item>
+        <item>нояб.</item>
+        <item>дек.</item>
+    </string-array>
+    <plurals name="entries">
+        <item quantity="one">%1$d запись</item>
+        <item quantity="few">%1$d записи</item>
+        <item quantity="many">%1$d записей</item>
+        <item quantity="other">%1$d записи</item>
+    </plurals>
+
+    <!-- Patient Today and History (task 4) -->
+    <string name="add_bp">Добавить артериальное давление</string>
+    <string name="bp_progress">%1$d из %2$d сегодня</string>
+    <string name="unit_per_min">/мин</string>
+    <string name="water_today">%1$s л сегодня</string>
+    <string name="add_water">250 мл</string>
+    <string name="undo">Отменить</string>
+    <string name="answer_questions">Ответить на вопросы за сегодня</string>
+    <string name="answered_at">Ответ записан в %1$s</string>
+    <string name="add_meal">Добавить еду</string>
+    <string name="not_confirmed">не подтверждено</string>
+    <string name="photo">Фото</string>
+    <string name="nothing_today">Сегодня пока нет записей</string>
+    <string name="cancel">Отмена</string>
+    <string name="save">Сохранить</string>
+    <string name="systolic">Верхнее значение</string>
+    <string name="diastolic">Нижнее значение</string>
+    <string name="pulse_optional">Пульс (необязательно)</string>
+    <string name="bp_missing">Введите верхнее и нижнее значения.</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="questions_required">Ответьте на вопросы с вариантами «да» или «нет» и с числовым ответом.</string>
+    <string name="meal_placeholder">Что вы ели или пили?</string>
+    <string name="feeling_placeholder">Как вы себя чувствуете сегодня?</string>
+    <string name="question_placeholder">Что вы хотите спросить у врача?</string>
+    <string name="problem_systolic">Верхнее значение должно быть от 50 до 300. Проверьте, нет ли опечатки.</string>
+    <string name="problem_diastolic">Нижнее значение должно быть от 20 до 200. Проверьте, нет ли опечатки.</string>
+    <string name="problem_pulse">Пульс должен быть от 20 до 250. Проверьте, нет ли опечатки.</string>
+    <string name="problem_order">Нижнее значение должно быть меньше верхнего.</string>
+    <string name="problem_water">Количество должно быть от 1 мл до 5 л.</string>
+    <string name="problem_empty">Напишите несколько слов перед сохранением.</string>
+    <string name="problem_other">Запись не сохранена. Закройте форму и попробуйте ещё раз.</string>
+    <string name="delete">Удалить</string>
+    <string name="delete_entry_question">Удалить эту запись? Она исчезнет с этого телефона и из отчёта.</string>
+    <string name="unit_ml">%1$d мл</string>
+    <string name="decimal_separator">,</string>
+    <!-- AI cost screen (task 32) -->
+    <string name="cost_title">Стоимость ИИ</string>
+    <string name="cost_report">Этот отчёт</string>
+    <string name="cost_no_report_selected">Отчёт не выбран</string>
+    <string name="cost_session">Весь сеанс</string>
+    <string name="cost_estimated">оценка</string>
+    <string name="cost_demo_capture">Записанный демозапуск локальной модели. Эти данные об использовании не обновляются в реальном времени.</string>
+    <string name="cost_step_photo">Описание фото</string>
+    <string name="cost_step_summary">Сводка</string>
+    <string name="cost_step_document">Извлечение данных из документа</string>
+    <string name="cost_tokens">Токены: %1$d на входе / %2$d на выходе</string>
+    <string name="cost_cache_hit">Из кэша</string>
+    <string name="cost_total">Итого</string>
+    <string name="cost_comparison">Сравнение стоимости</string>
+    <string name="cost_cloud">Облако (OpenRouter)</string>
+    <string name="cost_clinic">Модуль клиники (Ollama)</string>
+    <string name="cost_comparison_footer">Стоимость токенов при том же объёме ввода и вывода. Обращения к кэшу не расходуют токены. Стоимость оборудования клиники не учтена.</string>
+    <string name="cost_server">Сервер</string>
+    <string name="cost_mode">Режим</string>
+    <string name="cost_mode_cloud">Облако</string>
+    <string name="cost_mode_clinic">Модуль клиники</string>
+    <string name="cost_mode_off">Выключено</string>
+    <string name="cost_provider">Провайдер</string>
+    <string name="cost_small_model">Модель для фото</string>
+    <string name="cost_big_model">Модель для сводок и документов</string>
+    <string name="cost_budget">Израсходовано из бюджета сервера</string>
+    <string name="cost_budget_unlimited">Без ограничений</string>
+    <string name="cost_budget_amount">%1$s из %2$s</string>
+    <string name="cost_key_configured">Ключ API настроен</string>
+    <string name="cost_yes">Да</string>
+    <string name="cost_no">Нет</string>
+    <string name="cost_unavailable">Недоступно</string>
+    <string name="cost_empty_title">Нет вызовов ИИ</string>
+    <string name="cost_empty_message">Здесь пока нет данных об использовании ИИ.</string>
+    <string name="cost_usd">%1$s $</string>
+    <string name="cost_decimal_separator">,</string>
+
+    <!-- Doctor visit (task 10) -->
+    <string name="facts_without_ai">Факты без ИИ</string>
+    <string name="no_source">Нет источника</string>
+    <string name="confirm_summary">Подтвердить сводку</string>
+    <string name="clinic_form">Форма клиники</string>
+    <string name="fields_decided">Проверено: %1$d из %2$d</string>
+    <string name="remove">Убрать</string>
+    <string name="removed">Убрано</string>
+    <string name="save_record">Сохранить в карту клиники</string>
+    <string name="saved_at">Сохранено в %1$s</string>
+    <string name="save_hint">Подтвердите или уберите каждое поле, чтобы завершить проверку. До этого ничего не сохраняется.</string>
+    <string name="original_entry">Исходная запись</string>
+    <string name="field_complaint">Жалоба</string>
+    <string name="field_history">Анамнез</string>
+    <string name="field_bp">Артериальное давление</string>
+    <string name="field_meds">Текущие лекарства</string>
+    <string name="field_fluid">Потребление жидкости</string>
+    <string name="field_questions">Вопросы пациента</string>
+    <string name="wording_bp">%1$s: %2$s/%3$s мм рт. ст., измерений: %4$d</string>
+    <string name="wording_pulse">, пульс %1$s/мин</string>
+    <string name="wording_fluid">В среднем %1$d мл в день, дней: %2$d</string>
+    <string name="med_not_confirmed">не подтверждено пациентом</string>
+    <string name="no_entries">Нет записей</string>
+    <string-array name="weekdays_short">
+        <item>пн</item>
+        <item>вт</item>
+        <item>ср</item>
+        <item>чт</item>
+        <item>пт</item>
+        <item>сб</item>
+        <item>вс</item>
+    </string-array>
+    <string name="date_short">%1$d %2$s</string>
+    <string name="more_sources">Ещё %1$d</string>
+    <!-- patient medicines screen (task 31) -->
+    <string name="med_title">Лекарства</string>
+    <string name="med_scan">Сканировать упаковку</string>
+    <string name="med_type">Ввести вручную</string>
+    <string name="med_take_now">Принято сейчас</string>
+    <string name="med_taken_today">Сегодня: %1$s</string>
+    <string name="med_empty">Пока нет лекарств</string>
+    <string name="med_empty_message">Отсканируйте упаковку или введите название.</string>
+    <string name="med_footer">Только то, что вы принимаете. Приложение не даёт советов о лекарствах.</string>
+    <string name="med_found">Это ваше лекарство?</string>
+    <string name="med_not_found">Упаковка не распознана. Введите название.</string>
+    <string name="med_name">Название лекарства</string>
+    <string name="med_dose">Доза и частота, например 1 таблетка утром</string>
+    <string name="med_check">Проверить результат сканирования</string>
+    <string name="med_reading">Чтение фото…</string>
+    <string name="med_other">Нет в списке? Введите вручную</string>
+
+    <!-- Doctor visit, AI and chart (task 10 step 3) -->
+    <string name="ai_write">Составить сводку с ИИ</string>
+    <string name="ai_writing">Составление…</string>
+    <string name="ai_failed">ИИ недоступен. Сводка по фактам остаётся; попробуйте позже.</string>
+    <string name="ai_not_used">Сервер ответил без ИИ; сводка показывает факты.</string>
+    <string name="chart_title">Артериальное давление</string>
+    <string name="chart_upper">верхнее</string>
+    <string name="chart_lower">нижнее</string>
+    <string name="chart_description">График артериального давления: верхнее %1$s, нижнее %2$s мм рт. ст., измерений: %3$d.</string>
+    <!-- device storage could not be opened (task 27) -->
+    <string name="storage_error_title">Не удалось открыть дневник</string>
+    <string name="storage_error_message">На этом устройстве ничего не изменено и не удалено. Закройте и снова откройте приложение. Если это повторяется, сообщите в клинику.</string>
+    <!-- visit handover (task 30) -->
+    <string name="share_create">Создать код для врача</string>
+    <string name="share_show">Покажите этот код врачу. Он открывается один раз в течение 72 часов и только на экране врача.</string>
+    <string name="share_new">Создать новый код</string>
+    <string name="share_none">Пока нечем поделиться</string>
+    <string name="share_none_message">Здесь появятся запрос врача и ваши записи.</string>
+    <string name="share_offline">Сервер недоступен. Проверьте подключение к интернету и попробуйте ещё раз.</string>
+    <string name="share_failed">Не удалось создать код. Проверьте подключение к интернету и попробуйте ещё раз.</string>
+    <string name="share_qr">QR-код для врача</string>
+    <string name="open_report">Открыть отчёт пациента</string>
+    <string name="open_report_hint">Отсканируйте QR-код пациента или вставьте текст, начинающийся с ep1:</string>
+    <string name="open_report_button">Открыть</string>
+    <string name="open_used">Этот код уже использован или истёк. Попросите пациента создать новый.</string>
+    <string name="open_not_ours">Это не код Easy Paper. Отсканируйте QR-код ещё раз или вставьте весь код, начинающийся с ep1:</string>
+    <string name="open_failed">Не удалось открыть отчёт по этому коду. Проверьте, что код вставлен целиком, или попросите пациента создать новый.</string>
+    <string name="open_offline">Сервер недоступен. Проверьте сеть и попробуйте ещё раз; код останется в поле.</string>
+    <string name="entry_photo">Фото пациента</string>
+    <!-- Patient photos (task 4 step 2) -->
+    <string name="take_photo">Сделать фото</string>
+    <string name="choose_photo">Выбрать фото</string>
+    <string name="remove_photo">Убрать фото</string>
+    <string name="photo_optional">Фото необязательно.</string>
+
+    <!-- Request builder and invite (task 5) -->
+    <string name="rb_complaint_placeholder">Например: головная боль по утрам в течение двух недель</string>
+    <string name="rb_doctor_header">Ваше имя для пациента</string>
+    <string name="rb_doctor_placeholder">Доктор Анна Келлер</string>
+    <string name="rb_period">Период</string>
+    <string name="rb_start">Начало</string>
+    <string name="rb_length">Длительность</string>
+    <string name="rb_widgets">Что записывает пациент</string>
+    <string name="rb_widgets_footer">Пациент видит их в этом порядке и с этими названиями.</string>
+    <string name="rb_times_per_day">Раз в день: %1$d</string>
+    <string name="rb_water_target">Цель на день: %1$s л</string>
+    <string name="rb_water_no_target">Без цели на день</string>
+    <string name="rb_questions">Вопросы</string>
+    <string name="rb_question_placeholder">Напишите вопрос</string>
+    <string name="rb_kind_yesno">Да или нет</string>
+    <string name="rb_kind_scale">0–10</string>
+    <string name="rb_kind_text">Текст</string>
+    <string name="rb_add_question">Добавить вопрос</string>
+    <string name="rb_create">Создать приглашение</string>
+    <string name="rb_invite_title">Приглашение</string>
+    <string name="rb_invite_footer">Пациент сканирует код камерой телефона или открывает ссылку. Код содержит только этот запрос.</string>
+    <string name="rb_too_long_for_qr">Слишком длинно для одного QR-кода: отправьте ссылку.</string>
+    <string name="rb_copy">Скопировать ссылку</string>
+    <string name="rb_copied">Ссылка скопирована</string>
+    <string name="scale_none">нет</string>
+    <string name="scale_worst">максимальная</string>
+    <string name="q_default_1">Была ли у вас эта жалоба сегодня?</string>
+    <string name="q_default_2">Насколько сильно она проявлялась?</string>
+    <string name="err_doctor">Напишите своё имя так, как его должен видеть пациент.</string>
+    <string name="err_complaint">Напишите жалобу.</string>
+    <string name="err_start">Выберите дату начала.</string>
+    <string name="err_days">Период должен быть от 1 до 30 дней.</string>
+    <string name="err_no_widgets">Выберите хотя бы один вид записей.</string>
+    <string name="err_questionnaire">Напишите текст каждого вопроса или уберите его.</string>
+    <string name="err_other">Не удалось создать запрос. Начните новый запрос.</string>
+    <string name="open_invite">Открыть приглашение</string>
+    <string name="invite_placeholder">Вставьте ссылку или код от врача</string>
+    <string name="invite_open">Открыть</string>
+    <string name="invite_not">Это не приглашение Easy Paper. Проверьте, что вы скопировали ссылку целиком.</string>
+    <string name="invite_newer">Для этого приглашения нужна новая версия приложения. Обновите Easy Paper и откройте его снова.</string>
+    <string name="invite_damaged">Приглашение неполное или изменено. Попросите врача отправить его ещё раз.</string>
+    <string name="invite_too_large">Текст слишком длинный для приглашения. Вставьте только ссылку.</string>
+    <plurals name="days">
+        <item quantity="one">%1$d день</item>
+        <item quantity="few">%1$d дня</item>
+        <item quantity="many">%1$d дней</item>
+        <item quantity="other">%1$d дня</item>
+    </plurals>
+    <string name="less">Меньше</string>
+    <string name="more">Больше</string>
+    <string name="invite_start">Начать записи</string>
+    <string name="invite_summary">%1$s, %2$s с %3$s</string>
+    <string name="invite_preview_footer">Ваши записи остаются на этом телефоне, пока вы не покажете QR-код на приёме.</string>
+    <string name="edited_by_you">Изменено вами</string>
+    <string name="open_scan">Прочитать QR-код</string>
+    <string name="open_scan_failed">Не удалось прочитать код. Разрешите доступ к камере или вставьте код.</string>
+    <!-- documents at the visit (task 41) -->
+    <string name="doc_title">Документы</string>
+    <string name="doc_hint">Вставьте текст выписки или результатов анализов либо добавьте фото. Факты копируются словами документа; ничто не попадёт в форму, пока вы не подтвердите поле.</string>
+    <string name="doc_paste">Текст документа</string>
+    <string name="doc_read">Прочитать документ</string>
+    <string name="doc_reading">Чтение документа…</string>
+    <string name="doc_to_form">Добавить в форму</string>
+    <string name="doc_in_form">В форме</string>
+    <string name="doc_quote_checked">Цитата найдена в документе</string>
+    <string name="doc_quote_unchecked">Цитата не проверена (фото)</string>
+    <string name="doc_from">Из документа</string>
+    <string name="doc_clinic_only">Документы читает только модуль клиники. Этот сервер работает в облаке, поэтому документы на него не отправляются.</string>
+    <string name="doc_no_server">Подключитесь к модулю клиники, чтобы читать документы.</string>
+    <string name="doc_failed">Не удалось прочитать документ. Сделайте более чёткое фото или вставьте текст.</string>
+    <string name="doc_none">В этом документе не найдено фактов.</string>
+    <string name="doc_field_medication">Лекарство</string>
+    <string name="doc_field_allergy">Аллергия</string>
+    <string name="doc_field_diagnosis">Диагноз в документе</string>
+    <string name="doc_field_procedure">Процедура</string>
+    <string name="doc_field_lab">Результат анализа</string>
+    <string name="dev_server">Адрес сервера</string>
+    <string name="dev_server_footer">На телефоне: адрес компьютера с сервером в той же сети, например http://192.168.1.20:8080. Пусто: хост эмулятора на Android, этот компьютер на Desktop.</string>
+    <string name="share_offline_at">Сервер по адресу %1$s недоступен. Проверьте сеть и адрес сервера в меню разработчика (долгое нажатие на заголовок).</string>
+    <string name="clinic_code">Код доступа клиники</string>
+    <string name="clinic_code_footer">Нужен для сводок ИИ с сервера клиники. Остаётся только в этом окне и не сохраняется.</string>
+
+    <!-- Patient design system v2 (task 50). -->
+    <string name="v2_cancel">Отмена</string>
+    <string name="v2_clear_search">Очистить поиск</string>
+    <string name="v2_later">Позже</string>
+    <string name="v2_open_profile">Открыть профиль</string>
+    <string name="v2_catalog_title">Компоненты пациента v2</string>
+    <string name="v2_search_placeholder">Поиск категорий здоровья</string>
+    <string name="v2_period_day">Д</string>
+    <string name="v2_period_week">Н</string>
+    <string name="v2_period_month">М</string>
+    <string name="v2_period_half_year">6М</string>
+    <string name="v2_show_options">Показать способы передачи</string>
+    <string name="v2_options_title">Поделиться с врачом</string>
+    <string name="v2_option_qr">Показать QR-код</string>
+    <string name="v2_option_qr_subtitle">Зашифровано, для однократного использования.</string>
+    <string name="v2_option_nearby">Рядом (Bluetooth)</string>
+    <string name="v2_option_nearby_subtitle">Подключитесь к устройству врача рядом.</string>
+    <string name="v2_option_file">Сохранить зашифрованный файл</string>
+    <string name="v2_option_file_subtitle">Сохраните защищённую копию для передачи.</string>
+    <string name="v2_show_onboarding">Просмотреть знакомство с приложением</string>
+    <string name="v2_onboarding_title">Ваше здоровье в ваших руках</string>
+    <string name="v2_onboarding_body">Записывайте, как проходит день, следите за изменениями и делитесь с врачом, когда решите.</string>
+    <string name="v2_onboarding_primary">Продолжить</string>
+    <string name="v2_onboarding_secondary">Не сейчас</string>
+    <string name="v2_onboarding_detail">Зашифровано на этом телефоне. Данные передаются только по вашему выбору. Вы можете удалить всё в любой момент.</string>
+    <string name="v2_progress_label">План на сегодня</string>
+    <string name="v2_change_progress">Изменить прогресс</string>
+    <string name="v2_profile_sample">Выбран пример профиля.</string>
+    <string name="v2_qr_selected">Выбрана передача через QR-код.</string>
+    <string name="v2_sample_initials">МТ</string>
+    <string name="med_not_in_list">Этой упаковки нет в списке лекарств. Мы подставили название с коробки — проверьте его.</string>
+    <string name="share_creating">Создание кода…</string>
+    <string name="open_opening">Открытие отчёта…</string>
+    <string name="busy">Занято</string>
+    <string name="problem_measurement">Похоже, в числе опечатка. Проверьте значение и единицу измерения.</string>
+    <!-- Final UI review fixes (task 44) -->
+    <string name="opening_diary">Открытие дневника…</string>
+    <string name="complete_review">Завершить проверку</string>
+    <string name="review_completed_at">Проверка завершена в %1$s</string>
+    <string name="copy_for_record">Скопировать для карты клиники</string>
+    <string name="copied_for_record">Скопировано. Вставьте в карту клиники.</string>
+    <string name="report_number">Отчёт %1$s</string>
+    <string name="chart_show_values">Показать значения</string>
+    <string name="chart_hide_values">Скрыть значения</string>
+    <string name="rb_start_less">Начать на день раньше</string>
+    <string name="rb_start_more">Начать на день позже</string>
+    <string name="rb_days_less">На один день записей меньше</string>
+    <string name="rb_days_more">На один день записей больше</string>
+    <string name="rb_bp_less">На одно измерение в день меньше</string>
+    <string name="rb_bp_more">На одно измерение в день больше</string>
+    <string name="rb_water_less">Уменьшить дневную цель воды</string>
+    <string name="rb_water_more">Увеличить дневную цель воды</string>
+    <string name="doc_show">Показать документ</string>
+    <string name="doc_source_title">Документ</string>
+    <string name="date_day_month">%1$d %2$s</string>
+    <string name="chart_reading">%1$d/%2$d</string>
+</resources>

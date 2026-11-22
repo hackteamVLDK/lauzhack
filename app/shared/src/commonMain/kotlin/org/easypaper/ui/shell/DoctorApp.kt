@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import easypaper.app.shared.generated.resources.Res
@@ -72,6 +73,7 @@ import org.easypaper.ui.handover.OpenReportScreen
 import org.easypaper.ui.handover.relayUrl
 import org.easypaper.ui.format.dateRange
 import org.easypaper.ui.format.lastDay
+import org.easypaper.ui.patient.v2.supportedLanguage
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -337,10 +339,11 @@ private fun reportDates(report: Report): String? {
 private fun visitAi(state: ShellState, report: Report): VisitAi? {
     if (state.server == null) return null
     val scope = rememberCoroutineScope()
+    val language = supportedLanguage(Locale.current.language)
     return VisitAi(
         result = state.aiResults[report.id],
         busy = state.aiBusy[report.id] == true,
         failed = state.aiFailed[report.id] == true,
-        onWrite = { scope.launch { state.summarize(report) } },
+        onWrite = { scope.launch { state.summarize(report, language) } },
     )
 }

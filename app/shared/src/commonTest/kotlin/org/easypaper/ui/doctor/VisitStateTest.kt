@@ -40,6 +40,18 @@ class VisitStateTest {
     }
 
     @Test
+    fun localFactsAndHistoryUseFrenchAndRussianWithoutAi() {
+        val english = visitSummary(Demo.report, ai = null)
+        for ((language, label) in listOf("fr" to "Tension artérielle", "ru" to "Артериальное давление")) {
+            val state = VisitState(Demo.report, wording, language = language)
+            assertEquals(SummarySource.Facts, state.summary.source)
+            assertTrue(state.summary.lines.any { label in it.text && it.supported })
+            assertEquals(english.sourceIds, state.summary.sourceIds)
+            assertEquals(state.summary.text, state.form.field(FormFieldKey.HISTORY).value)
+        }
+    }
+
+    @Test
     fun withoutASummaryTheFactsAreShownWithTheirSources() {
         val summary = visitSummary(Demo.report, ai = null)
         assertEquals(SummarySource.Facts, summary.source)

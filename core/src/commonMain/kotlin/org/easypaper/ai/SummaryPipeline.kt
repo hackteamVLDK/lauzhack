@@ -43,7 +43,7 @@ class SummaryPipeline(
 ) {
     private val caller = ModelCaller(executor, config, cache, ledger)
 
-    /** [language] selects English (en), German (de), or Ukrainian (uk) output; other values use English. */
+    /** [language] selects EN/DE/UK/FR/RU output; other values use English. */
     suspend fun summarize(
         record: PatientRecord,
         photos: Map<String, ByteArray> = emptyMap(),
@@ -54,7 +54,13 @@ class SummaryPipeline(
         val knownIds = record.entries.map { it.id }.toSet()
         val digest = record.factDigest(utcOffsetMinutes)
         val facts = digest.toText()
-        val outputLanguage = when (language) { "de" -> "German"; "uk" -> "Ukrainian"; else -> "English" }
+        val outputLanguage = when (language) {
+            "de" -> "German"
+            "uk" -> "Ukrainian"
+            "fr" -> "French"
+            "ru" -> "Russian"
+            else -> "English"
+        }
         val photoSystem = PHOTO_SYSTEM.replace("English", outputLanguage)
         val summarySystem = SUMMARY_SYSTEM.replace("English", outputLanguage)
         val notes = mutableListOf<String>()
@@ -135,6 +141,8 @@ class SummaryPipeline(
             "en" to "Food photo, described by AI (not by the patient)",
             "de" to "Essensfoto, von KI beschrieben (nicht von der Person selbst)",
             "uk" to "Фото їжі, описане ШІ (не пацієнтом)",
+            "fr" to "Photo de repas décrite par l'IA (pas par le patient)",
+            "ru" to "Фото еды, описанное ИИ (не пациентом)",
         )
 
         const val PHOTO_USER = "What food is in this photo?"
@@ -155,11 +163,12 @@ class SummaryPipeline(
         private val REFS = Regex("""\[([A-Za-z0-9_-]+(?:\s*,\s*[A-Za-z0-9_-]+)*)\][.;,:\s]*$""")
         private val QUOTES = Regex(""""[^"]*"|“[^”]*”|«[^»]*»|(?<![\p{L}])'.*?'(?![\p{L}])""")
         private val BULLET = Regex("""^\s*(?:[-*•]|\d+[.)])\s*""")
-        // Advice or diagnosis in the languages of the app and of the models' slips (EN, DE, RU, UK).
+        // Advice or diagnosis in the languages of the app and of the models' slips (EN, DE, UK, FR, RU).
         private val ADVICE = Regex(
             """(?<![\p{L}])(?:should|recommend\p{L}*|advis\p{L}*|diagnos\p{L}*|likely|probably|suggests?|consider|must|""" +
                 """empfehl\p{L}*|sollte\p{L}*|vermutlich|рекоменд\p{L}*|следует|советую|диагноз\p{L}*|вероятно|""" +
-                """варто|радимо|ймовірно)(?![\p{L}])""",
+                """варто|радимо|ймовірно|conseill\p{L}*|recommand\p{L}*|devriez|devrait|probablement|""" +
+                """vraisemblablement|suggère\p{L}*|envisage\p{L}*|devez|doit|faut)(?![\p{L}])""",
             RegexOption.IGNORE_CASE,
         )
 

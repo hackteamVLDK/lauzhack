@@ -37,7 +37,7 @@ fun entryText(entry: Entry, request: CareRequest?): String = when (val p = entry
     is Food -> withPhoto(p.text, p.photoRef)
     is DiaryNote -> withPhoto(p.text, p.photoRef)
     is DoctorQuestion -> p.text
-    is Measurement -> "${p.name}: ${p.value.let { if (it % 1.0 == 0.0) it.toLong().toString() else it.toString() }} ${p.unit}"
+    is Measurement -> "${p.name}: ${measurementNumber(p.value, decimalSeparator())} ${p.unit}"
     // The scanned package name often contains the strength already ("… 20 mg 15 Stk"): show the dose once.
     is Medication -> listOfNotNull(p.name, p.dose?.takeIf { it !in p.name }).joinToString(", ") +
         if (p.confirmed) "" else " (" + stringResource(Res.string.not_confirmed) + ")"
@@ -63,3 +63,6 @@ private fun withPhoto(text: String?, photoRef: String?): String {
 /** The decimal separator of the app language. */
 @Composable
 fun decimalSeparator(): Char = stringResource(Res.string.decimal_separator).firstOrNull() ?: '.'
+
+fun measurementNumber(value: Double, decimalSeparator: Char): String =
+    (if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()).replace('.', decimalSeparator)

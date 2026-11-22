@@ -41,6 +41,8 @@ data class SummaryRequest(
     /** photoRef -> JPEG as base64, only photos the report references. */
     val photos: Map<String, String> = emptyMap(),
     val utcOffsetMinutes: Int = 0,
+    /** App language for the summary and the facts shown when AI is unavailable. */
+    val language: String = "en",
 )
 
 @Serializable
@@ -64,8 +66,8 @@ class AiClient(private val baseUrl: String, private val http: HttpClient, privat
             token?.let { header("X-EasyPaper-Clinic-Token", it) }
         }))
 
-    suspend fun summarize(record: PatientRecord, photos: Map<String, ByteArray> = emptyMap(), utcOffsetMinutes: Int = 0): SummaryResult {
-        val body = SummaryRequest(record, photos.mapValues { Base64.Default.encode(it.value) }, utcOffsetMinutes)
+    suspend fun summarize(record: PatientRecord, photos: Map<String, ByteArray> = emptyMap(), utcOffsetMinutes: Int = 0, language: String = "en"): SummaryResult {
+        val body = SummaryRequest(record, photos.mapValues { Base64.Default.encode(it.value) }, utcOffsetMinutes, language)
         return EasyPaperJson.decodeFromString(SummaryResult.serializer(), post("summary", EasyPaperJson.encodeToString(SummaryRequest.serializer(), body)))
     }
 

@@ -3,7 +3,7 @@
 ## 1. Pitch
 
 Easy Paper helps doctors get the most out of a short visit. Before the appointment the doctor sends a
-request built from widgets; the patient records facts for a few days in their own language (EN/DE/UK); at
+request built from widgets; the patient records facts for a few days in their own language (EN/DE/UK/FR/RU); at
 the visit the patient shows a QR and the doctor reads a short draft in which every line links to the
 original entry, then confirms a pre-filled clinic form field by field. No diagnosis, no advice.
 
@@ -27,7 +27,7 @@ A operates the doctor's Desktop (or Web) app, B the Android patient app. `C` = `
 ## 3. Kotlin Multiplatform
 
 - `core/commonMain`: model, invites, diary checks, medicine lookup, reports, encryption, clinic form, Koog AI pipeline — used by all clients and the server.
-- `app/shared/commonMain`: all Compose screens, navigation, Apple-HIG theme, motion, EN/DE/UK strings.
+- `app/shared/commonMain`: all Compose screens, navigation, Apple-HIG theme, motion, EN/DE/UK/FR/RU strings.
 - Platform code: camera and recognition (Android CameraX/ML Kit, Desktop/Web file + ZXing/BarcodeDetector), key storage (Android Keystore, Desktop owner-only key file), Web storage, entry points.
 - Measured (production `.kt`, without tests, blank lines, comments and imports): **commonMain 6,052 of 6,569 client lines = 92 %**; platform source sets 517 lines; Ktor server 264 lines.
 
@@ -38,7 +38,7 @@ Pipeline `C/ai/SummaryPipeline.kt` (Koog `PromptExecutorAPI`, same code for clou
 1. Facts without an LLM (`factDigest`): ranges, totals, medicines, answers, notes with entry ids. Medicine boxes: barcode/DataMatrix + OCR against a local list.
 2. Small vision model only for food photos without text; photos shrunk and EXIF-stripped on the phone; at most 6 attempts.
 3. Big model once per report; every line must cite entries; advice/diagnosis lines removed; uncited lines marked.
-4. SHA-256 cache (repeat = 0 tokens), per-report and server budget caps, per-call ledger (tokens, $, estimated flag), output language EN/DE/UK.
+4. SHA-256 cache (repeat = 0 tokens), per-report and server budget caps, per-call ledger (tokens, $, estimated flag), output language EN/DE/UK/FR/RU.
 
 | Run (demo record, 35 entries) | Tokens in / out | Time | Cost |
 |---|---|---|---|

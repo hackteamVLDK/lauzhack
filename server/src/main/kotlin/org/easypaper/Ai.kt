@@ -90,7 +90,8 @@ class AiService(
         val cfg = if (executor == null || left <= 0.0) base.copy(budgetUsdPerReport = 0.0)
         else base.copy(budgetUsdPerReport = minOf(base.budgetUsdPerReport, left))
         val photos = request.photos.mapValues { Base64.Default.decode(it.value) }
-        SummaryPipeline(executor ?: NoAi, cfg, cache, ledger).summarize(request.record, photos, request.utcOffsetMinutes)
+        SummaryPipeline(executor ?: NoAi, cfg, cache, ledger)
+            .summarize(request.record, photos, request.utcOffsetMinutes, request.language)
             .let { if (executor == null) it.copy(note = "AI is off on this server: facts without AI") else it }
     }
 

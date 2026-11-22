@@ -104,6 +104,7 @@ fun MedicationsScreen(
     back: BackAction?,
     modifier: Modifier = Modifier,
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    language: String = record.request.locale,
 ) {
     val scope = rememberCoroutineScope()
     val requestId = record.request.id
@@ -112,8 +113,8 @@ fun MedicationsScreen(
     var sheet by remember { mutableStateOf<MedSheet?>(null) }
     var problems by remember { mutableStateOf(emptyList<EntryProblem>()) }
     var saving by remember { mutableStateOf(false) }
-    fun now() = Clock.System.now().toEpochMilliseconds()
-    fun run(action: suspend () -> List<EntryProblem>) {
+    val now = { Clock.System.now().toEpochMilliseconds() }
+    val run: (suspend () -> List<EntryProblem>) -> Unit = { action ->
         saving = true
         scope.launch {
             problems = try { action() } finally { saving = false }
@@ -127,7 +128,7 @@ fun MedicationsScreen(
             // any failure of on-device recognition ends in typing, never in silence or a crash
             val reading = try { readPhoto(photo) } catch (e: CancellationException) { throw e } catch (e: Exception) { null }
             val match = reading?.let { db.recognize(it) }
-            val choices = match?.let { scanChoices(it, record.request.locale) }.orEmpty()
+            val choices = match?.let { scanChoices(it, language) }.orEmpty()
             sheet = when {
                 choices.isNotEmpty() -> MedSheet.Choose(choices)
                 reading == null -> MedSheet.Type(code = null, unreadable = true)
