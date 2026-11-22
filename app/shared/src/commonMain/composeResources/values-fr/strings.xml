@@ -417,4 +417,15 @@
     <string name="doc_source_title">Document</string>
     <string name="date_day_month">%1$d %2$s</string>
     <string name="chart_reading">%1$d/%2$d</string>
+
+    <!-- Own measurements form (task 61) -->
+    <string name="m_weight">Poids</string>
+    <string name="m_other">Autre mesure</string>
+    <string name="m_name">Ce que vous avez mesuré</string>
+    <string name="m_name_example">p. ex. tour de taille</string>
+    <string name="m_value">Valeur</string>
+    <string name="m_unit">Unité</string>
+    <string name="m_unit_example">p. ex. cm</string>
+    <string name="m_kg">kg</string>
+    <string name="m_missing">Saisissez un nombre.</string>
 </resources>

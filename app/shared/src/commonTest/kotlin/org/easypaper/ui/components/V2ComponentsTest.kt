@@ -65,4 +65,15 @@ class V2ComponentsTest {
         // dark: fill and cellRaised are the same grey, so the thumb must stand out from the track itself
         assertTrue(contrastRatio(segmentThumb(DarkColors), DarkColors.fill) >= 3f, "dark thumb vs track")
     }
+
+    @Test
+    fun aDecimalFieldTakesOnlyPlainNumbers() {
+        assertTrue(isDecimalInput("72,5", 5))
+        assertTrue(isDecimalInput("72.", 5))
+        assertTrue(isDecimalInput("", 5))
+        assertFalse(isDecimalInput("-72,5", 6)) // a sign is refused, not dropped
+        assertFalse(isDecimalInput("7.2.5", 6)) // two separators
+        assertFalse(isDecimalInput("123456", 5)) // too long is refused, not cut
+        assertFalse(isDecimalInput("7a", 5))
+    }
 }

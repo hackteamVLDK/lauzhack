@@ -61,6 +61,19 @@ import org.easypaper.model.FoodWidget
 import org.easypaper.model.QuestionKind
 import org.easypaper.model.QuestionnaireWidget
 import org.easypaper.model.WidgetSpec
+import easypaper.app.shared.generated.resources.m_missing
+import easypaper.app.shared.generated.resources.m_kg
+import easypaper.app.shared.generated.resources.m_unit_example
+import easypaper.app.shared.generated.resources.m_unit
+import easypaper.app.shared.generated.resources.m_value
+import easypaper.app.shared.generated.resources.m_name_example
+import easypaper.app.shared.generated.resources.m_name
+import easypaper.app.shared.generated.resources.m_other
+import easypaper.app.shared.generated.resources.m_weight
+import androidx.compose.ui.semantics.Role
+import org.easypaper.ui.components.TextFieldRow
+import org.easypaper.model.MeasurementsWidget
+import org.easypaper.model.Measurement
 import org.easypaper.ui.components.ChoiceList
 import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.NumberFieldRow
@@ -104,6 +117,7 @@ fun ColumnScope.EntryForm(
             onSave(DiaryNote(text), photo)
         }
         is DoctorQuestionsWidget -> TextForm(Res.string.question_placeholder, problems, saving) { text, _ -> onSave(DoctorQuestion(text), null) }
+        is MeasurementsWidget -> MeasurementsForm(problems, saving) { onSave(it, null) }
         else -> Unit // water has no form (stepper), medicines have their own screen (task 31)
     }
 }
@@ -218,6 +232,48 @@ private fun PhotoPicker(photo: ByteArray?, onPhoto: (ByteArray?) -> Unit) {
         Text(stringResource(Res.string.photo_optional), style = EasyPaperTheme.typography.footnote, color = EasyPaperTheme.colors.secondaryLabel)
     }
 }
+
+/**
+ * Own measurements (task 61): the weight in kg, or anything else the person measures with its own name and unit
+ * ("Waist 84 cm"). The value rules are the core's check (#52); here only "is it a number".
+ */
+@Composable
+private fun ColumnScope.MeasurementsForm(problems: List<EntryProblem>, saving: Boolean, onSave: (EntryPayload) -> Unit) {
+    var mode by remember { mutableStateOf(0) }
+    var weight by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var value by remember { mutableStateOf("") }
+    var unit by remember { mutableStateOf("") }
+    var missing by remember { mutableStateOf(false) }
+    val weightLabel = stringResource(Res.string.m_weight)
+    val spacing = EasyPaperTheme.spacing
+    SegmentedControl(listOf(weightLabel, stringResource(Res.string.m_other)), mode, { mode = it; missing = false },
+        role = Role.RadioButton)
+    Spacer(Modifier.height(spacing.s))
+    GroupedSection {
+        if (mode == 0) {
+            NumberFieldRow(weightLabel, weight, { weight = it; missing = false }, unit = stringResource(Res.string.m_kg),
+                placeholder = "72,5", decimal = true, maxLength = 5)
+        } else {
+            val nameLabel = stringResource(Res.string.m_name)
+            val unitLabel = stringResource(Res.string.m_unit)
+            TextFieldRow(name, { name = it; missing = false }, placeholder = stringResource(Res.string.m_name_example), description = nameLabel)
+            RowSeparator(spacing.m)
+            NumberFieldRow(stringResource(Res.string.m_value), value, { value = it; missing = false }, decimal = true, maxLength = 8)
+            RowSeparator(spacing.m)
+            TextFieldRow(unit, { unit = it; missing = false }, placeholder = stringResource(Res.string.m_unit_example), description = unitLabel)
+        }
+    }
+    Problems(if (missing) listOf(Res.string.m_missing) else problems.map { it.message() })
+    SaveButton(saving) {
+        val payload = if (mode == 0) parseDecimal(weight)?.let { Measurement.weight(it) }
+            else parseDecimal(value)?.let { Measurement(name.trim(), it, unit.trim()) }
+        if (payload == null) missing = true else onSave(payload)
+    }
+}
+
+/** "72,5" or "72.5" -> 72.5; null for an empty or broken number. */
+internal fun parseDecimal(text: String): Double? = text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it.isFinite() }
 
 @Composable
 private fun ColumnScope.SaveButton(saving: Boolean, enabled: Boolean = true, onClick: () -> Unit) {

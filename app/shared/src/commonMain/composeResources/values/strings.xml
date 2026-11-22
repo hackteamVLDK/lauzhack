@@ -417,4 +417,15 @@
     <string name="doc_source_title">Document</string>
     <string name="date_day_month">%1$d %2$s</string>
     <string name="chart_reading">%1$d/%2$d</string>
+
+    <!-- Own measurements form (task 61) -->
+    <string name="m_weight">Weight</string>
+    <string name="m_other">Other measurement</string>
+    <string name="m_name">What you measured</string>
+    <string name="m_name_example">e.g. Waist</string>
+    <string name="m_value">Value</string>
+    <string name="m_unit">Unit</string>
+    <string name="m_unit_example">e.g. cm</string>
+    <string name="m_kg">kg</string>
+    <string name="m_missing">Enter a number.</string>
 </resources>

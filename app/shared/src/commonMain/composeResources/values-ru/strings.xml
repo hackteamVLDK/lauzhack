@@ -423,4 +423,15 @@
     <string name="doc_source_title">Документ</string>
     <string name="date_day_month">%1$d %2$s</string>
     <string name="chart_reading">%1$d/%2$d</string>
+
+    <!-- Own measurements form (task 61) -->
+    <string name="m_weight">Вес</string>
+    <string name="m_other">Другое измерение</string>
+    <string name="m_name">Что вы измерили</string>
+    <string name="m_name_example">напр., обхват талии</string>
+    <string name="m_value">Значение</string>
+    <string name="m_unit">Единица</string>
+    <string name="m_unit_example">напр., см</string>
+    <string name="m_kg">кг</string>
+    <string name="m_missing">Введите число.</string>
 </resources>

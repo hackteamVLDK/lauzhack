@@ -18,6 +18,8 @@ import org.easypaper.model.DoctorQuestion
 import org.easypaper.model.Entry
 import org.easypaper.model.Food
 import org.easypaper.model.Measurement
+import easypaper.app.shared.generated.resources.m_kg
+import easypaper.app.shared.generated.resources.m_weight
 import org.easypaper.model.Medication
 import org.easypaper.model.SideEffectCheck
 import org.easypaper.scan.SIDE_EFFECTS_BY_KEY
@@ -47,7 +49,10 @@ fun entryText(entry: Entry, request: CareRequest?): String = when (val p = entry
             (SIDE_EFFECTS_BY_KEY[key]?.name(language) ?: key) + " — " + if (answer == "yes") yes else no
         }
     }
-    is Measurement -> "${p.name}: ${measurementNumber(p.value, decimalSeparator())} ${p.unit}"
+    // The weight is stored with English name and unit (for FHIR and the doctor); the patient reads it in their language.
+    is Measurement -> if (p.loinc == Measurement.WEIGHT_LOINC)
+        "${stringResource(Res.string.m_weight)}: ${measurementNumber(p.value, decimalSeparator())} ${stringResource(Res.string.m_kg)}"
+    else "${p.name}: ${measurementNumber(p.value, decimalSeparator())} ${p.unit}"
     // The scanned package name often contains the strength already ("… 20 mg 15 Stk"): show the dose once.
     is Medication -> listOfNotNull(p.name, p.dose?.takeIf { it !in p.name }).joinToString(", ") +
         if (p.confirmed) "" else " (" + stringResource(Res.string.not_confirmed) + ")"

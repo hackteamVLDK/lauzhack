@@ -57,6 +57,9 @@ fun NumberFieldRow(
     modifier: Modifier = Modifier,
     unit: String? = null,
     placeholder: String = "",
+    /** Allows one decimal separator ("72,5" or "72.5") and a decimal keyboard, e.g. a weight in kg. */
+    decimal: Boolean = false,
+    maxLength: Int = 3,
 ) {
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
@@ -71,11 +74,16 @@ fun NumberFieldRow(
             if (value.isEmpty()) Text(placeholder, style = type.body.tabular(), color = colors.secondaryLabel)
             BasicTextField(
                 value = value,
-                onValueChange = { text -> onValueChange(text.filter { it.isDigit() }.take(3)) },
+                // A decimal field takes a change only if it is still a plain number ("72,5"); a paste like "-72,5" or
+                // "7.2.5" is refused as a whole rather than silently turned into another number.
+                onValueChange = { text ->
+                    if (!decimal) onValueChange(text.filter { it.isDigit() }.take(maxLength))
+                    else if (isDecimalInput(text, maxLength)) onValueChange(text)
+                },
                 singleLine = true,
                 textStyle = type.body.tabular().copy(color = colors.label, textAlign = TextAlign.End),
                 cursorBrush = SolidColor(colors.tint),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                keyboardOptions = KeyboardOptions(keyboardType = if (decimal) KeyboardType.Decimal else KeyboardType.Number, imeAction = ImeAction.Next),
                 modifier = Modifier.widthIn(min = spacing.xxl * 3).semantics { contentDescription = label },
             )
         }
@@ -85,6 +93,10 @@ fun NumberFieldRow(
         }
     }
 }
+
+/** Digits with at most one decimal separator ("," or "."), at most [maxLength] characters; empty is fine. */
+internal fun isDecimalInput(text: String, maxLength: Int): Boolean =
+    text.length <= maxLength && text.all { it.isDigit() || it == ',' || it == '.' } && text.count { it == ',' || it == '.' } <= 1
 
 /** One line of text in a grouped cell (a name, a short answer); [placeholder] says what to type. */
 @Composable
