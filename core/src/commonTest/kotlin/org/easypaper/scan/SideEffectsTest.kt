@@ -31,6 +31,15 @@ class SideEffectsTest {
     }
 
     @Test
+    fun typedInMedicinesGetQuestionsByBrand() {
+        assertEquals(listOf("stomach_pain", "heartburn", "nausea"), db.sideEffectsFor(null, "Dolo Spedifen 400").map { it.key })
+        assertEquals(emptyList(), db.sideEffectsFor(null, "Vitamin D"))
+        assertEquals(emptyList(), db.sideEffectsFor(null, "Dolo Plus"), "a shared first word is not the whole brand")
+        assertEquals(listOf("swollen_ankles", "headache", "flushing"), db.sideEffectsFor(null, "amlodipin 5 mg").map { it.key })
+        assertEquals(emptyList(), db.sideEffectsFor(null, null))
+    }
+
+    @Test
     fun answersAreCheckedAndReachTheDoctorAsFacts() {
         val ok = SideEffectCheck("DOLO SPEDIFEN", "7680567200025", mapOf("stomach_pain" to "yes", "nausea" to "no"))
         assertEquals(emptyList(), Diary().check(Entry("s1", own, 1, ok)))

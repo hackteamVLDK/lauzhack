@@ -59,6 +59,22 @@ val COMMON_SIDE_EFFECTS: Map<String, List<SideEffect>> = mapOf(
 /** Every side effect the app can ask about, by key (to check answers and to name them in reports). */
 val SIDE_EFFECTS_BY_KEY: Map<String, SideEffect> = COMMON_SIDE_EFFECTS.values.flatten().associateBy { it.key }
 
-/** What to ask about a medicine with this package code; empty for unknown packages and typed-in medicines. */
-fun MedicationDb.sideEffectsFor(gtin: String?): List<SideEffect> =
-    gtin?.let { parseScanCode(it) }?.let { find(it) }?.let { COMMON_SIDE_EFFECTS[it.atc] }.orEmpty()
+/**
+ * Finds questions by package code, falling back to the first brand match for a nonblank name
+ * when the code has no match. Returns an empty list if the medicine has no questions or no match.
+ */
+fun MedicationDb.sideEffectsFor(gtin: String?, name: String? = null): List<SideEffect> {
+    val medicine = gtin?.let { parseScanCode(it) }?.let { find(it) }
+        ?: name?.takeIf { it.isNotBlank() }?.let { typed -> search(typed).firstOrNull { it.brandIn(typed) } }
+    return medicine?.let { COMMON_SIDE_EFFECTS[it.atc] }.orEmpty()
+}
+
+/**
+ * A typed name names this product only when it contains its whole brand: the leading upper-case words of the listed
+ * name ("DOLO SPEDIFEN forte …" -> DOLO, SPEDIFEN), so "Dolo Plus" is not taken for Dolo Spedifen.
+ */
+private fun MedicationInfo.brandIn(typed: String): Boolean {
+    val words = typed.uppercase().split(Regex("[^\\p{L}\\p{N}]+")).toSet()
+    val brand = nameDe.split(' ').takeWhile { w -> w.isNotEmpty() && w.any { it.isLetter() } && w == w.uppercase() }
+    return brand.isNotEmpty() && brand.all { it in words }
+}
