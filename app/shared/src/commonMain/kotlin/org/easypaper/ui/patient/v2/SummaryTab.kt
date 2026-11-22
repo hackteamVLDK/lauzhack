@@ -1,10 +1,6 @@
 package org.easypaper.ui.patient.v2
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -27,16 +23,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import easypaper.app.shared.generated.resources.*
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.easypaper.diary.progress
-import org.easypaper.model.BloodPressure
 import org.easypaper.model.PatientRecord
-import org.easypaper.model.Water
 import org.easypaper.ui.components.*
 import org.easypaper.ui.format.currentUtcOffsetMinutes
 import org.easypaper.ui.format.dateRange
@@ -51,9 +44,16 @@ import kotlin.time.Clock
 @Composable
 fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: LocalDate, timeZone: TimeZone,
                onProfile: () -> Unit, onDeveloper: () -> Unit, onPlan: (String) -> Unit,
-               onCategory: (Category) -> Unit, onAdd: (Category) -> Unit, onGallery: () -> Unit) {
+               onCategory: (Category) -> Unit, onGallery: () -> Unit, onOpenInvite: () -> Unit) {
     val active = records.activeDoctor(today)
     val pinned = settings.pinnedCategories
+    val summaries = remember(records, today, timeZone) {
+        Category.entries.associateWith { summaryData(records, it, today, timeZone) }
+    }
+    val trends = remember(records, today, timeZone) {
+        Category.entries.mapNotNull { summaryTrend(records, it, today, timeZone) }
+    }
+    val tips = summaryTips(settings, records.any { it.request.id != PERSONAL_REQUEST_ID && it.request.doctorName.isNotBlank() })
     // Keep entrance state above lazy rows: scrolling and reordering must not replay the spring.
     val entrances = remember { pinned.associateWith { MutableTransitionState(true) }.toMutableMap() }
     LaunchedEffect(pinned) { entrances.keys.retainAll(pinned.toSet()) }
@@ -78,6 +78,11 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
         records.flatMap { record -> record.entries.map { it.localDate(timeZone) } }
     }
     val diaryStreak = remember(entryDates, today) { streak(entryDates, today) }
+    // The streak card greets once a day: on the first Summary visit of the day. Leaving Summary (another tab) or
+    // restarting the app the same day does not bring it back; remember is dropped when the tab leaves composition.
+    val todayKey = today.toString()
+    val showStreak = remember(todayKey) { settings.streakSeen.value != todayKey }
+    LaunchedEffect(todayKey) { if (settings.streakSeen.value != todayKey) settings.streakSeen.update(todayKey) }
     val entriesToday = remember(entryDates, today) { entryDates.count { it == today } }
     Box(Modifier.fillMaxSize().background(colors.background).windowInsetsPadding(WindowInsets.statusBars),
         contentAlignment = Alignment.TopCenter) {
@@ -87,49 +92,54 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
             item(key = "greeting") {
                 SummaryHeader(settings.name.value, greeting, today, onProfile, onDeveloper)
             }
-            item(key = "streak") {
+            if (showStreak) item(key = "streak") {
                 StreakCard(diaryStreak, entriesToday)
             }
             if (active != null) item(key = "plan") {
                 PlanCard(active, today, onClick = { onPlan(active.request.id) })
             }
-            if (pinned.isEmpty()) {
-                item(key = "empty") {
-                    Column(Modifier.fillMaxWidth().padding(vertical = spacing.xxl),
-                        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacing.xl)) {
-                        Text(stringResource(Res.string.p2_empty_widgets), style = type.title1, color = colors.label,
-                            textAlign = TextAlign.Center)
-                        RoundIconButton(Res.drawable.ic_add, stringResource(Res.string.p2_add_widgets), onGallery, large = true)
-                    }
+            item(key = "edit") {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(Res.string.p2_summary_pinned), style = type.title2, color = colors.label,
+                        modifier = Modifier.weight(1f).semantics { heading() })
+                    if (pinned.isNotEmpty()) PlainButton(
+                        stringResource(if (editing) Res.string.p2_done else Res.string.p2_edit_widgets), { editing = !editing })
                 }
-            } else {
-                item(key = "edit") {
-                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(Res.string.p2_your_widgets), style = type.title2, color = colors.label,
-                            modifier = Modifier.weight(1f).semantics { heading() })
-                        PlainButton(stringResource(if (editing) Res.string.p2_done else Res.string.p2_edit_widgets), { editing = !editing })
-                    }
+            }
+            if (pinned.isEmpty()) item(key = "empty") {
+                Text(stringResource(Res.string.p2_empty_widgets), style = type.body, color = colors.secondaryLabel)
+            }
+            items(pinned, key = { it.name }) { category ->
+                SummaryPinnedCard(category, summaries.getValue(category), today, timeZone, editing,
+                    onOpen = { onCategory(category) }, onEdit = { editing = true },
+                    onRemove = { settings.removeWidget(category) },
+                    onPrevious = { settings.moveWidget(category, -1) }, onNext = { settings.moveWidget(category, 1) },
+                    canPrevious = pinned.first() != category, canNext = pinned.last() != category,
+                    entrance = entrances.getOrPut(category) { MutableTransitionState(false).apply { targetState = true } },
+                    modifier = Modifier.animateItem(
+                        fadeInSpec = EasyPaperTheme.motion.fade(),
+                        placementSpec = if (EasyPaperTheme.motion.reduceMotion) null else EasyPaperTheme.motion.snappy.spec(),
+                        fadeOutSpec = EasyPaperTheme.motion.fade()))
+            }
+            if (!editing && pinned.size < Category.entries.size) item(key = "add") {
+                AddWidgetTile(onGallery, Modifier.fillMaxWidth())
+            }
+            if (trends.isNotEmpty()) {
+                item(key = "trends-title") { SummarySectionTitle(stringResource(Res.string.p2_summary_trends)) }
+                items(trends, key = { "trend-${it.category.name}" }) { trend ->
+                    SummaryTrendCard(trend, onOpen = { onCategory(trend.category) })
                 }
-                // The add tile is the next free place in the grid (one way to add, no separate button); hidden while
-                // editing and when every category is already a widget.
-                val showAdd = !editing && pinned.size < Category.entries.size
-                val cells: List<Category?> = pinned + if (showAdd) listOf(null) else emptyList()
-                items(cells.chunked(2), key = { row -> row.joinToString { it?.name ?: "add" } }) { row ->
-                    Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(spacing.s)) {
-                        row.forEach { category ->
-                            if (category == null) AddWidgetTile(onGallery, Modifier.weight(1f).fillMaxHeight())
-                            else key(category) {
-                                SummaryWidget(category, records, today, timeZone, editing,
-                                    onOpen = { onCategory(category) }, onAdd = { onAdd(category) }, onEdit = { editing = true },
-                                    onRemove = { settings.removeWidget(category) },
-                                    onPrevious = { settings.moveWidget(category, -1) }, onNext = { settings.moveWidget(category, 1) },
-                                    canPrevious = pinned.first() != category, canNext = pinned.last() != category,
-                                    entrance = entrances.getOrPut(category) { MutableTransitionState(false).apply { targetState = true } },
-                                    modifier = Modifier.weight(1f).fillMaxHeight())
-                            }
+            }
+            if (tips.isNotEmpty()) {
+                item(key = "tips-title") { SummarySectionTitle(stringResource(Res.string.p2_summary_more)) }
+                items(tips, key = { "tip-${it.name}" }) { tip ->
+                    SummaryTipCard(tip, onDismiss = { settings.dismissTip(tip) }, onAction = {
+                        when (tip) {
+                            SummaryTip.Pressure -> settings.addWidget(Category.BloodPressure)
+                            SummaryTip.Medicines -> settings.addWidget(Category.Medicines)
+                            SummaryTip.Invite -> onOpenInvite()
                         }
-                        if (row.size == 1) Spacer(Modifier.weight(1f))
-                    }
+                    })
                 }
             }
         }
@@ -153,84 +163,23 @@ private fun SummaryHeader(name: String?, greeting: String, today: LocalDate, onP
     }
 }
 
-/**
- * The place for the next widget: same size as a widget, a dashed outline and a round "+" (like an empty slot on an
- * iOS home screen). Opens the widget gallery; the whole tile is one button for screen readers.
- */
 @Composable
 private fun AddWidgetTile(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
     val shape = EasyPaperTheme.shapes.widget
-    val label = stringResource(Res.string.p2_add_widgets)
-    Column(modifier.heightIn(min = spacing.widgetMinHeight).clip(shape)
-        .background(colors.fill.copy(alpha = 0.35f))
-        .drawBehind {
-            val dash = spacing.xs.toPx()
-            drawOutline(shape.createOutline(size, layoutDirection, this), colors.separator,
-                style = Stroke(spacing.glyphStroke.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(dash, dash / 2))))
-        }
-        .clickable(role = Role.Button, onClick = onClick)
+    val label = stringResource(Res.string.p2_summary_add)
+    Row(modifier.clip(shape).drawBehind {
+        val dash = spacing.xs.toPx()
+        drawOutline(shape.createOutline(size, layoutDirection, this), colors.separator,
+            style = Stroke(spacing.glyphStroke.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(dash, dash))))
+    }.clickable(role = Role.Button, onClick = onClick)
         .semantics(mergeDescendants = true) { contentDescription = label }
-        .padding(spacing.s),
-        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Box(Modifier.size(spacing.emptyAddSize).clip(EasyPaperTheme.shapes.capsule).background(colors.tint.copy(alpha = 0.15f)),
-            contentAlignment = Alignment.Center) {
-            Icon(painterResource(Res.drawable.ic_add), null, Modifier.size(spacing.xxl), tint = colors.tint)
-        }
-        Spacer(Modifier.height(spacing.s))
-        Text(label, style = EasyPaperTheme.typography.subheadline, color = colors.link, textAlign = TextAlign.Center)
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun SummaryWidget(category: Category, records: List<PatientRecord>, today: LocalDate, timeZone: TimeZone,
-                          editing: Boolean, onOpen: () -> Unit, onAdd: () -> Unit, onEdit: () -> Unit,
-                          onRemove: () -> Unit, onPrevious: () -> Unit, onNext: () -> Unit,
-                          canPrevious: Boolean, canNext: Boolean, entrance: MutableTransitionState<Boolean>,
-                          modifier: Modifier = Modifier) {
-    val spacing = EasyPaperTheme.spacing
-    val colors = EasyPaperTheme.colors
-    val type = EasyPaperTheme.typography
-    val motion = EasyPaperTheme.motion
-    val foreground = category.softText(colors)
-    val entries = categoryEntries(records, category)
-    val latest = entries.firstOrNull()
-    val pressure = latest?.entry?.payload as? BloodPressure
-    val water = entries.filter { it.entry.localDate(timeZone) == today }.sumOf { (it.entry.payload as? Water)?.ml ?: 0 }
-    AnimatedVisibility(entrance, modifier, enter = if (motion.reduceMotion) fadeIn(motion.fade())
-        else fadeIn(motion.fade()) + scaleIn(motion.snappy.spec(), initialScale = 0.9f), exit = fadeOut(motion.fade())) {
-        Column(Modifier.fillMaxSize().clip(EasyPaperTheme.shapes.widget).background(category.soft(colors))
-            .combinedClickable(role = Role.Button, onClick = { if (!editing) onOpen() }, onLongClick = onEdit)
-            .heightIn(min = spacing.widgetMinHeight).padding(spacing.s), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
-            if (editing) RoundIconButton(Res.drawable.ic_remove, stringResource(Res.string.p2_remove_widget, categoryTitle(category)),
-                onRemove, Modifier.align(Alignment.End))
-            Icon(painterResource(category.lineIcon), null, Modifier.size(spacing.xxl), tint = foreground)
-            Text(categoryTitle(category), style = type.headline, color = foreground)
-            when {
-                category == Category.Water && latest != null -> {
-                    AnimatedValueText(stringResource(Res.string.p2_widget_count_value, water), style = type.largeTitle, color = foreground)
-                    Text(stringResource(Res.string.p2_widget_water_unit), style = type.subheadline, color = foreground)
-                }
-                pressure != null -> {
-                    AnimatedValueText(stringResource(Res.string.p2_widget_pressure_value, pressure.systolic, pressure.diastolic),
-                        style = type.largeTitle, color = foreground)
-                    Text(stringResource(Res.string.p2_widget_pressure_unit), style = type.subheadline, color = foreground)
-                }
-                latest != null -> Text(patientEntryText(latest), style = type.body, color = foreground)
-                else -> Text(stringResource(Res.string.p2_no_data), style = type.body, color = foreground)
-            }
-            Spacer(Modifier.weight(1f))
-            if (editing) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    RoundIconButton(Res.drawable.ic_chevron_left, stringResource(Res.string.p2_move_widget_left, categoryTitle(category)),
-                        onPrevious, enabled = canPrevious)
-                    RoundIconButton(Res.drawable.ic_chevron_right, stringResource(Res.string.p2_move_widget_right, categoryTitle(category)),
-                        onNext, enabled = canNext)
-                }
-            } else CapsuleButton(stringResource(if (category == Category.Water) Res.string.p2_water_quick else Res.string.p2_add_data), onAdd)
-        }
+        .heightIn(min = spacing.prominentButtonHeight).padding(spacing.m),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+        Icon(painterResource(Res.drawable.ic_add), null, Modifier.size(spacing.rowIcon), tint = colors.link)
+        Spacer(Modifier.width(spacing.xs))
+        Text(label, style = EasyPaperTheme.typography.headline, color = colors.link)
     }
 }
 

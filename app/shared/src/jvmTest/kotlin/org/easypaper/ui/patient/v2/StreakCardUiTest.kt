@@ -105,7 +105,7 @@ class StreakCardUiTest {
             ShellTheme(ShellSettings(dark = false)) {
                 PatientLanguage("en") {
                     SummaryTab(records, patient, today, TimeZone.of("UTC+02:00"),
-                        onProfile = {}, onDeveloper = {}, onPlan = {}, onCategory = {}, onAdd = {}, onGallery = {})
+                        onProfile = {}, onDeveloper = {}, onPlan = {}, onCategory = {}, onGallery = {}, onOpenInvite = {})
                 }
             }
         }

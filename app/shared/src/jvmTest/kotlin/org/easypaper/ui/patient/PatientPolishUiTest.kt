@@ -13,10 +13,12 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
@@ -123,11 +125,18 @@ class PatientPolishUiTest {
             }
         }
         waitUntil(timeoutMillis = 10_000) { onAllNodesWithText("mmHg", substring = true).fetchSemanticsNodes().isNotEmpty() }
+        // Readings follow the chart and category actions and may be below the viewport.
+        val months = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+        val entryDate = SemanticsMatcher("entry date in words") { node ->
+            node.config.getOrNull(SemanticsProperties.Text).orEmpty().any { text ->
+                months.any { Regex("""\d{1,2} $it, \d""").containsMatchIn(text.text) }
+            }
+        }
+        onNode(hasScrollAction()).performScrollToNode(entryDate)
         val iso = Regex("""\d{4}-\d{2}-\d{2}""")
         val texts = onAllNodes(SemanticsMatcher("any text") { it.config.getOrNull(SemanticsProperties.Text) != null })
             .fetchSemanticsNodes().flatMap { node -> node.config[SemanticsProperties.Text].map { it.text } }
         assertTrue(texts.none { iso.containsMatchIn(it) }, "ISO date on the screen: ${texts.filter { iso.containsMatchIn(it) }}")
-        val months = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
         assertTrue(texts.any { t -> months.any { Regex("""\d{1,2} $it, \d""").containsMatchIn(t) } },
             "no entry with a day-month date: $texts")
     }

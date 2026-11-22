@@ -10,6 +10,7 @@ import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onFirst
@@ -104,8 +105,10 @@ class PatientScreensUiTest {
         onNodeWithContentDescription("Search categories").performTextInput("med")
         waitForText("Medicines")
         onNodeWithText("Medicines").performClick()
-        waitForText("Add Data")
-        onNodeWithText("Add Data").performClick()
+        waitUntil(timeoutMillis = 10_000) {
+            onAllNodesWithContentDescription("Add Data").fetchSemanticsNodes().isNotEmpty()
+        }
+        onNodeWithContentDescription("Add Data").performClick()
         waitForText("Type it in") // only the medicines screen of task 31 has this action
     }
 
@@ -141,20 +144,20 @@ class PatientScreensUiTest {
     }
 
     @Test
-    fun summaryHasAnAddWidgetsButtonWithoutACategoryCarousel() = runComposeUiTest {
+    fun summaryHasAFullWidthGalleryButtonWithoutACategoryCarousel() = runComposeUiTest {
         val state = ShellState(Role.Patient)
         val settings = ShellSettings(dark = false)
         val patient = settingsWithoutOnboarding().also { it.pinned.update("Water") }
         setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
 
-        waitForText("Your widgets")
-        onNode(hasScrollAction()).performScrollToNode(hasText("Add widgets"))
+        waitForText("Pinned")
+        onNode(hasScrollAction()).performScrollToNode(hasText("Add to Summary"))
         val button = SemanticsMatcher.expectValue(SemanticsProperties.Role, androidx.compose.ui.semantics.Role.Button)
-        onNode(hasText("Add widgets") and button).assertIsDisplayed().assertHasClickAction()
+        onNode(hasText("Add to Summary") and button).assertIsDisplayed().assertHasClickAction()
         onNodeWithText("Added").assertDoesNotExist()
         onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.HorizontalScrollAxisRange)).assertCountEquals(0)
 
-        onNode(hasText("Add widgets") and button).performClick()
+        onNode(hasText("Add to Summary") and button).performClick()
         waitForText("Choose a category to add it to Summary.")
         onNodeWithText("Added").assertExists() // The gallery still marks the pinned Water widget.
     }
@@ -166,10 +169,10 @@ class PatientScreensUiTest {
         val patient = settingsWithoutOnboarding()
         setContent { ShellTheme(settings) { PatientApp(state, settings, patientSettings = patient) } }
         waitForText("What do you want to track?")
-        onAllNodes(hasContentDescription("Add widgets")).onFirst().performClick()
+        onAllNodes(hasContentDescription("Add to Summary")).onFirst().performClick()
         waitForText("Choose a category to add it to Summary.")
         onNodeWithText("Water").performClick()
-        waitForText("Your widgets")
+        waitForText("Pinned")
         assertEquals("Water", patient.pinned.value)
         onAllNodes(hasScrollAction()).onFirst().performScrollToNode(hasText("Edit"))
         onNodeWithText("Edit").performClick()

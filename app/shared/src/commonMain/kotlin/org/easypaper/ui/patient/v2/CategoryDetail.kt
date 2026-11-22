@@ -1,7 +1,9 @@
 package org.easypaper.ui.patient.v2
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -9,32 +11,39 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.withStyle
 import easypaper.app.shared.generated.resources.*
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
+import kotlin.math.round
 import org.easypaper.model.*
 import org.easypaper.ui.components.*
 import org.easypaper.ui.format.dateRange
 import org.easypaper.ui.format.dayMonth
 import org.easypaper.ui.doctor.PressureChart
 import org.easypaper.ui.doctor.pressureSeries
-import org.easypaper.ui.theme.tabular
-import androidx.compose.material3.Text
-import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.rememberTextMeasurer
-import org.easypaper.ui.patient.entryText
+import org.easypaper.ui.patient.decimalSeparator
 import org.easypaper.ui.patient.localDate
+import org.easypaper.ui.patient.measurementNumber
 import org.easypaper.ui.patient.timeOfDay
 import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
+import org.easypaper.ui.theme.tabular
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CategoryDetail(category: Category, records: List<PatientRecord>, today: LocalDate, timeZone: TimeZone,
                    back: BackAction, onAdd: () -> Unit, onAll: () -> Unit, onEntry: (OwnedEntry) -> Unit) {
     var segment by rememberSaveable(category) { mutableIntStateOf(1) }
+    var showAbout by rememberSaveable(category) { mutableStateOf(false) }
+    val spacing = EasyPaperTheme.spacing
+    val motion = EasyPaperTheme.motion
     val period = when (segment) {
         0 -> recentPeriod(today, 1)
         1 -> recentPeriod(today, 7)
@@ -42,43 +51,110 @@ fun CategoryDetail(category: Category, records: List<PatientRecord>, today: Loca
         else -> Period(today.plus(DatePeriod(months = -6, days = 1)), today)
     }
     val entries = categoryEntries(records, category).filter { it.entry.localDate(timeZone) in period }
-    LargeTitleScaffold(categoryTitle(category), back = back, bottomInset = false,
-        actions = { PlainButton(stringResource(Res.string.p2_add_data), onAdd) }) {
-        item {
-            SegmentedControl(listOf(stringResource(Res.string.p2_period_day), stringResource(Res.string.p2_period_week),
-                stringResource(Res.string.p2_period_month), stringResource(Res.string.p2_period_six)), segment, { segment = it },
-                descriptions = listOf(stringResource(Res.string.p2_period_day_full), stringResource(Res.string.p2_period_week_full),
-                    stringResource(Res.string.p2_period_month_full), stringResource(Res.string.p2_period_six_full)))
-            PatientMessage(dateRange(period.from, period.to))
-            // Blood pressure: the same chart the doctor sees (days, mmHg scale, shapes per series); the readings
-            // are listed right under it, so the chart's own values list is off here.
-            val series = remember(entries) { pressureSeries(entries.map { it.entry }) }
-            if (series != null) {
-                pressureRange(entries.map { it.entry })?.let { PatientMessage(pressureText(it)) }
-                PressureChart(series, timeZone, valuesToggle = false)
-                Spacer(Modifier.height(EasyPaperTheme.spacing.s))
+    val aboutTitle = stringResource(Res.string.p2_category_about, categoryTitle(category))
+    Box(Modifier.fillMaxSize()) {
+        LargeTitleScaffold(categoryTitle(category), back = back, bottomInset = false,
+            actions = { RoundIconButton(Res.drawable.ic_add, stringResource(Res.string.p2_add_data), onAdd) }) {
+            item(key = "category-period") {
+                SegmentedControl(listOf(stringResource(Res.string.p2_period_day), stringResource(Res.string.p2_period_week),
+                    stringResource(Res.string.p2_period_month), stringResource(Res.string.p2_period_six)), segment, { segment = it },
+                    descriptions = listOf(stringResource(Res.string.p2_period_day_full), stringResource(Res.string.p2_period_week_full),
+                        stringResource(Res.string.p2_period_month_full), stringResource(Res.string.p2_period_six_full)))
             }
-            GroupedSection {
-                when {
-                    entries.isEmpty() -> PatientMessage(stringResource(Res.string.p2_no_data))
-                    category == Category.Water -> {
-                        val daily = waterPerDay(entries, timeZone)
-                        PatientMessage(stringResource(Res.string.p2_ml, daily.values.min()) + " – " +
-                            stringResource(Res.string.p2_ml, daily.values.max()))
-                        WaterChart(daily, period)
+            item(key = "category-chart") {
+                // Each fading page owns its period and readings, so the outgoing chart stays consistent.
+                // A fade has no spatial travel, including with Reduce Motion enabled.
+                Crossfade(period, animationSpec = motion.fade(), label = "category period") { shownPeriod ->
+                    val shownEntries = remember(records, category, shownPeriod, timeZone) {
+                        categoryEntries(records, category).filter { it.entry.localDate(timeZone) in shownPeriod }
+                    }
+                    Column(Modifier.fillMaxWidth().padding(top = spacing.m)) {
+                        CategorySummary(category, shownEntries, shownPeriod)
+                        Spacer(Modifier.height(spacing.m))
+                        val series = remember(shownEntries) { pressureSeries(shownEntries.map { it.entry }) }
+                        if (series != null) {
+                            PressureChart(series, timeZone, valuesToggle = false)
+                        } else if (category == Category.Water && shownEntries.isNotEmpty()) {
+                            GroupedSection { WaterChart(waterPerDay(shownEntries, timeZone), shownPeriod) }
+                        }
                     }
                 }
-                // Text values are also the accessible alternative to charts.
-                entries.forEach { owned ->
-                    ListRow(patientEntryText(owned), subtitle = entryDate(owned, timeZone), onClick = { onEntry(owned) })
+            }
+            item(key = "category-actions") {
+                Spacer(Modifier.height(spacing.sectionGap))
+                GroupedSection {
+                    ListRow(stringResource(Res.string.p2_show_all), onClick = onAll)
+                    RowSeparator()
+                    ListRow(aboutTitle, onClick = { showAbout = true })
                 }
             }
-            Spacer(Modifier.height(EasyPaperTheme.spacing.sectionGap))
-            GroupedSection {
-                ListRow(stringResource(Res.string.p2_show_all), onClick = onAll)
-                RowSeparator()
-                ListRow(stringResource(Res.string.p2_about_records), subtitle = stringResource(Res.string.p2_records_body), chevron = false)
+            if (entries.isNotEmpty()) item(key = "category-readings") {
+                Spacer(Modifier.height(spacing.sectionGap))
+                // Text values remain the accessible alternative to the charts.
+                GroupedSection {
+                    entries.forEachIndexed { index, owned ->
+                        if (index > 0) RowSeparator()
+                        ListRow(patientEntryText(owned), subtitle = entryDate(owned, timeZone), onClick = { onEntry(owned) })
+                    }
+                }
             }
+        }
+        Sheet(showAbout, aboutTitle, stringResource(Res.string.p2_done), { showAbout = false }) {
+            PatientMessage(stringResource(when (category) {
+                Category.BloodPressure -> Res.string.p2_category_pressure_fact
+                Category.Water -> Res.string.p2_category_water_fact
+                Category.Food -> Res.string.p2_category_food_fact
+                Category.Medicines -> Res.string.p2_category_medicines_fact
+                Category.Questionnaire -> Res.string.p2_category_symptoms_fact
+                Category.Diary -> Res.string.p2_category_diary_fact
+                Category.DoctorQuestion -> Res.string.p2_category_questions_fact
+                Category.Measurements -> Res.string.p2_category_measurements_fact
+            }))
+        }
+    }
+}
+
+@Composable
+private fun CategorySummary(category: Category, entries: List<OwnedEntry>, period: Period) {
+    val type = EasyPaperTheme.typography
+    val colors = EasyPaperTheme.colors
+    val pressure = pressureRange(entries.map { it.entry })
+    // Measurements can include unrelated units: only weight in kg participates in the weight mean.
+    val weights = entries.mapNotNull { it.entry.payload as? Measurement }
+        .filter { it.loinc == Measurement.WEIGHT_LOINC && it.unit == "kg" && it.value.isFinite() }
+    val weightSummary = category == Category.Measurements && (weights.isNotEmpty() || entries.isEmpty())
+    val label = stringResource(when {
+        category == Category.BloodPressure -> Res.string.p2_category_range
+        category == Category.Water -> Res.string.p2_category_daily_average
+        weightSummary -> Res.string.p2_category_average
+        else -> Res.string.p2_category_total
+    })
+    val value = when {
+        entries.isEmpty() -> stringResource(Res.string.p2_no_data)
+        category == Category.BloodPressure && pressure != null -> stringResource(Res.string.p2_category_pressure_value,
+            pressure.systolicMin, pressure.systolicMax, pressure.diastolicMin, pressure.diastolicMax)
+        category == Category.Water -> {
+            val days = (period.to.toEpochDays() - period.from.toEpochDays()).toInt() + 1
+            (entries.sumOf { (it.entry.payload as? Water)?.ml ?: 0 } / days).toString()
+        }
+        weightSummary -> measurementNumber(round(weights.map { it.value }.average() * 10) / 10, decimalSeparator())
+        else -> entries.size.toString()
+    }
+    val unit = if (entries.isEmpty()) null else when {
+        category == Category.BloodPressure -> stringResource(Res.string.unit_mmhg)
+        category == Category.Water -> stringResource(Res.string.p2_category_ml_unit)
+        weightSummary -> stringResource(Res.string.m_kg)
+        else -> pluralStringResource(Res.plurals.p2_category_entries_unit, entries.size)
+    }
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(EasyPaperTheme.spacing.xxs)) {
+        Text(label, style = type.footnote, color = colors.secondaryLabel)
+        Text(buildAnnotatedString {
+            append(value)
+            if (unit != null) withStyle(type.footnote.toSpanStyle()) { append("\u00A0$unit") }
+        }, style = type.title1.tabular(), color = colors.label)
+        Text(dateRange(period.from, period.to), style = type.footnote, color = colors.secondaryLabel)
+        if (category == Category.Water && entries.isNotEmpty()) {
+            Text(stringResource(Res.string.p2_water_average_note), style = type.caption1, color = colors.secondaryLabel)
         }
     }
 }
@@ -110,7 +186,7 @@ private fun WaterChart(daily: Map<LocalDate, Int>, period: Period) {
             val half = topLabel.size.height / 2f
             val bottom = size.height - half
             val stroke = spacing.xxs.toPx() / 2
-            fun y(ml: Int) = bottom - ml.toFloat() / high * (bottom - half)
+            val y: (Int) -> Float = { ml -> bottom - ml.toFloat() / high * (bottom - half) }
             // Scale lines at 0 and at the maximum, each with its value where the line is.
             for ((ml, label) in listOf(0 to zeroLabel, high to topLabel)) {
                 drawLine(colors.separator, Offset(left, y(ml)), Offset(size.width, y(ml)), stroke)

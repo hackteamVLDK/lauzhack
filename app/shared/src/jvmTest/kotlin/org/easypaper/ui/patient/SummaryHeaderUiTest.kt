@@ -29,7 +29,7 @@ class SummaryHeaderUiTest {
             ShellTheme(ShellSettings(dark = false)) {
                 PatientLanguage(language) {
                     SummaryTab(emptyList(), patient, LocalDate(2026, 11, 21), TimeZone.UTC,
-                        onProfile = {}, onDeveloper = {}, onPlan = {}, onCategory = {}, onAdd = {}, onGallery = {})
+                        onProfile = {}, onDeveloper = {}, onPlan = {}, onCategory = {}, onGallery = {}, onOpenInvite = {})
                 }
             }
         }

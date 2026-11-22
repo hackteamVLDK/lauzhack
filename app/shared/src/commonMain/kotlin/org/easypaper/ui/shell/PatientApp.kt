@@ -161,8 +161,8 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
                 PushNavigation(navigator.stack, Modifier.fillMaxSize()) { screen ->
                     when (screen) {
                         PatientScreen.Summary -> SummaryTab(records, patient, today, timeZone, openProfile, openDeveloper,
-                            { navigator.push(PatientScreen.Plan(it)) }, openCategory, { addCategory(it, true) },
-                            { navigator.presentSheet(PatientScreen.Pinned) })
+                            { navigator.push(PatientScreen.Plan(it)) }, openCategory,
+                            { navigator.presentSheet(PatientScreen.Pinned) }, openInvite)
                         PatientScreen.Sharing -> SharingTab(records, patient, today, openProfile, openDeveloper,
                             { navigator.push(PatientScreen.Plan(it)) }, openInvite,
                             { navigator.presentSheet(PatientScreen.WhatToShare) })
