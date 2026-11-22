@@ -232,6 +232,16 @@
     <string name="med_empty">Ліків ще немає</string>
     <string name="med_empty_message">Відскануйте упаковку або введіть назву.</string>
     <string name="med_footer">Лише те, що ви приймаєте. Застосунок не дає порад щодо ліків.</string>
+    <string name="med_side_title">Як ви почуваєтеся, приймаючи свої ліки?</string>
+    <string name="med_side_footer">Побічні дії, які для цієї діючої речовини вказані як часті. Ваші відповіді передаються лікарю разом з іншими записами; застосунок їх не оцінює.</string>
+    <string name="med_side_sheet">Чи помітили ви це сьогодні?</string>
+    <string name="med_side_done">Сьогодні вже відповіли</string>
+    <plurals name="med_side_count">
+        <item quantity="one">%1$d запитання</item>
+        <item quantity="few">%1$d запитання</item>
+        <item quantity="many">%1$d запитань</item>
+        <item quantity="other">%1$d запитання</item>
+    </plurals>
     <string name="med_found">Це ваші ліки?</string>
     <string name="med_not_found">Упаковку не розпізнано. Введіть назву.</string>
     <string name="med_name">Назва ліків</string>

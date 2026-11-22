@@ -230,6 +230,14 @@
     <string name="med_empty">Noch keine Medikamente</string>
     <string name="med_empty_message">Scannen Sie die Packung oder geben Sie den Namen ein.</string>
     <string name="med_footer">Nur was Sie einnehmen. Die App gibt keine Ratschläge zu Medikamenten.</string>
+    <string name="med_side_title">Wie geht es Ihnen mit Ihren Medikamenten?</string>
+    <string name="med_side_footer">Nebenwirkungen, die für diesen Wirkstoff als häufig gelten. Ihre Antworten werden mit Ihren anderen Einträgen an Ihre Praxis übergeben; die App bewertet sie nicht.</string>
+    <string name="med_side_sheet">Haben Sie heute etwas davon bemerkt?</string>
+    <string name="med_side_done">Heute beantwortet</string>
+    <plurals name="med_side_count">
+        <item quantity="one">%1$d Frage</item>
+        <item quantity="other">%1$d Fragen</item>
+    </plurals>
     <string name="med_found">Ist das Ihr Medikament?</string>
     <string name="med_not_found">Die Packung wurde nicht erkannt. Bitte geben Sie den Namen ein.</string>
     <string name="med_name">Name des Medikaments</string>

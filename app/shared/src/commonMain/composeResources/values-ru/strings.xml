@@ -232,6 +232,16 @@
     <string name="med_empty">Пока нет лекарств</string>
     <string name="med_empty_message">Отсканируйте упаковку или введите название.</string>
     <string name="med_footer">Только то, что вы принимаете. Приложение не даёт советов о лекарствах.</string>
+    <string name="med_side_title">Как вы себя чувствуете, принимая свои лекарства?</string>
+    <string name="med_side_footer">Побочные эффекты, указанные как частые для этого действующего вещества. Ваши ответы передаются врачу вместе с остальными записями; приложение их не оценивает.</string>
+    <string name="med_side_sheet">Замечали ли вы это сегодня?</string>
+    <string name="med_side_done">Сегодня уже ответили</string>
+    <plurals name="med_side_count">
+        <item quantity="one">%1$d вопрос</item>
+        <item quantity="few">%1$d вопроса</item>
+        <item quantity="many">%1$d вопросов</item>
+        <item quantity="other">%1$d вопроса</item>
+    </plurals>
     <string name="med_found">Это ваше лекарство?</string>
     <string name="med_not_found">Упаковка не распознана. Введите название.</string>
     <string name="med_name">Название лекарства</string>

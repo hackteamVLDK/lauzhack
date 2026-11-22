@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,12 +46,19 @@ import easypaper.app.shared.generated.resources.med_not_found
 import easypaper.app.shared.generated.resources.med_other
 import easypaper.app.shared.generated.resources.med_reading
 import easypaper.app.shared.generated.resources.med_scan
+import easypaper.app.shared.generated.resources.med_side_count
+import easypaper.app.shared.generated.resources.med_side_done
+import easypaper.app.shared.generated.resources.med_side_footer
+import easypaper.app.shared.generated.resources.med_side_sheet
+import easypaper.app.shared.generated.resources.med_side_title
 import easypaper.app.shared.generated.resources.med_take_now
 import easypaper.app.shared.generated.resources.med_taken_today
 import easypaper.app.shared.generated.resources.med_title
 import easypaper.app.shared.generated.resources.med_type
+import easypaper.app.shared.generated.resources.no
 import easypaper.app.shared.generated.resources.problem_empty
 import easypaper.app.shared.generated.resources.save
+import easypaper.app.shared.generated.resources.yes
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import org.easypaper.diary.EntryProblem
@@ -73,6 +81,7 @@ import org.easypaper.ui.components.ListRow
 import org.easypaper.ui.components.PlainButton
 import org.easypaper.ui.components.ProminentButton
 import org.easypaper.ui.components.RowSeparator
+import org.easypaper.ui.components.SegmentedControl
 import org.easypaper.ui.components.Sheet
 import org.easypaper.ui.components.TextAreaRow
 import org.easypaper.ui.components.TintedButton
@@ -80,15 +89,16 @@ import org.easypaper.ui.format.today
 import org.easypaper.ui.patient.timeOfDay
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 
-/** What the sheet shows: reading a photo, choosing among scan results, checking a draft, or typing a medicine. */
 private sealed interface MedSheet {
     data object Reading : MedSheet
     data class Choose(val choices: List<Medication>) : MedSheet
     data class Check(val item: MedicineItem) : MedSheet
     data class Type(val code: String?, val unreadable: Boolean = false, val readName: String? = null) : MedSheet
+    data class SideEffects(val question: SideEffectQuestions) : MedSheet
 }
 
 /**
@@ -108,8 +118,10 @@ fun MedicationsScreen(
 ) {
     val scope = rememberCoroutineScope()
     val requestId = record.request.id
-    val items = medicinesFor(record, widget.id, today(), timeZone)
+    val date = today()
+    val items = medicinesFor(record, widget.id, date, timeZone)
     val db = remember { MedicationDb() }
+    val questions = sideEffectQuestions(record, widget.id, items, db, date, timeZone)
     var sheet by remember { mutableStateOf<MedSheet?>(null) }
     var problems by remember { mutableStateOf(emptyList<EntryProblem>()) }
     var saving by remember { mutableStateOf(false) }
@@ -155,6 +167,32 @@ fun MedicationsScreen(
                     }
                 }
             }
+            if (questions.isNotEmpty()) {
+                item {
+                    GroupedSection(
+                        modifier = Modifier.padding(top = EasyPaperTheme.spacing.sectionGap),
+                        header = stringResource(Res.string.med_side_title),
+                        footer = stringResource(Res.string.med_side_footer),
+                    ) {
+                        questions.forEachIndexed { index, question ->
+                            if (index > 0) RowSeparator(EasyPaperTheme.spacing.m)
+                            val count = question.effects.size
+                            ListRow(
+                                title = question.item.name,
+                                subtitle = if (question.answeredToday) stringResource(Res.string.med_side_done)
+                                else pluralStringResource(Res.plurals.med_side_count, count, count),
+                                chevron = !question.answeredToday,
+                                onClick = if (question.answeredToday) null else {
+                                    {
+                                        problems = emptyList()
+                                        sheet = MedSheet.SideEffects(question)
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            }
             item {
                 val spacing = EasyPaperTheme.spacing
                 FlowRow(Modifier.fillMaxWidth().padding(horizontal = spacing.m, vertical = spacing.sectionGap),
@@ -173,6 +211,7 @@ fun MedicationsScreen(
                 is MedSheet.Choose -> stringResource(Res.string.med_found)
                 is MedSheet.Check -> stringResource(Res.string.med_check)
                 is MedSheet.Type -> stringResource(Res.string.med_type)
+                is MedSheet.SideEffects -> stringResource(Res.string.med_side_sheet)
                 else -> stringResource(Res.string.med_scan)
             },
             doneLabel = stringResource(Res.string.cancel),
@@ -195,10 +234,43 @@ fun MedicationsScreen(
                 is MedSheet.Type -> TypeForm(open.code != null || open.unreadable, open.readName, problems, saving) { name, dose ->
                     run { repository.addMedication(requestId, widget.id, typedMedication(name, dose, open.code), now()) }
                 }
+                is MedSheet.SideEffects -> SideEffectsForm(open.question, language, problems, saving) { answers ->
+                    run { repository.saveSideEffects(requestId, widget.id, open.question.item, answers, now()) }
+                }
                 null -> Unit
             }
         }
     }
+}
+
+@Composable
+private fun ColumnScope.SideEffectsForm(
+    question: SideEffectQuestions,
+    language: String,
+    problems: List<EntryProblem>,
+    saving: Boolean,
+    save: (Map<String, Boolean>) -> Unit,
+) {
+    val answers = remember(question) { mutableStateMapOf<String, Boolean>() }
+    val options = listOf(stringResource(Res.string.yes), stringResource(Res.string.no))
+    val spacing = EasyPaperTheme.spacing
+    question.effects.forEach { effect ->
+        Text(
+            text = effect.name(language),
+            style = EasyPaperTheme.typography.headline,
+            color = EasyPaperTheme.colors.label,
+            modifier = Modifier.padding(start = spacing.m, end = spacing.m, top = spacing.l),
+        )
+        val selected = answers[effect.key]?.let { if (it) 0 else 1 }
+        SegmentedControl(
+            options = options,
+            selected = selected,
+            onSelect = { answers[effect.key] = it == 0 },
+            modifier = Modifier.padding(horizontal = spacing.m),
+        )
+    }
+    SaveButton(saving, enabled = question.effects.all { it.key in answers }) { save(answers.toMap()) }
+    Problems(problems)
 }
 
 @Composable

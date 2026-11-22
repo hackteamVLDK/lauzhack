@@ -230,6 +230,14 @@
     <string name="med_empty">Pas encore de médicaments</string>
     <string name="med_empty_message">Scannez la boîte ou saisissez le nom.</string>
     <string name="med_footer">Uniquement ce que vous prenez. L'application ne donne pas de conseils sur les médicaments.</string>
+    <string name="med_side_title">Comment vous sentez-vous avec vos médicaments ?</string>
+    <string name="med_side_footer">Effets indésirables indiqués comme fréquents pour cette substance active. Vos réponses sont transmises à votre médecin avec vos autres saisies ; l’application ne les juge pas.</string>
+    <string name="med_side_sheet">Avez-vous remarqué ces effets aujourd’hui ?</string>
+    <string name="med_side_done">Répondu aujourd’hui</string>
+    <plurals name="med_side_count">
+        <item quantity="one">%1$d question</item>
+        <item quantity="other">%1$d questions</item>
+    </plurals>
     <string name="med_found">Est-ce votre médicament ?</string>
     <string name="med_not_found">La boîte n'a pas été reconnue. Saisissez le nom.</string>
     <string name="med_name">Nom du médicament</string>
