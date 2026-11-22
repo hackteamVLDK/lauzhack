@@ -1,0 +1,14 @@
+64793681	DOLIPRANE 100 mg, poudre pour solution buvable en sachet-dose	poudre pour solution buvable	orale	Autorisation abrogée	Procédure nationale	Non commercialisée	09/02/1999	Warning disponibilité		 OPELLA HEALTHCARE FRANCE	Non
+66057393	DOLIPRANE 100 mg, suppositoire sécable	suppositoire sécable	rectale	Autorisation active	Procédure nationale	Commercialisée	17/08/1998			 OPELLA HEALTHCARE FRANCE	Non
+60234100	DOLIPRANE 1000 mg, comprimé	comprimé	orale	Autorisation active	Procédure nationale	Commercialisée	09/07/2002			 OPELLA HEALTHCARE FRANCE	Non
+66567738	DOLIPRANE 1000 mg, comprimé effervescent sécable	comprimé effervescent(e) sécable	orale	Autorisation active	Procédure nationale	Commercialisée	16/12/1999			 OPELLA HEALTHCARE FRANCE	Non
+69309629	DOLIPRANE 1000 mg, gélule	gélule	orale	Autorisation active	Procédure nationale	Commercialisée	25/02/2011			 OPELLA HEALTHCARE FRANCE	Non
+61681702	DOLIPRANE 1000 mg, poudre pour solution buvable en sachet-dose	poudre pour solution buvable	orale	Autorisation active	Procédure nationale	Commercialisée	26/08/2003			 OPELLA HEALTHCARE FRANCE	Non
+63368332	DOLIPRANE 500 mg, comprimé	comprimé	orale	Autorisation active	Procédure nationale	Commercialisée	26/04/1996			 OPELLA HEALTHCARE FRANCE	Non
+65196753	DOLIPRANE 500 mg, comprimé effervescent	comprimé effervescent(e)	orale	Autorisation active	Procédure nationale	Non commercialisée	01/12/1986	Warning disponibilité		 OPELLA HEALTHCARE FRANCE	Non
+67119691	DOLIPRANE 500 mg, gélule	gélule	orale	Autorisation active	Procédure nationale	Commercialisée	14/11/1997			 OPELLA HEALTHCARE FRANCE	Non
+66731536	DOLIPRANE 500 mg, poudre pour solution buvable en sachet-dose	poudre pour solution buvable	orale	Autorisation active	Procédure nationale	Commercialisée	04/02/1980			 OPELLA HEALTHCARE FRANCE	Non
+69738404	FERVEX ADULTES FRAMBOISE, granulés pour solution buvable en sachet	granulés pour solution buvable	orale	Autorisation active	Procédure nationale	Commercialisée	07/03/2011			 UPSA	Non
+66947007	FERVEX ADULTES SANS SUCRE, granulés pour solution buvable en sachet	granulés pour solution buvable	orale	Autorisation active	Procédure nationale	Commercialisée	12/02/1991			 UPSA	Non
+69329731	FERVEX ADULTES, granulés pour solution buvable en sachet	granulés pour solution buvable	orale	Autorisation active	Procédure nationale	Commercialisée	06/06/1980			 UPSA	Non
+66418648	FERVEX ENFANTS SANS SUCRE, granulés pour solution buvable en sachet	granulés pour solution buvable	orale	Autorisation active	Procédure nationale	Commercialisée	16/06/1992			 UPSA	Non

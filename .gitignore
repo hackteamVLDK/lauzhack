@@ -30,3 +30,6 @@ secrets.properties
 .classpath
 .settings/
 .vscode/
+
+# medicine catalog snapshots and downloads (task 71): rebuilt by :server:importCatalog
+server/data/

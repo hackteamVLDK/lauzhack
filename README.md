@@ -144,6 +144,19 @@ connection and the AI cost/status screen pass this token to `AiClient`. Its defa
 so an unconfigured client can only access the public off-mode status. The server environment
 variable is not automatically exposed to the browser; never embed the token in a public web build.
 
+## Medicine catalog
+
+The patient's *Recognise medicine* (barcode or photo of the package) and the doctor's medicine brief use official
+registries imported on the server: Switzerland (Swissmedic + Refdata SAI), France (BDPM), EU names (EMA Article 57).
+Import or update them, then restart the server:
+
+```
+EASYPAPER_CATALOG_DIR=server/data/catalog ./gradlew :server:importCatalog --args="fr ch eu"
+```
+
+The import can be repeated without duplicates; `server/data/` is not committed. Flow, sources, real coverage
+(Ukraine, Russia and Belarus are not covered) and what is not verified: [docs/medicine-recognition.md](docs/medicine-recognition.md).
+
 ## Tests
 
 ```

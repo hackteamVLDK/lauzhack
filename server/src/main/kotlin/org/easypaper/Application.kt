@@ -9,18 +9,23 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.io.File
+import org.easypaper.catalog.CatalogService
+import org.easypaper.catalog.CatalogStore
+import org.easypaper.catalog.catalogRoutes
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 fun main() {
     val relay = Relay.fromEnv()
     val ai = AiService.fromEnv() // the OpenRouter key is read here from the environment and never leaves this process
+    // medicine catalog snapshots written by :server:importCatalog (task 71); empty until the first import
+    val catalog = CatalogService(CatalogStore.fromEnv())
     val webDir = File(
         System.getenv("EASYPAPER_WEB_DIR") ?: System.getProperty("easypaper.webDir")
             ?: "app/webApp/build/dist/wasmJs/productionExecutable",
     )
     embeddedServer(Netty, port = System.getenv("PORT")?.toIntOrNull() ?: 8080, host = "0.0.0.0") {
-        module(relay, webDir.takeIf { it.isDirectory }, ai = ai)
+        module(relay, webDir.takeIf { it.isDirectory }, ai = ai, catalog = catalog)
     }.start(wait = true)
 }
 
@@ -35,6 +40,7 @@ fun Application.module(
     ai: AiService = AiService.off(),
     aiToken: String? = System.getenv("EASYPAPER_CLINIC_TOKEN"),
     handoff: Handoff = Handoff(maxBytes = relay.maxBytes, maxTotalBytes = relay.maxTotalBytes),
+    catalog: CatalogService? = null,
 ) {
     protectAiRoutes(ai.mode, aiToken)
     launch {
@@ -48,6 +54,7 @@ fun Application.module(
         relayRoutes(relay)
         handoffRoutes(handoff, aiToken)
         aiRoutes(ai)
+        catalog?.let { catalogRoutes(it) }
         if (webDir != null) staticFiles("/", webDir) { default("index.html") }
     }
 }

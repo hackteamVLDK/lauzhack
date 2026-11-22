@@ -54,7 +54,12 @@ fun entryText(entry: Entry, request: CareRequest?): String = when (val p = entry
         "${stringResource(Res.string.m_weight)}: ${measurementNumber(p.value, decimalSeparator())} ${stringResource(Res.string.m_kg)}"
     else "${p.name}: ${measurementNumber(p.value, decimalSeparator())} ${p.unit}"
     // The scanned package name often contains the strength already ("… 20 mg 15 Stk"): show the dose once.
-    is Medication -> listOfNotNull(p.name, p.dose?.takeIf { it !in p.name }).joinToString(", ") +
+    // a registry card shows its brand and form; the intake (task 71) is what the patient took, never the pack size
+    is Medication -> listOfNotNull(
+        p.product?.let { org.easypaper.ui.medicine.cardTitle(it) } ?: p.name,
+        p.dose?.takeIf { p.product == null && it !in p.name },
+        p.intake?.let { org.easypaper.ui.medicine.amountWithUnit(it.amount, it.unit) },
+    ).joinToString(", ") +
         if (p.confirmed) "" else " (" + stringResource(Res.string.not_confirmed) + ")"
     is Answers -> {
         val questions = request?.widgets?.filterIsInstance<QuestionnaireWidget>()?.flatMap { it.questions }?.associateBy { it.id }.orEmpty()

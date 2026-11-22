@@ -84,6 +84,11 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
     var failed by remember { mutableStateOf(false) }
     var selection by remember { mutableStateOf<ShareSelection?>(null) }
     val back = BackAction(stringResource(Res.string.p2_back)) { navigator.back() }
+    // official medicine registries on the Easy Paper server (task 71): only package codes and printed text are sent
+    val catalogUrl = relayUrl(settings.serverUrl, defaultServerUrl())
+    val catalogHttp = remember { io.ktor.client.HttpClient() }
+    DisposableEffect(catalogHttp) { onDispose { catalogHttp.close() } }
+    val catalog = remember(catalogUrl) { org.easypaper.catalog.HttpCatalog(catalogUrl, catalogHttp) }
     val openDeveloper = { navigator.presentSheet(PatientScreen.Developer) }
     val openProfile = { navigator.presentSheet(PatientScreen.Profile) }
     val openInvite = { navigator.presentSheet(PatientScreen.OpenInvite) }
@@ -183,7 +188,7 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
                         is PatientScreen.Medicines -> {
                             val record = records.firstOrNull { it.request.id == screen.requestId }
                             val widget = record?.request?.widgets?.filterIsInstance<MedicationsWidget>()?.firstOrNull { it.id == screen.widgetId }
-                            if (record != null && widget != null) MedicationsScreen(state.repository, record, widget, back, language = language)
+                            if (record != null && widget != null) MedicationsScreen(state.repository, record, widget, back, language = language, catalog = catalog)
                         }
                         is PatientScreen.ShareReport, is PatientScreen.ShareCode, is PatientScreen.ShareFile -> {
                             val sharedRecord = when (screen) {

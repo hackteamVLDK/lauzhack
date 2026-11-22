@@ -1,0 +1,22 @@
+60234100	comprimé	02202	PARACÉTAMOL	1000 mg	un comprimé	SA	1
+61681702	poudre	02202	PARACÉTAMOL	1000 mg	un sachet-dose de 4 g	SA	1
+63368332	comprimé	02202	PARACÉTAMOL	500 mg	un comprimé	SA	1
+64793681	poudre	02202	PARACÉTAMOL	100 mg	un sachet-dose de 0,4 g	SA	1
+65196753	comprimé	02202	PARACÉTAMOL	500 mg	un comprimé	SA	1
+66057393	suppositoire	02202	PARACÉTAMOL	100 mg	un suppositoire	SA	1
+66418648	granulés	01023	ACIDE ASCORBIQUE	100 mg	un sachet	SA	2
+66418648	granulés	02202	PARACÉTAMOL	280 mg	un sachet	SA	3
+66418648	granulés	03460	MALÉATE DE PHÉNIRAMINE	10 mg	un sachet	SA	4
+66567738	comprimé	02202	PARACÉTAMOL	1000 mg	un comprimé	SA	1
+66731536	poudre	02202	PARACÉTAMOL	500 mg	un sachet-dose de 2 g	SA	1
+66947007	granulés	01023	ACIDE ASCORBIQUE	200 mg	un sachet	SA	3
+66947007	granulés	02202	PARACÉTAMOL	500 mg	un sachet	SA	4
+66947007	granulés	03460	MALÉATE DE PHÉNIRAMINE	25 mg	un sachet	SA	6
+67119691	gélule	02202	PARACÉTAMOL	500 mg	une gélule	SA	1
+69309629	gélule	02202	PARACÉTAMOL	1000 mg	une gélule	SA	1
+69329731	granulés	01023	ACIDE ASCORBIQUE	200 mg	un sachet	SA	4
+69329731	granulés	02202	PARACÉTAMOL	500 mg	un sachet	SA	5
+69329731	granulés	03460	MALÉATE DE PHÉNIRAMINE	25 mg	un sachet	SA	6
+69738404	granulés	01023	ACIDE ASCORBIQUE	200 mg	un sachet	SA	4
+69738404	granulés	02202	PARACÉTAMOL	500 mg	un sachet	SA	5
+69738404	granulés	03460	MALÉATE DE PHÉNIRAMINE	25 mg	un sachet	SA	6

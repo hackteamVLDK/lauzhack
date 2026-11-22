@@ -163,8 +163,19 @@ private fun Entry.toFhir(questions: Map<String, Question>): JsonObject = buildJs
                     p.code?.let { code -> putJsonArray("coding") { addJsonObject { put("system", "https://www.gs1.org/gtin"); put("code", code) } } }
                 }
             }
-            p.dose?.let { putJsonArray("dosage") { addJsonObject { put("text", it) } } }
-            putJsonArray("note") { addJsonObject { put("text", "source: " + p.source.name.lowercase()) } }
+            // what the patient says they took (task 71); otherwise the dose text they typed
+            (p.intake?.let { "${it.amount} ${it.unit}" } ?: p.dose)?.let { putJsonArray("dosage") { addJsonObject { put("text", it) } } }
+            putJsonArray("note") {
+                addJsonObject { put("text", "source: " + p.source.name.lowercase()) }
+                p.product?.let { card ->
+                    addJsonObject {
+                        put("text", "registry card: ${card.name}; " + card.ingredients.joinToString(", ") {
+                            listOfNotNull(it.name, it.amount, it.unit).joinToString(" ")
+                        } + (card.perUnit?.let { " ($it)" } ?: "") + "; ${card.source.url} (${card.source.updated})")
+                    }
+                }
+                p.patientWords?.let { addJsonObject { put("text", "patient's words: $it") } }
+            }
         }
         is Answers -> {
             put("resourceType", "QuestionnaireResponse")

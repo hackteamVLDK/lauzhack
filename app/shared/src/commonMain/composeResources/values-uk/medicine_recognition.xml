@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Task 71: medicine recognition and the doctor's brief -->
+    <string name="rec_action">Розпізнати препарат</string>
+    <string name="rec_take_photo">Зробити фото</string>
+    <string name="rec_choose_image">Вибрати зображення</string>
+    <string name="rec_type_label">Ввести напис з упаковки</string>
+    <string name="rec_label_hint">Назва і дозування як на упаковці</string>
+    <string name="rec_search">Шукати в реєстрах</string>
+    <string name="rec_intro">Сфотографуйте коробку, етикетку флакона, пакетик або блістер з боку фольги. Штрихкод допомагає, але не обов’язковий.</string>
+    <string name="rec_privacy">До офіційних реєстрів надсилаються лише код і текст з упаковки — ніколи не фото і не ваші дані.</string>
+    <string name="rec_searching">Пошук в офіційних реєстрах ліків…</string>
+    <string name="rec_country">Куплено в</string>
+    <string name="rec_country_any">Будь-яка країна</string>
+    <string name="rec_country_note">Країна визначає, в якому реєстрі шукати; мова застосунку — ні.</string>
+    <string name="country_CH">Швейцарія</string>
+    <string name="country_FR">Франція</string>
+    <string name="country_DE">Німеччина</string>
+    <string name="country_AT">Австрія</string>
+    <string name="country_IT">Італія</string>
+    <string name="country_BE">Бельгія</string>
+    <string name="country_ES">Іспанія</string>
+    <string name="country_NL">Нідерланди</string>
+    <string name="country_PL">Польща</string>
+    <string name="country_UA">Україна (реєстр ще не підключено)</string>
+    <string name="country_RU">Росія (реєстр ще не підключено)</string>
+    <string name="country_BY">Білорусь (реєстр ще не підключено)</string>
+    <string name="rec_card_title">Це ваш препарат?</string>
+    <string name="rec_form">Форма</string>
+    <string name="rec_substances">Діючі речовини</string>
+    <string name="rec_amount_missing">кількість у реєстрі не вказано</string>
+    <string name="rec_pack">Знайдена упаковка</string>
+    <string name="rec_source">Джерело: %1$s, дані від %2$s</string>
+    <string name="rec_open_source">Відкрити офіційну інформацію</string>
+    <string name="rec_unverified">Цей перелік називає речовини, але не їхню кількість на одиницю. Перевірте дозування на упаковці.</string>
+    <string name="rec_confirm">Підтвердити</string>
+    <string name="rec_not_this">Не той — описати своїми словами</string>
+    <string name="rec_q_strength">Яке дозування надруковано на упаковці? Якщо не видно, сфотографуйте місце з дозуванням.</string>
+    <string name="rec_q_variant">Який це варіант? Пошукайте на упаковці слова Forte, Junior або Sans sucre.</string>
+    <string name="rec_q_form">Яка форма — наприклад, таблетки чи пакетики?</string>
+    <string name="rec_q_product">Який із них ваш препарат?</string>
+    <string name="rec_conflict">Штрихкод належить препарату %1$s, але напис інший. Будь ласка, сфотографуйте лицьовий бік упаковки ще раз.</string>
+    <string name="rec_too_little">На цьому фото замало видно. Сфотографуйте фольгу з назвою і дозуванням або коробку — чи опишіть своїми словами.</string>
+    <string name="rec_unknown_code">Штрихкоду %1$s немає в реєстрах, тому шукали за надписом.</string>
+    <string name="rec_retake">Нове фото</string>
+    <string name="rec_words">Описати своїми словами</string>
+    <string name="rec_unavailable">Реєстри ліків зараз недоступні. Можна зберегти своїми словами.</string>
+    <string name="rec_words_hint">Що ви прийняли? Напр., порошок від застуди, назву не пам’ятаю</string>
+    <string name="rec_label_ingredients">Склад з етикетки (необов’язково, напр. для чаю чи БАДу)</string>
+    <string name="rec_words_footer">Зберігається так, як ви написали. Склад не додається.</string>
+    <string name="rec_next">Далі</string>
+    <string name="rec_intake_title">Що ви прийняли?</string>
+    <string name="rec_intake_note">Фото упаковки не означає, що ви її прийняли. Вкажіть, що ви справді прийняли.</string>
+    <string name="rec_amount">Скільки</string>
+    <string name="rec_unit_free">Одиниця, напр. таблетка, пакетик, мл</string>
+    <string name="rec_when">Коли</string>
+    <string name="rec_now">Зараз</string>
+    <string name="rec_today">Сьогодні</string>
+    <string name="rec_yesterday">Учора</string>
+    <string name="rec_time">Час, напр. 08:30</string>
+    <string name="rec_time_error">Введіть час у форматі 08:30.</string>
+    <string name="rec_amount_error">Вкажіть кількість числом, напр. 1.</string>
+    <string name="rec_future_error">Цей час ще не настав.</string>
+    <string name="rec_save_intake">Зберегти прийом</string>
+    <string name="rec_only_list">Не приймав(-ла) — лише додати до списку</string>
+    <string name="brief_per_volume">На %1$s мл</string>
+    <string name="brief_per_raw">На одиницю (%1$s)</string>
+    <string name="brief_per_tablet">На 1 таблетку</string>
+    <string name="brief_per_capsule">На 1 капсулу</string>
+    <string name="brief_per_sachet">На 1 пакетик</string>
+    <string name="brief_per_dose">На 1 дозу</string>
+    <string name="brief_per_suppository">На 1 супозиторій</string>
+    <string name="brief_per_lozenge">На 1 льодяник</string>
+    <string name="brief_patient_reports">Зі слів пацієнта: %1$s, %2$s.</string>
+    <string name="brief_today_at">сьогодні о %1$s</string>
+    <string name="brief_yesterday_at">учора о %1$s</string>
+    <string name="brief_date_at">%1$s о %2$s</string>
+    <string name="brief_not_taken">Пацієнт додав до списку; прийом не вказано.</string>
+    <string name="brief_words">Зі слів пацієнта</string>
+    <string name="brief_label_ingredients">З етикетки, не звірено з реєстром: %1$s</string>
+    <string name="brief_no_card">Картку з реєстру не підтверджено: склад не показано.</string>
+    <string name="brief_source_fr">Джерело: офіційна інформація, Франція (BDPM)</string>
+    <string name="brief_source_ch">Джерело: інформація для фахівців, Швейцарія (Swissmedic)</string>
+    <string name="brief_source_eu">Джерело: перелік EMA за статтею 57 (без дозування)</string>
+    <string name="brief_data_of">дані від %1$s</string>
+    <string name="brief_indication_lang">Офіційний текст (%1$s)</string>
+    <plurals name="u_tablet">
+        <item quantity="one">%1$s таблетка</item>
+        <item quantity="few">%1$s таблетки</item>
+        <item quantity="many">%1$s таблеток</item>
+        <item quantity="other">%1$s таблетки</item>
+    </plurals>
+    <plurals name="u_capsule">
+        <item quantity="one">%1$s капсула</item>
+        <item quantity="few">%1$s капсули</item>
+        <item quantity="many">%1$s капсул</item>
+        <item quantity="other">%1$s капсули</item>
+    </plurals>
+    <plurals name="u_sachet">
+        <item quantity="one">%1$s пакетик</item>
+        <item quantity="few">%1$s пакетики</item>
+        <item quantity="many">%1$s пакетиків</item>
+        <item quantity="other">%1$s пакетика</item>
+    </plurals>
+    <plurals name="u_ml">
+        <item quantity="one">%1$s мл</item>
+        <item quantity="few">%1$s мл</item>
+        <item quantity="many">%1$s мл</item>
+        <item quantity="other">%1$s мл</item>
+    </plurals>
+    <plurals name="u_g">
+        <item quantity="one">%1$s г</item>
+        <item quantity="few">%1$s г</item>
+        <item quantity="many">%1$s г</item>
+        <item quantity="other">%1$s г</item>
+    </plurals>
+    <plurals name="u_dose">
+        <item quantity="one">%1$s доза</item>
+        <item quantity="few">%1$s дози</item>
+        <item quantity="many">%1$s доз</item>
+        <item quantity="other">%1$s дози</item>
+    </plurals>
+    <plurals name="u_suppository">
+        <item quantity="one">%1$s супозиторій</item>
+        <item quantity="few">%1$s супозиторії</item>
+        <item quantity="many">%1$s супозиторіїв</item>
+        <item quantity="other">%1$s супозиторію</item>
+    </plurals>
+    <plurals name="u_lozenge">
+        <item quantity="one">%1$s льодяник</item>
+        <item quantity="few">%1$s льодяники</item>
+        <item quantity="many">%1$s льодяників</item>
+        <item quantity="other">%1$s льодяника</item>
+    </plurals>
+</resources>

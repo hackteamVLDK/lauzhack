@@ -1,0 +1,19 @@
+60234100	3595583	plaquette(s) thermoformée(s) PVC-aluminium de 8  comprimé(s)	Présentation active	Déclaration de commercialisation	02/01/2003	3400935955838	oui	65%	1,16	2,18	1,02	
+60234100	5636955	plaquette(s) thermoformée(s) PVC-aluminium de 100  comprimé(s)	Présentation active	Déclaration de commercialisation	17/03/2003	3400956369553	oui					
+61681702	3624698	8 sachet(s)-dose(s) papier aluminium polyéthylène de 4 g	Présentation active	Déclaration de commercialisation	03/01/2005	3400936246980	oui	65%	1,16	2,18	1,02	
+63368332	3232018	plaquette(s) thermoformée(s) PVC-Aluminium de 16 comprimé(s)	Présentation active	Déclaration de commercialisation	19/02/1981	3400932320189	oui	65%	1,16	2,18	1,02	
+63368332	5547335	10 plaquette(s) thermoformée(s) papier aluminium polyéthylène de 10 comprimé(s)	Présentation active	Déclaration de commercialisation	19/05/1984	3400955473350	oui					
+64793681	3499833	12 sachet(s)-dose(s) papier aluminium polyéthylène de 0,4 g	Présentation active	Déclaration d'arrêt de commercialisation	31/10/2024	3400934998331	non	65%	1,43	2,45	1,02	
+65196753	3307199	tube(s) polypropylène de 16  comprimé(s)	Présentation active	Déclaration d'arrêt de commercialisation	30/06/2025	3400933071998	non	65%	1,16	2,18	1,02	
+66057393	3480911	plaquette(s) thermoformée(s) PVC polyéthylène de 10 suppositoire(s)	Présentation active	Déclaration de commercialisation	01/09/1999	3400934809118	oui	65%	1,33	2,35	1,02	
+66418648	3351579	8 sachet(s) aluminium polyéthylène papier de 3  g	Présentation active	Déclaration de commercialisation	28/11/2016	3400933515799	non					
+66567738	3529422	tube(s) polypropylène de 8 comprimé(s)	Présentation active	Déclaration de commercialisation	02/05/2000	3400935294227	oui	65%	1,16	2,18	1,02	
+66567738	5632992	film(s) thermosoudé(s) polyéthylène aluminium de 100 comprimé(s)	Présentation active	Déclaration d'arrêt de commercialisation	31/08/2023	3400956329922	non					
+66731536	3233153	12 sachet(s) papier aluminium polyéthylène de 2 g	Présentation active	Déclaration de commercialisation	19/12/1980	3400932331536	oui	65%	1,16	2,18	1,02	
+66947007	3335959	8 sachet(s) papier aluminium polyéthylène de 5 g	Présentation active	Déclaration de commercialisation	19/09/1991	3400933359591	non					
+67119691	3450778	plaquette(s) thermoformée(s) PVC aluminium de 16 gélule(s)	Présentation active	Déclaration de commercialisation	19/03/1998	3400934507786	oui	65%	1,16	2,18	1,02	
+67119691	5608261	plaquette(s) thermoformée(s) PVC aluminium de 100 gélule(s)	Présentation active	Déclaration de commercialisation	19/12/1999	3400956082612	oui					
+69309629	4153396	plaquette(s) thermoformée(s) PVC-Aluminium de 8 gélule(s)	Présentation active	Déclaration de commercialisation	30/11/2011	3400941533969	oui	65%	1,16	2,18	1,02	
+69329731	3031694	12 sachet(s) papier aluminium polyéthylène	Présentation active	Déclaration de commercialisation	05/11/2025	3400930316948	non					
+69329731	3270591	8 sachet(s) papier aluminium polyéthylène	Présentation active	Déclaration de commercialisation	19/06/1984	3400932705917	non					
+69738404	4989835	8 sachet(s) papier aluminium polyéthylène	Présentation active	Déclaration de commercialisation	03/10/2011	3400949898350	non					

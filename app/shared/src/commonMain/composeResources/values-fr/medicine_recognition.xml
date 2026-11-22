@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Task 71: medicine recognition and the doctor's brief -->
+    <string name="rec_action">Reconnaître un médicament</string>
+    <string name="rec_take_photo">Prendre une photo</string>
+    <string name="rec_choose_image">Choisir une image</string>
+    <string name="rec_type_label">Saisir le texte de l’emballage</string>
+    <string name="rec_label_hint">Nom et dosage tels qu’imprimés, ex. FERVEX ADULTES</string>
+    <string name="rec_search">Chercher dans les registres</string>
+    <string name="rec_intro">Photographiez la boîte, l’étiquette du flacon, le sachet ou la face aluminium de la plaquette. Un code-barres aide mais n’est pas nécessaire.</string>
+    <string name="rec_privacy">Seuls le code et le texte lus sur l’emballage sont envoyés aux registres officiels — jamais la photo ni vos données.</string>
+    <string name="rec_searching">Recherche dans les registres officiels…</string>
+    <string name="rec_country">Acheté en</string>
+    <string name="rec_country_any">Tout pays</string>
+    <string name="rec_country_note">Le pays détermine le registre consulté, pas la langue de l’application.</string>
+    <string name="country_CH">Suisse</string>
+    <string name="country_FR">France</string>
+    <string name="country_DE">Allemagne</string>
+    <string name="country_AT">Autriche</string>
+    <string name="country_IT">Italie</string>
+    <string name="country_BE">Belgique</string>
+    <string name="country_ES">Espagne</string>
+    <string name="country_NL">Pays-Bas</string>
+    <string name="country_PL">Pologne</string>
+    <string name="country_UA">Ukraine (registre pas encore relié)</string>
+    <string name="country_RU">Russie (registre pas encore relié)</string>
+    <string name="country_BY">Biélorussie (registre pas encore relié)</string>
+    <string name="rec_card_title">Est-ce votre médicament ?</string>
+    <string name="rec_form">Forme</string>
+    <string name="rec_substances">Substances actives</string>
+    <string name="rec_amount_missing">quantité non indiquée dans le registre</string>
+    <string name="rec_pack">Boîte trouvée</string>
+    <string name="rec_source">Source : %1$s, données du %2$s</string>
+    <string name="rec_open_source">Ouvrir l’information officielle</string>
+    <string name="rec_unverified">Cette liste nomme les substances mais pas leur quantité par unité. Vérifiez le dosage sur l’emballage.</string>
+    <string name="rec_confirm">Confirmer</string>
+    <string name="rec_not_this">Ce n’est pas celui-ci — le décrire avec mes mots</string>
+    <string name="rec_q_strength">Quel dosage est imprimé sur l’emballage ? S’il n’est pas visible, photographiez la partie avec le dosage.</string>
+    <string name="rec_q_variant">Quelle version ? Cherchez des mots comme Forte, Junior ou Sans sucre sur l’emballage.</string>
+    <string name="rec_q_form">Quelle forme — par exemple comprimés ou sachets ?</string>
+    <string name="rec_q_product">Lequel est votre médicament ?</string>
+    <string name="rec_conflict">Le code-barres correspond à %1$s, mais l’étiquette indique autre chose. Reprenez une photo de la face avant.</string>
+    <string name="rec_too_little">Trop peu de texte lisible sur cette photo. Photographiez l’aluminium avec le nom et le dosage ou la boîte — ou décrivez-le avec vos mots.</string>
+    <string name="rec_unknown_code">Le code-barres %1$s n’est dans aucun registre : la recherche a utilisé le texte imprimé.</string>
+    <string name="rec_retake">Nouvelle photo</string>
+    <string name="rec_words">Le décrire avec mes mots</string>
+    <string name="rec_unavailable">Les registres des médicaments sont injoignables pour l’instant. Vous pouvez l’enregistrer avec vos mots.</string>
+    <string name="rec_words_hint">Qu’avez-vous pris ? ex. poudre contre le rhume, nom oublié</string>
+    <string name="rec_label_ingredients">Ingrédients imprimés sur l’étiquette (facultatif, ex. tisane ou complément)</string>
+    <string name="rec_words_footer">Enregistré tel que vous l’écrivez. Aucune composition n’est ajoutée.</string>
+    <string name="rec_next">Suivant</string>
+    <string name="rec_intake_title">Qu’avez-vous pris ?</string>
+    <string name="rec_intake_note">Une photo de la boîte ne signifie pas que vous l’avez pris. Indiquez ce que vous avez réellement pris.</string>
+    <string name="rec_amount">Quantité</string>
+    <string name="rec_unit_free">Unité, ex. comprimé, sachet, ml</string>
+    <string name="rec_when">Quand</string>
+    <string name="rec_now">Maintenant</string>
+    <string name="rec_today">Aujourd’hui</string>
+    <string name="rec_yesterday">Hier</string>
+    <string name="rec_time">Heure, ex. 08:30</string>
+    <string name="rec_time_error">Saisissez l’heure comme 08:30.</string>
+    <string name="rec_amount_error">Indiquez la quantité en chiffres, ex. 1.</string>
+    <string name="rec_future_error">Cette heure est dans le futur.</string>
+    <string name="rec_save_intake">Enregistrer la prise</string>
+    <string name="rec_only_list">Je ne l’ai pas pris — seulement l’ajouter à ma liste</string>
+    <string name="brief_per_volume">Pour %1$s ml</string>
+    <string name="brief_per_raw">Par unité (%1$s)</string>
+    <string name="brief_per_tablet">Par comprimé</string>
+    <string name="brief_per_capsule">Par gélule</string>
+    <string name="brief_per_sachet">Par sachet</string>
+    <string name="brief_per_dose">Par dose</string>
+    <string name="brief_per_suppository">Par suppositoire</string>
+    <string name="brief_per_lozenge">Par pastille</string>
+    <string name="brief_patient_reports">Selon le patient : %1$s, %2$s.</string>
+    <string name="brief_today_at">aujourd’hui à %1$s</string>
+    <string name="brief_yesterday_at">hier à %1$s</string>
+    <string name="brief_date_at">%1$s à %2$s</string>
+    <string name="brief_not_taken">Ajouté à la liste par le patient ; aucune prise indiquée.</string>
+    <string name="brief_words">Selon les mots du patient</string>
+    <string name="brief_label_ingredients">D’après l’étiquette, non vérifié dans un registre : %1$s</string>
+    <string name="brief_no_card">Aucune fiche de registre confirmée : pas de composition affichée.</string>
+    <string name="brief_source_fr">Source : information officielle, France (BDPM)</string>
+    <string name="brief_source_ch">Source : information professionnelle, Suisse (Swissmedic)</string>
+    <string name="brief_source_eu">Source : liste EMA article 57 (sans dosage par unité)</string>
+    <string name="brief_data_of">données du %1$s</string>
+    <string name="brief_indication_lang">Texte officiel (%1$s)</string>
+    <plurals name="u_tablet">
+        <item quantity="one">%1$s comprimé</item>
+        <item quantity="other">%1$s comprimés</item>
+    </plurals>
+    <plurals name="u_capsule">
+        <item quantity="one">%1$s gélule</item>
+        <item quantity="other">%1$s gélules</item>
+    </plurals>
+    <plurals name="u_sachet">
+        <item quantity="one">%1$s sachet</item>
+        <item quantity="other">%1$s sachets</item>
+    </plurals>
+    <plurals name="u_ml">
+        <item quantity="one">%1$s ml</item>
+        <item quantity="other">%1$s ml</item>
+    </plurals>
+    <plurals name="u_g">
+        <item quantity="one">%1$s g</item>
+        <item quantity="other">%1$s g</item>
+    </plurals>
+    <plurals name="u_dose">
+        <item quantity="one">%1$s dose</item>
+        <item quantity="other">%1$s doses</item>
+    </plurals>
+    <plurals name="u_suppository">
+        <item quantity="one">%1$s suppositoire</item>
+        <item quantity="other">%1$s suppositoires</item>
+    </plurals>
+    <plurals name="u_lozenge">
+        <item quantity="one">%1$s pastille</item>
+        <item quantity="other">%1$s pastilles</item>
+    </plurals>
+</resources>

@@ -33,6 +33,8 @@ data class MedicineItem(
     /** Times of today's intakes, oldest first. */
     val takenToday: List<Long>,
     val lastTaken: Long?,
+    /** The newest confirmed entry's payload: its registry card is reused for the next intake (task 71). */
+    val latest: Medication? = null,
 ) {
     val isDraft: Boolean get() = draftIds.isNotEmpty() && lastTaken == null
 }
@@ -54,6 +56,7 @@ fun medicinesFor(record: PatientRecord, widgetId: String, today: LocalDate, time
                 draftIds = entries.filterNot { (it.payload as Medication).confirmed }.map { it.id },
                 takenToday = confirmed.filter { Instant.fromEpochMilliseconds(it.at).toLocalDateTime(timeZone).date == today }.map { it.at },
                 lastTaken = confirmed.lastOrNull()?.at,
+                latest = confirmed.lastOrNull()?.payload as? Medication,
             )
         }
         .sortedWith(compareByDescending<MedicineItem> { it.isDraft }.thenBy { it.name.lowercase() })

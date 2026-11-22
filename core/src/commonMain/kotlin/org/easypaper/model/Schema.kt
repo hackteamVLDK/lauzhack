@@ -163,6 +163,14 @@ data class Medication(
     val dose: String? = null,
     val source: MedicationSource,
     val confirmed: Boolean, // patient confirmed what the scan found
+    /** The registry card the patient confirmed (task 71); null for medicines typed in or kept in the patient's words. */
+    val product: MedicineProduct? = null,
+    /** How much the patient says they took and when; null = only added to their list, not taken. */
+    val intake: Intake? = null,
+    /** The patient's own words when no registry card was confirmed ("cold powder, can't remember the name"). */
+    val patientWords: String? = null,
+    /** Ingredients copied from the label of a tea or supplement, as printed; never checked against a registry. */
+    val labelIngredients: String? = null,
 ) : EntryPayload
 
 @Serializable

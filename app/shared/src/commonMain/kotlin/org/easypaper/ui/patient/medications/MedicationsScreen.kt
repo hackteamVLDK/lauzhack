@@ -1,6 +1,10 @@
 package org.easypaper.ui.patient.medications
 
 import easypaper.app.shared.generated.resources.med_not_in_list
+import easypaper.app.shared.generated.resources.rec_action
+import easypaper.app.shared.generated.resources.rec_card_title
+import easypaper.app.shared.generated.resources.rec_intake_title
+import easypaper.app.shared.generated.resources.rec_words
 import org.easypaper.scan.likelyName
 import kotlin.coroutines.cancellation.CancellationException
 import androidx.compose.foundation.layout.Arrangement
@@ -115,6 +119,11 @@ fun MedicationsScreen(
     modifier: Modifier = Modifier,
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
     language: String = record.request.locale,
+    /** The official registries on the Easy Paper server (task 71); null keeps the offline local list only. */
+    catalog: org.easypaper.catalog.Catalog? = null,
+    reader: suspend (ByteArray) -> org.easypaper.scan.PhotoReading = ::readPhoto,
+    /** The recognition state from outside (tests drive it with a photo); by default the screen keeps its own. */
+    injectedRecognition: Recognition? = null,
 ) {
     val scope = rememberCoroutineScope()
     val requestId = record.request.id
@@ -126,6 +135,18 @@ fun MedicationsScreen(
     var problems by remember { mutableStateOf(emptyList<EntryProblem>()) }
     var saving by remember { mutableStateOf(false) }
     val now = { Clock.System.now().toEpochMilliseconds() }
+    val recognition = injectedRecognition ?: remember(catalog) { Recognition(catalog, reader) }
+    val countrySetting = org.easypaper.ui.shell.rememberSavedSetting("med_purchase_country")
+    recognition.country = countrySetting.value
+    // records the confirmed medicine with its intake; the same entry id makes a second tap a no-op
+    val saveMedicine: (String, Medication, org.easypaper.model.Intake?) -> Unit = { entryId, medication, intake ->
+        saving = true
+        scope.launch {
+            try {
+                if (repository.recordMedicine(requestId, widget.id, entryId, medication, intake, now()).isEmpty()) recognition.close()
+            } finally { saving = false }
+        }
+    }
     val run: (suspend () -> List<EntryProblem>) -> Unit = { action ->
         saving = true
         scope.launch {
@@ -135,6 +156,10 @@ fun MedicationsScreen(
     }
     // a file that is not a photo: say so and offer typing, rather than a tap that seems to do nothing
     val photos = rememberPhotoSource(onError = { problems = emptyList(); sheet = MedSheet.Type(code = null, unreadable = true) }) { photo ->
+        if (recognition.step != null) {
+            scope.launch { recognition.onPhoto(photo) }
+            return@rememberPhotoSource
+        }
         sheet = MedSheet.Reading
         scope.launch {
             // any failure of on-device recognition ends in typing, never in silence or a crash
@@ -162,7 +187,12 @@ fun MedicationsScreen(
                             if (index > 0) RowSeparator(EasyPaperTheme.spacing.m)
                             MedicineRow(item, timeZone, saving,
                                 check = { problems = emptyList(); sheet = MedSheet.Check(item) },
-                                takeNow = { run { repository.takeNow(requestId, widget.id, item, now()) } })
+                                // a confirmed registry card asks how much and when; older entries keep one tap
+                                takeNow = {
+                                    val latest = item.latest
+                                    if (latest?.product != null || latest?.patientWords != null) recognition.intakeOf(latest)
+                                    else run { repository.takeNow(requestId, widget.id, item, now()) }
+                                })
                         }
                     }
                 }
@@ -197,11 +227,30 @@ fun MedicationsScreen(
                 val spacing = EasyPaperTheme.spacing
                 FlowRow(Modifier.fillMaxWidth().padding(horizontal = spacing.m, vertical = spacing.sectionGap),
                     horizontalArrangement = Arrangement.spacedBy(spacing.s), verticalArrangement = Arrangement.spacedBy(spacing.s)) {
-                    if (scan != null) TintedButton(stringResource(Res.string.med_scan), onClick = scan, icon = Res.drawable.ic_pill)
+                    if (catalog != null) {
+                        TintedButton(stringResource(Res.string.rec_action), onClick = { recognition.start() }, icon = Res.drawable.ic_pill)
+                    } else if (scan != null) TintedButton(stringResource(Res.string.med_scan), onClick = scan, icon = Res.drawable.ic_pill)
                     GrayButton(stringResource(Res.string.med_type), onClick = { problems = emptyList(); sheet = MedSheet.Type(null) },
                         icon = Res.drawable.ic_add)
                 }
             }
+        }
+
+        val recognising = recognition.step
+        Sheet(
+            visible = recognising != null,
+            title = when (recognising) {
+                is RecognitionStep.Card -> stringResource(Res.string.rec_card_title)
+                is RecognitionStep.Intake -> stringResource(Res.string.rec_intake_title)
+                is RecognitionStep.Words -> stringResource(Res.string.rec_words)
+                else -> stringResource(Res.string.rec_action)
+            },
+            doneLabel = stringResource(Res.string.cancel),
+            onDismiss = recognition::close,
+        ) {
+            RecognitionContent(recognition, photos.takePhoto, photos.pickPhoto, saving, timeZone,
+                onCountry = { code -> countrySetting.update(code); scope.launch { recognition.retryWithCountry(code) } },
+                onSave = saveMedicine)
         }
 
         val open = sheet

@@ -306,7 +306,8 @@ private fun SheetBar(title: String, doneLabel: String, onDismiss: () -> Unit) {
     val spacing = EasyPaperTheme.spacing
     androidx.compose.ui.layout.Layout(
         content = {
-            Text(title, style = EasyPaperTheme.typography.headline, color = EasyPaperTheme.colors.label,
+            // a long German word at 200 % shrinks rather than breaking ("Arzneimitt / el")
+            WordFitText(title, style = EasyPaperTheme.typography.headline, color = EasyPaperTheme.colors.label,
                 textAlign = TextAlign.Center, modifier = Modifier.semantics { heading() })
             PlainButton(doneLabel, onDismiss)
         },

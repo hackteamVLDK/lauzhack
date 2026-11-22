@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Task 71: medicine recognition and the doctor's brief -->
+    <string name="rec_action">Распознать препарат</string>
+    <string name="rec_take_photo">Сделать фото</string>
+    <string name="rec_choose_image">Выбрать изображение</string>
+    <string name="rec_type_label">Ввести надпись с упаковки</string>
+    <string name="rec_label_hint">Название и дозировка как на упаковке</string>
+    <string name="rec_search">Искать в реестрах</string>
+    <string name="rec_intro">Сфотографируйте коробку, этикетку флакона, пакетик или блистер со стороны фольги. Штрихкод помогает, но не обязателен.</string>
+    <string name="rec_privacy">В официальные реестры отправляются только код и текст с упаковки — никогда фото или ваши данные.</string>
+    <string name="rec_searching">Поиск в официальных реестрах лекарств…</string>
+    <string name="rec_country">Куплено в</string>
+    <string name="rec_country_any">Любая страна</string>
+    <string name="rec_country_note">Страна определяет, в каком реестре искать; язык приложения — нет.</string>
+    <string name="country_CH">Швейцария</string>
+    <string name="country_FR">Франция</string>
+    <string name="country_DE">Германия</string>
+    <string name="country_AT">Австрия</string>
+    <string name="country_IT">Италия</string>
+    <string name="country_BE">Бельгия</string>
+    <string name="country_ES">Испания</string>
+    <string name="country_NL">Нидерланды</string>
+    <string name="country_PL">Польша</string>
+    <string name="country_UA">Украина (реестр пока не подключён)</string>
+    <string name="country_RU">Россия (реестр пока не подключён)</string>
+    <string name="country_BY">Беларусь (реестр пока не подключён)</string>
+    <string name="rec_card_title">Это ваш препарат?</string>
+    <string name="rec_form">Форма</string>
+    <string name="rec_substances">Действующие вещества</string>
+    <string name="rec_amount_missing">количество в реестре не указано</string>
+    <string name="rec_pack">Найденная упаковка</string>
+    <string name="rec_source">Источник: %1$s, данные от %2$s</string>
+    <string name="rec_open_source">Открыть официальную информацию</string>
+    <string name="rec_unverified">Этот список называет вещества, но не их количество на единицу. Проверьте дозировку на упаковке.</string>
+    <string name="rec_confirm">Подтвердить</string>
+    <string name="rec_not_this">Не тот — описать своими словами</string>
+    <string name="rec_q_strength">Какая дозировка напечатана на упаковке? Если её не видно, сфотографируйте участок с дозировкой.</string>
+    <string name="rec_q_variant">Какой это вариант? Поищите на упаковке слова Forte, Junior или Sans sucre.</string>
+    <string name="rec_q_form">Какая форма — например, таблетки или пакетики?</string>
+    <string name="rec_q_product">Какой из них ваш препарат?</string>
+    <string name="rec_conflict">Штрихкод принадлежит препарату %1$s, но надпись другая. Пожалуйста, сфотографируйте лицевую сторону упаковки ещё раз.</string>
+    <string name="rec_too_little">На этом фото слишком мало видно. Сфотографируйте фольгу с названием и дозировкой или коробку — или опишите своими словами.</string>
+    <string name="rec_unknown_code">Штрихкода %1$s нет в реестрах, поэтому искали по надписи.</string>
+    <string name="rec_retake">Новое фото</string>
+    <string name="rec_words">Описать своими словами</string>
+    <string name="rec_unavailable">Реестры лекарств сейчас недоступны. Можно сохранить своими словами.</string>
+    <string name="rec_words_hint">Что вы приняли? Например, порошок от простуды, название не помню</string>
+    <string name="rec_label_ingredients">Состав с этикетки (необязательно, например для чая или БАДа)</string>
+    <string name="rec_words_footer">Сохраняется так, как вы написали. Состав не добавляется.</string>
+    <string name="rec_next">Далее</string>
+    <string name="rec_intake_title">Что вы приняли?</string>
+    <string name="rec_intake_note">Фото упаковки не означает, что вы её приняли. Укажите, что вы действительно приняли.</string>
+    <string name="rec_amount">Сколько</string>
+    <string name="rec_unit_free">Единица, например таблетка, пакетик, мл</string>
+    <string name="rec_when">Когда</string>
+    <string name="rec_now">Сейчас</string>
+    <string name="rec_today">Сегодня</string>
+    <string name="rec_yesterday">Вчера</string>
+    <string name="rec_time">Время, например 08:30</string>
+    <string name="rec_time_error">Введите время в формате 08:30.</string>
+    <string name="rec_amount_error">Укажите количество числом, например 1.</string>
+    <string name="rec_future_error">Это время ещё не наступило.</string>
+    <string name="rec_save_intake">Сохранить приём</string>
+    <string name="rec_only_list">Не принимал(а) — только добавить в список</string>
+    <string name="brief_per_volume">На %1$s мл</string>
+    <string name="brief_per_raw">На единицу (%1$s)</string>
+    <string name="brief_per_tablet">На 1 таблетку</string>
+    <string name="brief_per_capsule">На 1 капсулу</string>
+    <string name="brief_per_sachet">На 1 пакетик</string>
+    <string name="brief_per_dose">На 1 дозу</string>
+    <string name="brief_per_suppository">На 1 суппозиторий</string>
+    <string name="brief_per_lozenge">На 1 пастилку</string>
+    <string name="brief_patient_reports">Со слов пациента: %1$s, %2$s.</string>
+    <string name="brief_today_at">сегодня в %1$s</string>
+    <string name="brief_yesterday_at">вчера в %1$s</string>
+    <string name="brief_date_at">%1$s в %2$s</string>
+    <string name="brief_not_taken">Пациент добавил в список; приём не указан.</string>
+    <string name="brief_words">Со слов пациента</string>
+    <string name="brief_label_ingredients">С этикетки, не сверено с реестром: %1$s</string>
+    <string name="brief_no_card">Карточка из реестра не подтверждена: состав не показан.</string>
+    <string name="brief_source_fr">Источник: официальная информация, Франция (BDPM)</string>
+    <string name="brief_source_ch">Источник: информация для специалистов, Швейцария (Swissmedic)</string>
+    <string name="brief_source_eu">Источник: список EMA по статье 57 (без дозировки)</string>
+    <string name="brief_data_of">данные от %1$s</string>
+    <string name="brief_indication_lang">Официальный текст (%1$s)</string>
+    <plurals name="u_tablet">
+        <item quantity="one">%1$s таблетка</item>
+        <item quantity="few">%1$s таблетки</item>
+        <item quantity="many">%1$s таблеток</item>
+        <item quantity="other">%1$s таблетки</item>
+    </plurals>
+    <plurals name="u_capsule">
+        <item quantity="one">%1$s капсула</item>
+        <item quantity="few">%1$s капсулы</item>
+        <item quantity="many">%1$s капсул</item>
+        <item quantity="other">%1$s капсулы</item>
+    </plurals>
+    <plurals name="u_sachet">
+        <item quantity="one">%1$s пакетик</item>
+        <item quantity="few">%1$s пакетика</item>
+        <item quantity="many">%1$s пакетиков</item>
+        <item quantity="other">%1$s пакетика</item>
+    </plurals>
+    <plurals name="u_ml">
+        <item quantity="one">%1$s мл</item>
+        <item quantity="few">%1$s мл</item>
+        <item quantity="many">%1$s мл</item>
+        <item quantity="other">%1$s мл</item>
+    </plurals>
+    <plurals name="u_g">
+        <item quantity="one">%1$s г</item>
+        <item quantity="few">%1$s г</item>
+        <item quantity="many">%1$s г</item>
+        <item quantity="other">%1$s г</item>
+    </plurals>
+    <plurals name="u_dose">
+        <item quantity="one">%1$s доза</item>
+        <item quantity="few">%1$s дозы</item>
+        <item quantity="many">%1$s доз</item>
+        <item quantity="other">%1$s дозы</item>
+    </plurals>
+    <plurals name="u_suppository">
+        <item quantity="one">%1$s суппозиторий</item>
+        <item quantity="few">%1$s суппозитория</item>
+        <item quantity="many">%1$s суппозиториев</item>
+        <item quantity="other">%1$s суппозитория</item>
+    </plurals>
+    <plurals name="u_lozenge">
+        <item quantity="one">%1$s пастилка</item>
+        <item quantity="few">%1$s пастилки</item>
+        <item quantity="many">%1$s пастилок</item>
+        <item quantity="other">%1$s пастилки</item>
+    </plurals>
+</resources>

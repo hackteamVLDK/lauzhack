@@ -486,10 +486,13 @@ private fun EntriesSection(report: Report, timeZone: TimeZone, onOpen: (Entry) -
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     val date = entry.localDate(timeZone)
+                    // a medicine gets its brief: name and form, official use, substances per unit, the intake as reported (task 71)
+                    val medicine = (entry.payload as? org.easypaper.model.Medication)?.takeIf { it.hasBrief() }
                     Text(dateShort.fill(date.day, monthsShort.getOrElse(date.month.ordinal) { "" }) + " " + timeOfDay(entry.at, timeZone),
                         style = EasyPaperTheme.typography.footnote.tabular(), color = EasyPaperTheme.colors.secondaryLabel,
-                        modifier = Modifier.padding(top = spacing.xxs / 2))
-                    Text(entryText(entry, record.request), style = EasyPaperTheme.typography.callout, color = EasyPaperTheme.colors.label)
+                        modifier = Modifier.padding(top = spacing.xxs / 2).then(if (medicine != null) Modifier.align(Alignment.Top) else Modifier))
+                    if (medicine != null) MedicineBrief(medicine, timeZone, modifier = Modifier.weight(1f))
+                    else Text(entryText(entry, record.request), style = EasyPaperTheme.typography.callout, color = EasyPaperTheme.colors.label)
                 }
             }
         }
@@ -507,7 +510,9 @@ private fun OriginalSheet(report: Report, entry: Entry?, timeZone: TimeZone, pho
             CategoryRow(widget.category, widget.title, trailing = {
                 Text(timeOfDay(e.at, timeZone), style = EasyPaperTheme.typography.footnote.tabular(), color = EasyPaperTheme.colors.secondaryLabel)
             }) {
-                Text(entryText(e, report.record.request), style = EasyPaperTheme.typography.body, color = EasyPaperTheme.colors.label)
+                val medicine = (e.payload as? org.easypaper.model.Medication)?.takeIf { it.hasBrief() }
+                if (medicine != null) MedicineBrief(medicine, timeZone)
+                else Text(entryText(e, report.record.request), style = EasyPaperTheme.typography.body, color = EasyPaperTheme.colors.label)
                 Text(longDate(e.localDate(timeZone)), style = EasyPaperTheme.typography.footnote, color = EasyPaperTheme.colors.secondaryLabel)
             }
         }

@@ -22,3 +22,13 @@ dependencies {
 tasks.named<JavaExec>("run") {
     systemProperty("easypaper.webDir", rootProject.file("app/webApp/build/dist/wasmJs/productionExecutable").path)
 }
+
+// Medicine catalog import (task 71): ./gradlew :server:importCatalog --args="fr ch eu" [--from <dir>]
+// Snapshots go to EASYPAPER_CATALOG_DIR (default server/data/catalog); repeatable, keyed by registry ids.
+tasks.register<JavaExec>("importCatalog") {
+    group = "application"
+    description = "Downloads the official medicine registries and writes catalog snapshots"
+    mainClass = "org.easypaper.catalog.ImportKt"
+    classpath = sourceSets["main"].runtimeClasspath
+    maxHeapSize = "2g"
+}

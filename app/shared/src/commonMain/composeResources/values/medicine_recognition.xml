@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Task 71: medicine recognition and the doctor's brief -->
+    <string name="rec_action">Recognise medicine</string>
+    <string name="rec_take_photo">Take photo</string>
+    <string name="rec_choose_image">Choose image</string>
+    <string name="rec_type_label">Type what’s printed on the package</string>
+    <string name="rec_label_hint">Name and strength as printed, e.g. FERVEX ADULTES</string>
+    <string name="rec_search">Search the registries</string>
+    <string name="rec_intro">Photograph the box, bottle label, sachet or the foil side of the blister. A barcode helps but is not needed.</string>
+    <string name="rec_privacy">Only the code and the text read from the package are sent to the official registries — never the photo or your data.</string>
+    <string name="rec_searching">Searching the official medicine registries…</string>
+    <string name="rec_country">Bought in</string>
+    <string name="rec_country_any">Any country</string>
+    <string name="rec_country_note">The country decides which registry is searched; the app language does not.</string>
+    <string name="country_CH">Switzerland</string>
+    <string name="country_FR">France</string>
+    <string name="country_DE">Germany</string>
+    <string name="country_AT">Austria</string>
+    <string name="country_IT">Italy</string>
+    <string name="country_BE">Belgium</string>
+    <string name="country_ES">Spain</string>
+    <string name="country_NL">Netherlands</string>
+    <string name="country_PL">Poland</string>
+    <string name="country_UA">Ukraine (registry not connected yet)</string>
+    <string name="country_RU">Russia (registry not connected yet)</string>
+    <string name="country_BY">Belarus (registry not connected yet)</string>
+    <string name="rec_card_title">Is this your medicine?</string>
+    <string name="rec_form">Form</string>
+    <string name="rec_substances">Active substances</string>
+    <string name="rec_amount_missing">amount not stated in the registry</string>
+    <string name="rec_pack">Pack found</string>
+    <string name="rec_source">Source: %1$s, data of %2$s</string>
+    <string name="rec_open_source">Open the official information</string>
+    <string name="rec_unverified">This list names the substances but not their amount per unit. Check the strength on the package.</string>
+    <string name="rec_confirm">Confirm</string>
+    <string name="rec_not_this">Not this one — describe it in my words</string>
+    <string name="rec_q_strength">Which strength is printed on the package? If you can’t see it, take a photo of the part with the strength.</string>
+    <string name="rec_q_variant">Which version is it? Look for words like Forte, Junior or Sans sucre on the package.</string>
+    <string name="rec_q_form">Which form is it — for example tablets or sachets?</string>
+    <string name="rec_q_product">Which of these is your medicine?</string>
+    <string name="rec_conflict">The barcode belongs to %1$s, but the label reads differently. Please take a new photo of the front of the package.</string>
+    <string name="rec_too_little">Not enough is readable on this photo. Take a photo of the foil with the name and strength or of the box — or describe it in your words.</string>
+    <string name="rec_unknown_code">The barcode %1$s is not in the registries, so the printed name was searched.</string>
+    <string name="rec_retake">New photo</string>
+    <string name="rec_words">Describe it in my words</string>
+    <string name="rec_unavailable">The medicine registries can’t be reached right now. You can save it in your words.</string>
+    <string name="rec_words_hint">What did you take? e.g. cold powder, can’t remember the name</string>
+    <string name="rec_label_ingredients">Ingredients printed on the label (optional, e.g. for a tea or supplement)</string>
+    <string name="rec_words_footer">Saved as you wrote it. No composition is added.</string>
+    <string name="rec_next">Next</string>
+    <string name="rec_intake_title">What did you take?</string>
+    <string name="rec_intake_note">A photo of the package doesn’t mean you took it. Enter what you actually took.</string>
+    <string name="rec_amount">How much</string>
+    <string name="rec_unit_free">Unit, e.g. tablet, sachet, ml</string>
+    <string name="rec_when">When</string>
+    <string name="rec_now">Now</string>
+    <string name="rec_today">Today</string>
+    <string name="rec_yesterday">Yesterday</string>
+    <string name="rec_time">Time, e.g. 08:30</string>
+    <string name="rec_time_error">Enter the time like 08:30.</string>
+    <string name="rec_amount_error">Enter how much as a number, e.g. 1.</string>
+    <string name="rec_future_error">This time is in the future.</string>
+    <string name="rec_save_intake">Save intake</string>
+    <string name="rec_only_list">I didn’t take it — only add it to my list</string>
+    <string name="brief_per_volume">Per %1$s ml</string>
+    <string name="brief_per_raw">Per unit (%1$s)</string>
+    <string name="brief_per_tablet">Per tablet</string>
+    <string name="brief_per_capsule">Per capsule</string>
+    <string name="brief_per_sachet">Per sachet</string>
+    <string name="brief_per_dose">Per dose</string>
+    <string name="brief_per_suppository">Per suppository</string>
+    <string name="brief_per_lozenge">Per lozenge</string>
+    <string name="brief_patient_reports">Patient reports: %1$s, %2$s.</string>
+    <string name="brief_today_at">today at %1$s</string>
+    <string name="brief_yesterday_at">yesterday at %1$s</string>
+    <string name="brief_date_at">%1$s at %2$s</string>
+    <string name="brief_not_taken">Added to the list by the patient; no intake reported.</string>
+    <string name="brief_words">Patient’s own words</string>
+    <string name="brief_label_ingredients">From the label, not checked against a registry: %1$s</string>
+    <string name="brief_no_card">No registry card confirmed: no composition is shown.</string>
+    <string name="brief_source_fr">Source: official product information, France (BDPM)</string>
+    <string name="brief_source_ch">Source: professional information, Switzerland (Swissmedic)</string>
+    <string name="brief_source_eu">Source: EMA Article 57 list (no strength per unit)</string>
+    <string name="brief_data_of">data of %1$s</string>
+    <string name="brief_indication_lang">Official text (%1$s)</string>
+    <plurals name="u_tablet">
+        <item quantity="one">%1$s tablet</item>
+        <item quantity="other">%1$s tablets</item>
+    </plurals>
+    <plurals name="u_capsule">
+        <item quantity="one">%1$s capsule</item>
+        <item quantity="other">%1$s capsules</item>
+    </plurals>
+    <plurals name="u_sachet">
+        <item quantity="one">%1$s sachet</item>
+        <item quantity="other">%1$s sachets</item>
+    </plurals>
+    <plurals name="u_ml">
+        <item quantity="one">%1$s ml</item>
+        <item quantity="other">%1$s ml</item>
+    </plurals>
+    <plurals name="u_g">
+        <item quantity="one">%1$s g</item>
+        <item quantity="other">%1$s g</item>
+    </plurals>
+    <plurals name="u_dose">
+        <item quantity="one">%1$s dose</item>
+        <item quantity="other">%1$s doses</item>
+    </plurals>
+    <plurals name="u_suppository">
+        <item quantity="one">%1$s suppository</item>
+        <item quantity="other">%1$s suppositories</item>
+    </plurals>
+    <plurals name="u_lozenge">
+        <item quantity="one">%1$s lozenge</item>
+        <item quantity="other">%1$s lozenges</item>
+    </plurals>
+</resources>
