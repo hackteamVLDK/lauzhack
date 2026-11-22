@@ -34,6 +34,8 @@ Kotlin Multiplatform project generated with [kmp.jetbrains.com](https://kmp.jetb
   of purchase — no photo, no patient data — are looked up in official registries on the server (`/catalog/resolve`:
   Swissmedic/Refdata, French BDPM, EMA Article 57 and more), and the patient confirms the card; three common side
   effects per active substance are asked as yes/no once a day — facts only, never advice;
+- optional account: Google or a code by email, or none; a doctor can invite a patient by name, phone and email,
+  and the patient confirms "Is this you?" with a code sent to that email;
 - photos are shrunk to ≤ 1024 px / ≤ 200 KB and stripped of EXIF/GPS before they are stored; everything on the
   phone is encrypted (AES-256-GCM, key in Android Keystore).
 
@@ -77,8 +79,9 @@ from paper documents with a verbatim quote (clinic module), and a cost screen fo
 Data stays on the phone, encrypted, until the patient shares it. Reports sent by QR, code or file are end-to-end
 encrypted: the server only relays ciphertext and never sees a key. The AI summary is different: the doctor's app
 sends the opened report (and photos without text) to the server's AI proxy and its model — in the cloud mode to the
-provider, in the clinic module to a local model only. There are no accounts yet: Google and email sign-in are shown
-as *Soon*, the profile is local. Keys and tokens live only in environment variables, never in the
+provider, in the clinic module to a local model only. An account is optional (Google, or a 6-digit code sent by email;
+Apple is *Soon*): the server keeps only the email, name and phone of the account and hashes of codes and sessions;
+diary records never go to the account. Keys and tokens live only in environment variables, never in the
 repository.
 
 ## Modules
