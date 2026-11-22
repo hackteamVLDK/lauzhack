@@ -30,9 +30,10 @@
     <string name="p2_about_you">Über Sie</string>
     <string name="p2_optional_details">Alle Angaben sind freiwillig. Nur auf diesem Telefon und in bewusst geteilten Daten.</string>
     <string name="p2_name">Name</string>
-    <string name="p2_birth">Geburtsdatum (JJJJ-MM-TT)</string>
+    <string name="p2_birth">Geburtsdatum</string>
+    <string name="p2_birth_example">14.03.1958</string>
     <string name="p2_sex">Geschlecht (freiwillig)</string>
-    <string name="p2_birth_error">Geben Sie ein gültiges Geburtsdatum ein oder lassen Sie das Feld leer.</string>
+    <string name="p2_birth_error">Geben Sie das Datum wie 14.03.1958 ein oder lassen Sie das Feld leer.</string>
     <string name="p2_privacy">Datenschutz und Daten</string>
     <string name="p2_privacy_body">Ihr Tagebuch ist auf diesem Telefon verschlüsselt. Ohne Teilen verlässt nichts das Gerät. Sie können jederzeit alle Daten löschen.</string>
     <string name="p2_reminders">Erinnerungen</string>

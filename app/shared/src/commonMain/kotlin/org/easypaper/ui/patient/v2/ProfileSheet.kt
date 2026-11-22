@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.KeyboardType
 import easypaper.app.shared.generated.resources.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -84,16 +85,20 @@ fun ProfileSheet(visible: Boolean, settings: PatientSettings, repository: Patien
                 GroupedSection(header = stringResource(Res.string.p2_health_details), footer = stringResource(Res.string.p2_optional_details)) {
                     HealthField(stringResource(Res.string.p2_name), settings.name)
                     RowSeparator()
-                    HealthField(stringResource(Res.string.p2_birth), settings.birth)
+                    HealthField(stringResource(Res.string.p2_birth), settings.birth, example = stringResource(Res.string.p2_birth_example),
+                        keyboardType = KeyboardType.Number)
                     if (!validBirth(settings.birth.value, today)) PatientMessage(stringResource(Res.string.p2_birth_error), error = true)
                     RowSeparator()
                     HealthField(stringResource(Res.string.p2_sex), settings.sex)
                     RowSeparator()
-                    HealthField(stringResource(Res.string.p2_height), settings.height)
+                    HealthField(stringResource(Res.string.p2_height), settings.height, keyboardType = KeyboardType.Decimal)
                     RowSeparator()
-                    HealthField(stringResource(Res.string.p2_weight), settings.weight)
+                    HealthField(stringResource(Res.string.p2_weight), settings.weight, keyboardType = KeyboardType.Decimal)
                     RowSeparator()
-                    TextAreaRow(settings.allergies.value.orEmpty(), settings.allergies::update, stringResource(Res.string.p2_allergies))
+                    RowSeparator()
+                    val allergies = stringResource(Res.string.p2_allergies)
+                    FieldLabel(allergies)
+                    TextAreaRow(settings.allergies.value.orEmpty(), settings.allergies::update, placeholder = "", description = allergies)
                     ListRow(stringResource(Res.string.p2_medical_id), subtitle = stringResource(Res.string.p2_later), chevron = false)
                 }
                 Spacer(Modifier.height(EasyPaperTheme.spacing.sectionGap))
@@ -125,9 +130,18 @@ fun ProfileSheet(visible: Boolean, settings: PatientSettings, repository: Patien
     }
 }
 
+/**
+ * One profile detail: its name above, the value in the field. The field shows an [example] of the format (or
+ * nothing) instead of repeating the name; screen readers still hear the name.
+ */
 @Composable
-private fun HealthField(label: String, setting: SavedSetting) {
+private fun HealthField(label: String, setting: SavedSetting, example: String = "", keyboardType: KeyboardType = KeyboardType.Text) {
+    FieldLabel(label)
+    TextFieldRow(setting.value.orEmpty(), setting::update, placeholder = example, description = label, keyboardType = keyboardType)
+}
+
+@Composable
+private fun FieldLabel(label: String) {
     Text(label, style = EasyPaperTheme.typography.footnote, color = EasyPaperTheme.colors.secondaryLabel,
         modifier = Modifier.padding(start = EasyPaperTheme.spacing.m, end = EasyPaperTheme.spacing.m, top = EasyPaperTheme.spacing.s))
-    TextFieldRow(setting.value.orEmpty(), setting::update, label)
 }

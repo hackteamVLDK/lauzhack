@@ -189,7 +189,8 @@ fun LargeTitleScaffold(
                                 onClick = {},
                             )
                         } else Modifier
-                        Text(
+                        // Shrinks rather than breaking a long word ("Programme du médecin" in French at 200 %).
+                        WordFitText(
                             title,
                             style = type.largeTitle,
                             color = colors.label,
@@ -282,18 +283,7 @@ fun Sheet(
                     // Taps inside the sheet must not reach the scrim.
                     .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = {}),
             ) {
-                Box(Modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight).padding(horizontal = spacing.m)) {
-                    Text(
-                        title,
-                        style = EasyPaperTheme.typography.headline,
-                        color = colors.label,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.align(Alignment.Center).padding(horizontal = spacing.xxl * 2).semantics { heading() },
-                    )
-                    Box(Modifier.align(Alignment.CenterEnd)) {
-                        PlainButton(doneLabel, onDismiss)
-                    }
-                }
+                SheetBar(title, doneLabel, onDismiss)
                 Column(
                     Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
                         .padding(horizontal = spacing.screenMargin)
@@ -305,6 +295,39 @@ fun Sheet(
         }
     }
 }
+
+/**
+ * The sheet's bar: the title centered between equal insets as wide as the button, so they never overlap even
+ * when "Done" grows with the font (200 % text); if the centered title would get less than [SHEET_TITLE_MIN] of
+ * the bar, it starts at the leading edge and uses all the room the button leaves.
+ */
+@Composable
+private fun SheetBar(title: String, doneLabel: String, onDismiss: () -> Unit) {
+    val spacing = EasyPaperTheme.spacing
+    androidx.compose.ui.layout.Layout(
+        content = {
+            Text(title, style = EasyPaperTheme.typography.headline, color = EasyPaperTheme.colors.label,
+                textAlign = TextAlign.Center, modifier = Modifier.semantics { heading() })
+            PlainButton(doneLabel, onDismiss)
+        },
+        modifier = Modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight).padding(horizontal = spacing.m),
+    ) { measurables, constraints ->
+        val width = constraints.maxWidth
+        val loose = constraints.copy(minWidth = 0, minHeight = 0)
+        val button = measurables[1].measure(loose)
+        val inset = button.width + spacing.s.roundToPx()
+        val centered = width - 2 * inset >= width * SHEET_TITLE_MIN
+        val titleWidth = (if (centered) width - 2 * inset else width - inset).coerceAtLeast(0)
+        val text = measurables[0].measure(loose.copy(maxWidth = titleWidth))
+        val height = maxOf(constraints.minHeight, text.height, button.height)
+        layout(width, height) {
+            text.place(if (centered) (width - text.width) / 2 else 0, (height - text.height) / 2)
+            button.place(width - button.width, (height - button.height) / 2)
+        }
+    }
+}
+
+private const val SHEET_TITLE_MIN = 0.4f
 
 /** Doctor app sidebar (macOS style): a title, rows, an optional footer action; hairline on the end. */
 @OptIn(ExperimentalFoundationApi::class)

@@ -30,9 +30,10 @@
     <string name="p2_about_you">Про вас</string>
     <string name="p2_optional_details">Усі дані необов’язкові. Лише на цьому телефоні та у вибраних вами даних для поширення.</string>
     <string name="p2_name">Ім’я</string>
-    <string name="p2_birth">Дата народження (РРРР-ММ-ДД)</string>
+    <string name="p2_birth">Дата народження</string>
+    <string name="p2_birth_example">14.03.1958</string>
     <string name="p2_sex">Стать (необов’язково)</string>
-    <string name="p2_birth_error">Введіть коректну дату народження або залиште поле порожнім.</string>
+    <string name="p2_birth_error">Введіть дату у форматі 14.03.1958 або залиште поле порожнім.</string>
     <string name="p2_privacy">Приватність і дані</string>
     <string name="p2_privacy_body">Щоденник зашифрований на цьому телефоні. Нічого не передається без дії «Поділитися». Усі дані можна видалити будь-коли.</string>
     <string name="p2_reminders">Нагадування</string>

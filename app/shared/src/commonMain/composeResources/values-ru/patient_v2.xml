@@ -30,9 +30,10 @@
     <string name="p2_about_you">О вас</string>
     <string name="p2_optional_details">Все данные необязательны. Они остаются на этом телефоне и попадают только в то, чем вы решите поделиться.</string>
     <string name="p2_name">Имя</string>
-    <string name="p2_birth">Дата рождения (ГГГГ-ММ-ДД)</string>
+    <string name="p2_birth">Дата рождения</string>
+    <string name="p2_birth_example">14.03.1958</string>
     <string name="p2_sex">Пол (необязательно)</string>
-    <string name="p2_birth_error">Введите верную дату рождения или оставьте поле пустым.</string>
+    <string name="p2_birth_error">Введите дату в формате 14.03.1958 или оставьте поле пустым.</string>
     <string name="p2_privacy">Конфиденциальность и данные</string>
     <string name="p2_privacy_body">Ваш дневник зашифрован на этом телефоне. Данные передаются только через «Поделиться». Вы можете удалить всё в любой момент.</string>
     <string name="p2_reminders">Напоминания</string>

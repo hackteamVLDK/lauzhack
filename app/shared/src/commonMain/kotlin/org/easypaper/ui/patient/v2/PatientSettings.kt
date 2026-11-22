@@ -112,8 +112,29 @@ fun CategorySwitches(selected: Set<Category>, onChange: (Set<Category>) -> Unit)
     }
 }
 
+/**
+ * A date of birth as people write it: 14.03.1958, 14/03/1958 (day first, as in the app's languages) or
+ * 1958-03-14. Null for anything else, including impossible dates (31.02.1958) and two-digit years.
+ */
+fun parseBirth(value: String): LocalDate? {
+    val text = value.trim()
+    fun date(year: String, month: String, day: String) =
+        runCatching { LocalDate(year.toInt(), month.toInt(), day.toInt()) }.getOrNull()
+    Regex("""(\d{4})\s*-\s*(\d{1,2})\s*-\s*(\d{1,2})""").matchEntire(text)?.let { m ->
+        val (y, mo, d) = m.destructured
+        return date(y, mo, d)
+    }
+    Regex("""(\d{1,2})\s*[./]\s*(\d{1,2})\s*[./]\s*(\d{4})""").matchEntire(text)?.let { m ->
+        val (d, mo, y) = m.destructured
+        return date(y, mo, d)
+    }
+    return null
+}
+
 fun validBirth(value: String?, today: LocalDate): Boolean = value.isNullOrBlank() ||
-    runCatching { LocalDate.parse(value) <= today }.getOrDefault(false)
+    parseBirth(value)?.let { it <= today && it.year >= MIN_BIRTH_YEAR } == true
+
+private const val MIN_BIRTH_YEAR = 1900
 
 /** Personal prompts are app copy; doctor's questionnaire wording remains the doctor's wording. */
 @Composable

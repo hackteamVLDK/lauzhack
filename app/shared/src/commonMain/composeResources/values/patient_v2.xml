@@ -30,9 +30,10 @@
     <string name="p2_about_you">About you</string>
     <string name="p2_optional_details">All details are optional. Only on this phone and in what you choose to share.</string>
     <string name="p2_name">Name</string>
-    <string name="p2_birth">Date of birth (YYYY-MM-DD)</string>
+    <string name="p2_birth">Date of birth</string>
+    <string name="p2_birth_example">14.03.1958</string>
     <string name="p2_sex">Sex (optional)</string>
-    <string name="p2_birth_error">Enter a valid date of birth, or leave it empty.</string>
+    <string name="p2_birth_error">Enter the date as 14.03.1958, or leave it empty.</string>
     <string name="p2_privacy">Privacy &amp; data</string>
     <string name="p2_privacy_body">Your diary is encrypted on this phone. Nothing leaves without Share. You can delete all data at any time.</string>
     <string name="p2_reminders">Reminders</string>

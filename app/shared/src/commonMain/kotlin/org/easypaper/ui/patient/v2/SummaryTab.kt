@@ -151,7 +151,7 @@ private fun SummaryHeader(name: String?, greeting: String, onProfile: () -> Unit
             AvatarButton(initials(name), onProfile)
             RoundIconButton(Res.drawable.ic_add, stringResource(Res.string.p2_add_widgets), onGallery)
         }
-        Text(greeting, style = EasyPaperTheme.typography.largeTitle, color = colors.label,
+        WordFitText(greeting, style = EasyPaperTheme.typography.largeTitle, color = colors.label,
             modifier = Modifier.combinedClickable(onClick = {}, onLongClick = onDeveloper).semantics { heading() })
     }
 }

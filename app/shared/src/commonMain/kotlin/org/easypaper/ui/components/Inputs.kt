@@ -95,6 +95,9 @@ fun TextFieldRow(
     modifier: Modifier = Modifier,
     /** A secret (access code): shown as dots, no autocorrect. */
     secret: Boolean = false,
+    /** What screen readers call the field, when a label outside it names it and [placeholder] is only an example. */
+    description: String = placeholder,
+    keyboardType: KeyboardType = KeyboardType.Text,
 ) {
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
@@ -109,8 +112,9 @@ fun TextFieldRow(
             textStyle = type.body.copy(color = colors.label),
             cursorBrush = SolidColor(colors.tint),
             visualTransformation = if (secret) PasswordVisualTransformation() else VisualTransformation.None,
-            keyboardOptions = if (secret) KeyboardOptions(keyboardType = KeyboardType.Password, autoCorrectEnabled = false) else KeyboardOptions.Default,
-            modifier = Modifier.fillMaxWidth().semantics { contentDescription = placeholder },
+            keyboardOptions = if (secret) KeyboardOptions(keyboardType = KeyboardType.Password, autoCorrectEnabled = false)
+                else KeyboardOptions(keyboardType = keyboardType),
+            modifier = Modifier.fillMaxWidth().semantics { contentDescription = description },
         )
     }
 }
@@ -152,7 +156,14 @@ fun StepperRow(
 
 /** Multi-line text in a grouped cell, for the patient's own words. */
 @Composable
-fun TextAreaRow(value: String, onValueChange: (String) -> Unit, placeholder: String, modifier: Modifier = Modifier) {
+fun TextAreaRow(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+    /** The screen reader name when a label outside the cell names the field. */
+    description: String = placeholder,
+) {
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
     val type = EasyPaperTheme.typography
@@ -164,7 +175,7 @@ fun TextAreaRow(value: String, onValueChange: (String) -> Unit, placeholder: Str
         textStyle = type.body.copy(color = colors.label),
         cursorBrush = SolidColor(colors.tint),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        modifier = modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight * 2).semantics { contentDescription = placeholder },
+        modifier = modifier.fillMaxWidth().heightIn(min = spacing.rowMinHeight * 2).semantics { contentDescription = description },
         decorationBox = { field ->
             Box(Modifier.fillMaxWidth().padding(spacing.m)) {
                 if (value.isEmpty()) Text(placeholder, style = type.body, color = colors.secondaryLabel)

@@ -30,9 +30,10 @@
     <string name="p2_about_you">À propos de vous</string>
     <string name="p2_optional_details">Tout est facultatif. Ces informations restent sur ce téléphone et dans ce que vous choisissez de partager.</string>
     <string name="p2_name">Nom</string>
-    <string name="p2_birth">Date de naissance (AAAA-MM-JJ)</string>
+    <string name="p2_birth">Date de naissance</string>
+    <string name="p2_birth_example">14/03/1958</string>
     <string name="p2_sex">Sexe (facultatif)</string>
-    <string name="p2_birth_error">Saisissez une date de naissance valide ou laissez le champ vide.</string>
+    <string name="p2_birth_error">Saisissez la date au format 14/03/1958 ou laissez le champ vide.</string>
     <string name="p2_privacy">Confidentialité et données</string>
     <string name="p2_privacy_body">Votre journal est chiffré sur ce téléphone. Rien n'est transmis sans utiliser Partager. Vous pouvez tout supprimer à tout moment.</string>
     <string name="p2_reminders">Rappels</string>
