@@ -1,6 +1,12 @@
 package org.easypaper
 
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.server.application.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.request.httpMethod
+import io.ktor.server.response.header
+import io.ktor.server.response.respond
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
@@ -44,6 +50,7 @@ fun Application.module(
     accounts: Accounts? = null,
 ) {
     val accountService = accounts ?: Accounts.fromEnv(this)
+    allowWebOrigins()
     protectAiRoutes(ai.mode, aiToken)
     launch {
         while (isActive) {
@@ -61,3 +68,28 @@ fun Application.module(
         if (webDir != null) staticFiles("/", webDir) { default("index.html") }
     }
 }
+
+/**
+ * The web app is also published on GitHub Pages (another origin than this server): those pages may call the API.
+ * EASYPAPER_CORS_ORIGINS adds more, comma-separated ("http://localhost:8081" for the web dev server). Headers are only
+ * added for these origins and nothing is refused here (same-origin pages and the apps send no CORS questions); no
+ * cookies are used, the clinic token and the account session travel in headers.
+ */
+fun Application.allowWebOrigins(extra: String? = System.getenv("EASYPAPER_CORS_ORIGINS")) {
+    val origins = (listOf(GITHUB_PAGES_ORIGIN) + extra.orEmpty().split(',')).map { it.trim().trimEnd('/') }.filter { it.isNotEmpty() }.toSet()
+    intercept(ApplicationCallPipeline.Plugins) {
+        val origin = call.request.headers[HttpHeaders.Origin]?.trimEnd('/') ?: return@intercept
+        if (origin !in origins) return@intercept
+        call.response.header(HttpHeaders.AccessControlAllowOrigin, origin)
+        call.response.header(HttpHeaders.Vary, HttpHeaders.Origin)
+        if (call.request.httpMethod == HttpMethod.Options && call.request.headers[HttpHeaders.AccessControlRequestMethod] != null) {
+            call.response.header(HttpHeaders.AccessControlAllowMethods, "GET, POST, PUT, DELETE")
+            call.response.header(HttpHeaders.AccessControlAllowHeaders, "Content-Type, Authorization, X-EasyPaper-Clinic-Token")
+            call.response.header(HttpHeaders.AccessControlMaxAge, "600")
+            call.respond(HttpStatusCode.NoContent)
+            finish()
+        }
+    }
+}
+
+const val GITHUB_PAGES_ORIGIN = "https://hackteamvldk.github.io"

@@ -17,6 +17,12 @@ expect fun defaultServerUrl(): String?
  */
 const val PUBLIC_SERVER = "https://74-148-56-1.sslip.io"
 
+/** Static hosts that serve only the web app, never the API (GitHub Pages): the app talks to [PUBLIC_SERVER] there. */
+fun webServerFor(origin: String): String {
+    val host = origin.substringAfter("://").substringBefore('/').substringBefore(':').lowercase()
+    return if (host.endsWith(".github.io")) PUBLIC_SERVER else origin
+}
+
 /** The AI summary takes one model call on the server; give it time, but not forever. */
 private const val AI_TIMEOUT_MILLIS = 120_000L
 
