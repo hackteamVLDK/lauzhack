@@ -136,7 +136,7 @@ class MedicineRecognitionUiTest {
         onNodeWithText("maléate de phéniramine 25 mg").assertExists()
         onNodeWithText("Confirm").performClick()
         waitForText("What did you take?")
-        onNodeWithText("1 sachet").assertExists() // asked separately; the pack size is not the amount
+        onNodeWithText("1 sachet").assertExists() // asked separately; the pack size is not the amount
         onNodeWithText("Save intake").performClick()
         waitUntil(timeoutMillis = 10_000) { setup.medicines.any { it.product != null } }
         val saved = setup.medicines.single { it.product != null }
@@ -149,7 +149,7 @@ class MedicineRecognitionUiTest {
             "FERVEX ADULTES · granulés pour solution buvable",
             "Ce médicament est indiqué chez l’adulte",
             "Per sachet: acide ascorbique 200 mg, paracétamol 500 mg, maléate de phéniramine 25 mg.",
-            "Patient reports: 1 sachet, today at",
+            "Patient reports: 1 sachet, today at",
             "Source: official product information, France (BDPM)",
         )
     }
@@ -207,7 +207,7 @@ class MedicineRecognitionUiTest {
         val saved = setup.medicines.single { it.patientWords != null }
         assertNull(saved.product)
         assertEquals("cup", saved.intake?.unit)
-        doctorSees(setup, "«cold tea»", "Patient’s own words", "No registry card confirmed", "Patient reports: 1 cup")
+        doctorSees(setup, "«cold tea»", "Patient’s own words", "No registry card confirmed", "Patient reports: 1 cup")
         assertTrue(onAllNodesWithText("paracétamol", substring = true, ignoreCase = true).fetchSemanticsNodes().isEmpty())
     }
 

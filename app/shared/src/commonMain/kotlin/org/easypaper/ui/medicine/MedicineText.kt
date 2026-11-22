@@ -33,7 +33,7 @@ private val UNIT_PLURALS: Map<String, PluralStringResource> = mapOf(
 /** "1 sachet", "2 таблетки", "0.5 comprimés"; a unit the app does not know is shown as written. */
 @Composable
 fun amountWithUnit(amount: String, unit: String): String {
-    val plural = UNIT_PLURALS[countUnitKey(unit) ?: unit] ?: return "$amount $unit"
+    val plural = UNIT_PLURALS[countUnitKey(unit) ?: unit] ?: return "$amount $unit" // never split over two lines
     val whole = amount.toDoubleOrNull()?.takeIf { it % 1.0 == 0.0 }?.toInt()
     return pluralStringResource(plural, whole ?: FRACTION_QUANTITY, amount)
 }

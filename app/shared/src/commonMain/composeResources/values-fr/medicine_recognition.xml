@@ -63,7 +63,7 @@
     <string name="rec_future_error">Cette heure est dans le futur.</string>
     <string name="rec_save_intake">Enregistrer la prise</string>
     <string name="rec_only_list">Je ne l’ai pas pris — seulement l’ajouter à ma liste</string>
-    <string name="brief_per_volume">Pour %1$s ml</string>
+    <string name="brief_per_volume">Pour %1$s ml</string>
     <string name="brief_per_raw">Par unité (%1$s)</string>
     <string name="brief_per_tablet">Par comprimé</string>
     <string name="brief_per_capsule">Par gélule</string>
@@ -85,35 +85,35 @@
     <string name="brief_data_of">données du %1$s</string>
     <string name="brief_indication_lang">Texte officiel (%1$s)</string>
     <plurals name="u_tablet">
-        <item quantity="one">%1$s comprimé</item>
-        <item quantity="other">%1$s comprimés</item>
+        <item quantity="one">%1$s comprimé</item>
+        <item quantity="other">%1$s comprimés</item>
     </plurals>
     <plurals name="u_capsule">
-        <item quantity="one">%1$s gélule</item>
-        <item quantity="other">%1$s gélules</item>
+        <item quantity="one">%1$s gélule</item>
+        <item quantity="other">%1$s gélules</item>
     </plurals>
     <plurals name="u_sachet">
-        <item quantity="one">%1$s sachet</item>
-        <item quantity="other">%1$s sachets</item>
+        <item quantity="one">%1$s sachet</item>
+        <item quantity="other">%1$s sachets</item>
     </plurals>
     <plurals name="u_ml">
-        <item quantity="one">%1$s ml</item>
-        <item quantity="other">%1$s ml</item>
+        <item quantity="one">%1$s ml</item>
+        <item quantity="other">%1$s ml</item>
     </plurals>
     <plurals name="u_g">
-        <item quantity="one">%1$s g</item>
-        <item quantity="other">%1$s g</item>
+        <item quantity="one">%1$s g</item>
+        <item quantity="other">%1$s g</item>
     </plurals>
     <plurals name="u_dose">
-        <item quantity="one">%1$s dose</item>
-        <item quantity="other">%1$s doses</item>
+        <item quantity="one">%1$s dose</item>
+        <item quantity="other">%1$s doses</item>
     </plurals>
     <plurals name="u_suppository">
-        <item quantity="one">%1$s suppositoire</item>
-        <item quantity="other">%1$s suppositoires</item>
+        <item quantity="one">%1$s suppositoire</item>
+        <item quantity="other">%1$s suppositoires</item>
     </plurals>
     <plurals name="u_lozenge">
-        <item quantity="one">%1$s pastille</item>
-        <item quantity="other">%1$s pastilles</item>
+        <item quantity="one">%1$s pastille</item>
+        <item quantity="other">%1$s pastilles</item>
     </plurals>
 </resources>

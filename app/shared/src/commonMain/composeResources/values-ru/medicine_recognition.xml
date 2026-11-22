@@ -63,7 +63,7 @@
     <string name="rec_future_error">Это время ещё не наступило.</string>
     <string name="rec_save_intake">Сохранить приём</string>
     <string name="rec_only_list">Не принимал(а) — только добавить в список</string>
-    <string name="brief_per_volume">На %1$s мл</string>
+    <string name="brief_per_volume">На %1$s мл</string>
     <string name="brief_per_raw">На единицу (%1$s)</string>
     <string name="brief_per_tablet">На 1 таблетку</string>
     <string name="brief_per_capsule">На 1 капсулу</string>
@@ -85,51 +85,51 @@
     <string name="brief_data_of">данные от %1$s</string>
     <string name="brief_indication_lang">Официальный текст (%1$s)</string>
     <plurals name="u_tablet">
-        <item quantity="one">%1$s таблетка</item>
-        <item quantity="few">%1$s таблетки</item>
-        <item quantity="many">%1$s таблеток</item>
-        <item quantity="other">%1$s таблетки</item>
+        <item quantity="one">%1$s таблетка</item>
+        <item quantity="few">%1$s таблетки</item>
+        <item quantity="many">%1$s таблеток</item>
+        <item quantity="other">%1$s таблетки</item>
     </plurals>
     <plurals name="u_capsule">
-        <item quantity="one">%1$s капсула</item>
-        <item quantity="few">%1$s капсулы</item>
-        <item quantity="many">%1$s капсул</item>
-        <item quantity="other">%1$s капсулы</item>
+        <item quantity="one">%1$s капсула</item>
+        <item quantity="few">%1$s капсулы</item>
+        <item quantity="many">%1$s капсул</item>
+        <item quantity="other">%1$s капсулы</item>
     </plurals>
     <plurals name="u_sachet">
-        <item quantity="one">%1$s пакетик</item>
-        <item quantity="few">%1$s пакетика</item>
-        <item quantity="many">%1$s пакетиков</item>
-        <item quantity="other">%1$s пакетика</item>
+        <item quantity="one">%1$s пакетик</item>
+        <item quantity="few">%1$s пакетика</item>
+        <item quantity="many">%1$s пакетиков</item>
+        <item quantity="other">%1$s пакетика</item>
     </plurals>
     <plurals name="u_ml">
-        <item quantity="one">%1$s мл</item>
-        <item quantity="few">%1$s мл</item>
-        <item quantity="many">%1$s мл</item>
-        <item quantity="other">%1$s мл</item>
+        <item quantity="one">%1$s мл</item>
+        <item quantity="few">%1$s мл</item>
+        <item quantity="many">%1$s мл</item>
+        <item quantity="other">%1$s мл</item>
     </plurals>
     <plurals name="u_g">
-        <item quantity="one">%1$s г</item>
-        <item quantity="few">%1$s г</item>
-        <item quantity="many">%1$s г</item>
-        <item quantity="other">%1$s г</item>
+        <item quantity="one">%1$s г</item>
+        <item quantity="few">%1$s г</item>
+        <item quantity="many">%1$s г</item>
+        <item quantity="other">%1$s г</item>
     </plurals>
     <plurals name="u_dose">
-        <item quantity="one">%1$s доза</item>
-        <item quantity="few">%1$s дозы</item>
-        <item quantity="many">%1$s доз</item>
-        <item quantity="other">%1$s дозы</item>
+        <item quantity="one">%1$s доза</item>
+        <item quantity="few">%1$s дозы</item>
+        <item quantity="many">%1$s доз</item>
+        <item quantity="other">%1$s дозы</item>
     </plurals>
     <plurals name="u_suppository">
-        <item quantity="one">%1$s суппозиторий</item>
-        <item quantity="few">%1$s суппозитория</item>
-        <item quantity="many">%1$s суппозиториев</item>
-        <item quantity="other">%1$s суппозитория</item>
+        <item quantity="one">%1$s суппозиторий</item>
+        <item quantity="few">%1$s суппозитория</item>
+        <item quantity="many">%1$s суппозиториев</item>
+        <item quantity="other">%1$s суппозитория</item>
     </plurals>
     <plurals name="u_lozenge">
-        <item quantity="one">%1$s пастилка</item>
-        <item quantity="few">%1$s пастилки</item>
-        <item quantity="many">%1$s пастилок</item>
-        <item quantity="other">%1$s пастилки</item>
+        <item quantity="one">%1$s пастилка</item>
+        <item quantity="few">%1$s пастилки</item>
+        <item quantity="many">%1$s пастилок</item>
+        <item quantity="other">%1$s пастилки</item>
     </plurals>
 </resources>
