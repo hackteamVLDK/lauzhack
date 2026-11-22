@@ -192,7 +192,14 @@ fun SegmentedControl(options: List<String>, selected: Int?, onSelect: (Int) -> U
 
 /** A list of options in a grouped section with a check on the chosen one (iOS picker in a form). */
 @Composable
-fun ChoiceList(options: List<String>, selected: String?, onSelect: (String) -> Unit, modifier: Modifier = Modifier) {
+fun ChoiceList(options: List<String>, selected: String?, onSelect: (String) -> Unit, modifier: Modifier = Modifier) =
+    ChoiceList(options, selected, label = { it }, onSelect = onSelect, modifier = modifier)
+
+/** The same picker over any values (e.g. request ids): rows are told apart by value, not by their label, so two
+ * options with the same text stay separately selectable. */
+@Composable
+fun <T> ChoiceList(options: List<T>, selected: T?, label: @Composable (T) -> String, onSelect: (T) -> Unit,
+                  modifier: Modifier = Modifier) {
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
     GroupedSection(modifier) {
@@ -209,7 +216,7 @@ fun ChoiceList(options: List<String>, selected: String?, onSelect: (String) -> U
                         .padding(horizontal = spacing.m, vertical = spacing.xs),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(option, style = EasyPaperTheme.typography.body, color = colors.label, modifier = Modifier.weight(1f))
+                    Text(label(option), style = EasyPaperTheme.typography.body, color = colors.label, modifier = Modifier.weight(1f))
                     if (option == selected) {
                         // The selected state is announced by the radio role; the check is decoration.
                         Icon(painterResource(Res.drawable.ic_check_circle), contentDescription = null, tint = colors.tint,

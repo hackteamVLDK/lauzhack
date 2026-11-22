@@ -77,14 +77,14 @@ fun WhatToShareSheet(visible: Boolean, records: List<PatientRecord>, today: Loca
         // One source at a time: a radio list (a switch would suggest several, and switching one off did nothing).
         PatientMessage(stringResource(Res.string.p2_source))
         val personal = stringResource(Res.string.p2_personal_diary)
-        val sources = records.map { record ->
-            record.request.id to (if (record.request.id == PERSONAL_REQUEST_ID) personal
-                else record.request.doctorName + ": " + record.request.complaint +
-                    // the period tells two requests of the same doctor apart (the list picks by title)
-                    (record.requestPeriod()?.let { ", " + dateRange(it.from, it.to) } ?: ""))
-        }
-        ChoiceList(sources.map { it.second }, sources.firstOrNull { it.first == source?.request?.id }?.second,
-            onSelect = { title -> sources.firstOrNull { it.second == title }?.let { sourceId = it.first } })
+        val byId = records.associateBy { it.request.id }
+        // Picked by request id: two requests with the same doctor, complaint and period stay separate choices.
+        ChoiceList(records.map { it.request.id }, source?.request?.id, label = { id ->
+            val record = byId.getValue(id)
+            if (id == PERSONAL_REQUEST_ID) personal
+            else record.request.doctorName + ": " + record.request.complaint +
+                (record.requestPeriod()?.let { ", " + dateRange(it.from, it.to) } ?: "")
+        }, onSelect = { sourceId = it })
         Spacer(Modifier.height(EasyPaperTheme.spacing.sectionGap))
         val labels = listOf(stringResource(Res.string.p2_request_period), stringResource(Res.string.p2_days7),
             stringResource(Res.string.p2_days14), stringResource(Res.string.p2_days30))

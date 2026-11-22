@@ -27,6 +27,10 @@ import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import org.easypaper.ui.format.formatDayMonth
+import org.jetbrains.compose.resources.stringArrayResource
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 import kotlin.time.Clock
 
 sealed interface PatientScreen {
@@ -178,14 +182,18 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
                             if (record != null && widget != null) MedicationsScreen(state.repository, record, widget, back, language = language)
                         }
                         is PatientScreen.ShareReport -> {
+                            val dayMonthPattern = stringResource(Res.string.date_day_month)
+                            val shortMonths = stringArrayResource(Res.array.months_short)
                             val historyPattern = stringResource(Res.string.p2_history_line, screen.record.request.doctorName.ifBlank {
                                 stringResource(Res.string.p2_personal_diary)
                             }, "%TIME%", pluralStringResource(Res.plurals.entries, screen.record.entries.size, screen.record.entries.size))
-                            val sharedDay = org.easypaper.ui.format.dayMonth(today)
                             ShareScreen(state.repository, relayUrl(settings.serverUrl, defaultServerUrl()), openDeveloper,
                                 selectedRecord = screen.record, back = back, onCreated = {
                                     val at = Clock.System.now().toEpochMilliseconds()
-                                    patient.addSharedHistory(historyPattern.replace("%TIME%", "$sharedDay, ${timeOfDay(at, timeZone)}"))
+                                    // the day of the moment it was sent (a share after midnight is not dated yesterday)
+                                    val sentDay = Instant.fromEpochMilliseconds(at).toLocalDateTime(timeZone).date
+                                    patient.addSharedHistory(historyPattern.replace("%TIME%",
+                                        formatDayMonth(sentDay, dayMonthPattern, shortMonths) + ", " + timeOfDay(at, timeZone)))
                                 })
                         }
                         PatientScreen.DesignCatalog -> CatalogScreen(settings, back)
