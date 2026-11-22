@@ -11,6 +11,63 @@ anything the AI drafts is confirmed field by field by the doctor.
 Kotlin Multiplatform project generated with [kmp.jetbrains.com](https://kmp.jetbrains.com)
 (Android, Desktop JVM, Web Wasm/JS, Ktor server).
 
+## Try it
+
+- **Doctor (web):** open <https://74-148-56-1.sslip.io> in Chrome or Firefox — *Open patient report* → *Read QR code*
+  (camera) or paste the code. The page is served over HTTPS by the team's server, so the camera works on any laptop.
+- **Patient (Android):** `./gradlew :app:androidApp:assembleDebug`, then install
+  `app/androidApp/build/outputs/apk/debug/androidApp-debug.apk`. The app talks to the public server by default.
+- **Demo data:** long-press the large title on the phone (or *Requests* in the doctor app) to open the developer menu
+  and fill in the five-day demo diary.
+
+## What it does
+
+**Patient app** — a personal health diary first, a doctor's request second:
+- widgets for blood pressure, water, food (photo optional), medicines, symptoms questionnaires, diary, questions for
+  the doctor and own measurements (weight or anything with its own unit); a doctor's request is a plan on top of the
+  same records, with its progress;
+- medicine packs are recognised **on the device, without any LLM**: DataMatrix/EAN with ML Kit (Android) or ZXing
+  (Desktop), the printed name by OCR, matched against a local list; three common side effects per active substance
+  are asked as yes/no once a day — facts only, never advice;
+- photos are shrunk to ≤ 1024 px / ≤ 200 KB and stripped of EXIF/GPS before they are stored; everything on the
+  phone is encrypted (AES-256-GCM, key in Android Keystore).
+
+**Handover at the visit** — the phone seals the chosen categories and period with a fresh key, uploads only
+ciphertext to a blind relay and shows a QR that carries the key. The report opens once, then it is gone.
+
+**Doctor app** (web, Desktop) — a short summary in which every line links to the patient's original entry (with the
+photo), a pre-filled clinic form that the doctor confirms field by field (nothing is saved before), facts copied
+from paper documents with a verbatim quote (clinic module), and a cost screen for every AI call.
+
+## How it works
+
+- **Kotlin Multiplatform:** one `core` (model, encryption, recognition rules, reports/FHIR, AI pipeline on
+  [Koog](https://github.com/JetBrains/koog)) and one Compose Multiplatform UI for Android, Desktop and Web (Wasm),
+  plus a Ktor server (blind relay, AI proxy, doctor's web app).
+- **Frugal AI:** facts are computed without AI; a small vision model only labels food photos the patient left
+  without text; a larger model runs once per report on those facts; answers are cached; a budget per report and per
+  server stops spending; every call is listed with tokens and price. The same pipeline runs in the cloud
+  (OpenRouter / Together) or as a **clinic module** on a local model (Ollama) — then nothing leaves the clinic and
+  the token price is $0.
+- **Safety by design:** the app never diagnoses or advises; AI lines that do are dropped, every summary line must
+  cite real entries, and the doctor confirms each field.
+
+## Challenges
+
+- **IMC — tech for good:** a free or volunteer clinic sees patients who speak different languages and has little
+  time; patients record in English, German, Ukrainian, French or Russian, the doctor gets a structured, sourced
+  summary.
+- **JetBrains:** Kotlin Multiplatform end to end — shared core and Compose UI on three platforms, Ktor server, AI on
+  Koog.
+- **AXA — frugal AI:** recognition without LLMs, one big-model call per report, cache, budgets and a per-call cost
+  comparison between cloud and a local clinic module.
+
+## Privacy
+
+Data stays on the phone, encrypted, until the patient shares it. Shared reports are end-to-end encrypted: the
+server only relays ciphertext and never sees a key. Keys and tokens live only in environment variables, never in the
+repository.
+
 ## Modules
 
 | Path | What lives there |
