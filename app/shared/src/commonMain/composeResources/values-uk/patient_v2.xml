@@ -125,7 +125,7 @@
     <string name="p2_about">Про застосунок</string>
     <string name="p2_about_body">Easy Paper — особистий щоденник здоров’я. Він записує факти, не ставить діагнозів і не надає медичних порад. Реєстрація не потрібна.</string>
     <string name="p2_show_onboarding">Показати початкове налаштування знову</string>
-    <string name="p2_history_line">%1$s, %2$s, записів: %3$d</string>
+    <string name="p2_history_line">%1$s, %2$s, %3$s</string>
     <string name="p2_replace_backup">Замінити наявний файл резервної копії?</string>
     <string name="p2_water_amount">Кількість води (мл)</string>
     <string name="p2_measurements">Вимірювання тіла</string>
@@ -144,8 +144,18 @@
     <string name="p2_good_afternoon">Доброго дня</string>
     <string name="p2_good_evening">Доброго вечора</string>
     <string name="p2_widget_count_value">%1$d</string>
-    <string name="p2_widgets_label">віджетів</string>
-    <string name="p2_entries_today_label">записів сьогодні</string>
+    <plurals name="p2_widgets_label">
+        <item quantity="one">віджет</item>
+        <item quantity="few">віджети</item>
+        <item quantity="many">віджетів</item>
+        <item quantity="other">віджета</item>
+    </plurals>
+    <plurals name="p2_entries_today_label">
+        <item quantity="one">запис сьогодні</item>
+        <item quantity="few">записи сьогодні</item>
+        <item quantity="many">записів сьогодні</item>
+        <item quantity="other">запису сьогодні</item>
+    </plurals>
     <string name="p2_empty_widgets">Що ти хочеш відстежувати?</string>
     <string name="p2_add_widgets">Додати віджети</string>
     <string name="p2_your_widgets">Твої віджети</string>

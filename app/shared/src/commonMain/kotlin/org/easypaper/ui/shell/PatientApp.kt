@@ -25,6 +25,7 @@ import org.easypaper.ui.patient.medications.MedicationsScreen
 import org.easypaper.ui.patient.v2.*
 import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 
@@ -179,7 +180,7 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
                         is PatientScreen.ShareReport -> {
                             val historyPattern = stringResource(Res.string.p2_history_line, screen.record.request.doctorName.ifBlank {
                                 stringResource(Res.string.p2_personal_diary)
-                            }, "%TIME%", screen.record.entries.size)
+                            }, "%TIME%", pluralStringResource(Res.plurals.entries, screen.record.entries.size, screen.record.entries.size))
                             val sharedDay = org.easypaper.ui.format.dayMonth(today)
                             ShareScreen(state.repository, relayUrl(settings.serverUrl, defaultServerUrl()), openDeveloper,
                                 selectedRecord = screen.record, back = back, onCreated = {

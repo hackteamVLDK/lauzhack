@@ -125,7 +125,7 @@
     <string name="p2_about">Über die App</string>
     <string name="p2_about_body">Easy Paper ist ein persönliches Gesundheitstagebuch. Es erfasst Fakten, stellt keine Diagnosen und gibt keine medizinischen Ratschläge. Keine Registrierung nötig.</string>
     <string name="p2_show_onboarding">Einführung erneut anzeigen</string>
-    <string name="p2_history_line">%1$s, %2$s, %3$d Einträge</string>
+    <string name="p2_history_line">%1$s, %2$s, %3$s</string>
     <string name="p2_replace_backup">Die vorhandene Sicherungsdatei ersetzen?</string>
     <string name="p2_water_amount">Wassermenge (ml)</string>
     <string name="p2_measurements">Körpermaße</string>
@@ -144,8 +144,14 @@
     <string name="p2_good_afternoon">Guten Tag</string>
     <string name="p2_good_evening">Guten Abend</string>
     <string name="p2_widget_count_value">%1$d</string>
-    <string name="p2_widgets_label">Widgets</string>
-    <string name="p2_entries_today_label">Einträge heute</string>
+    <plurals name="p2_widgets_label">
+        <item quantity="one">Widget</item>
+        <item quantity="other">Widgets</item>
+    </plurals>
+    <plurals name="p2_entries_today_label">
+        <item quantity="one">Eintrag heute</item>
+        <item quantity="other">Einträge heute</item>
+    </plurals>
     <string name="p2_empty_widgets">Was möchtest du erfassen?</string>
     <string name="p2_add_widgets">Widgets hinzufügen</string>
     <string name="p2_your_widgets">Deine Widgets</string>
