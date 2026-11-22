@@ -13,8 +13,11 @@ Kotlin Multiplatform project generated with [kmp.jetbrains.com](https://kmp.jetb
 
 ## Try it
 
-- **Doctor (web):** open <https://74-148-56-1.sslip.io> in Chrome or Firefox — *Open patient report* → *Read QR code*
-  (camera) or paste the code. The page is served over HTTPS by the team's server, so the camera works on any laptop.
+- **Live server:** <https://74-148-56-1.sslip.io> (the team's VM behind Caddy, HTTPS): the doctor's web app, the
+  blind relay for reports, the AI proxy and the medicine catalog.
+- **Doctor (web):** open it in Chrome or Firefox — *Open patient report* → *Read QR code* (camera), paste the code,
+  enter the patient's 6-digit code or open an encrypted report file. Receiving by code needs the clinic token in
+  the settings.
 - **Patient (Android):** `./gradlew :app:androidApp:assembleDebug`, then install
   `app/androidApp/build/outputs/apk/debug/androidApp-debug.apk`. The app talks to the public server by default.
 - **Demo data:** long-press the large title on the phone (or *Requests* in the doctor app) to open the developer menu
@@ -26,14 +29,20 @@ Kotlin Multiplatform project generated with [kmp.jetbrains.com](https://kmp.jetb
 - widgets for blood pressure, water, food (photo optional), medicines, symptoms questionnaires, diary, questions for
   the doctor and own measurements (weight or anything with its own unit); a doctor's request is a plan on top of the
   same records, with its progress;
-- medicine packs are recognised **on the device, without any LLM**: DataMatrix/EAN with ML Kit (Android) or ZXing
-  (Desktop), the printed name by OCR, matched against a local list; three common side effects per active substance
-  are asked as yes/no once a day — facts only, never advice;
+- medicine packs are recognised **without any LLM**: the barcode (DataMatrix/EAN, ML Kit on Android, ZXing on
+  Desktop) and the printed text (OCR) are read on the device; then only those codes, the label text and the country
+  of purchase — no photo, no patient data — are looked up in official registries on the server (`/catalog/resolve`:
+  Swissmedic/Refdata, French BDPM, EMA Article 57 and more), and the patient confirms the card; three common side
+  effects per active substance are asked as yes/no once a day — facts only, never advice;
 - photos are shrunk to ≤ 1024 px / ≤ 200 KB and stripped of EXIF/GPS before they are stored; everything on the
   phone is encrypted (AES-256-GCM, key in Android Keystore).
 
-**Handover at the visit** — the phone seals the chosen categories and period with a fresh key, uploads only
-ciphertext to a blind relay and shows a QR that carries the key. The report opens once, then it is gone.
+**Handover at the visit** — the patient chooses categories and a period, then one of three ways:
+- **QR:** the phone seals the report with a fresh key, uploads only ciphertext to a blind relay and shows a QR that
+  carries the key; the report opens once, then it is gone;
+- **6-digit code:** valid for 5 minutes; the doctor's app sends a one-time public key (ECDH P-256), the phone
+  encrypts for that key, the server sees only ciphertext and hands it out once;
+- **encrypted file:** protected by a password (PBKDF2 + AES-GCM), saved through the system dialog.
 
 **Doctor app** (web, Desktop) — a short summary in which every line links to the patient's original entry (with the
 photo), a pre-filled clinic form that the doctor confirms field by field (nothing is saved before), facts copied
@@ -49,8 +58,9 @@ from paper documents with a verbatim quote (clinic module), and a cost screen fo
   server stops spending; every call is listed with tokens and price. The same pipeline runs in the cloud
   (OpenRouter / Together) or as a **clinic module** on a local model (Ollama) — then nothing leaves the clinic and
   the token price is $0.
-- **Safety by design:** the app never diagnoses or advises; AI lines that do are dropped, every summary line must
-  cite real entries, and the doctor confirms each field.
+- **Safety by design:** the app never diagnoses or advises; AI lines that do are dropped, summary lines are checked
+  against the cited entries and a line without a valid source is kept but marked *No source*, and the doctor
+  confirms each field.
 
 ## Challenges
 
@@ -64,8 +74,11 @@ from paper documents with a verbatim quote (clinic module), and a cost screen fo
 
 ## Privacy
 
-Data stays on the phone, encrypted, until the patient shares it. Shared reports are end-to-end encrypted: the
-server only relays ciphertext and never sees a key. Keys and tokens live only in environment variables, never in the
+Data stays on the phone, encrypted, until the patient shares it. Reports sent by QR, code or file are end-to-end
+encrypted: the server only relays ciphertext and never sees a key. The AI summary is different: the doctor's app
+sends the opened report (and photos without text) to the server's AI proxy and its model — in the cloud mode to the
+provider, in the clinic module to a local model only. There are no accounts yet: Google and email sign-in are shown
+as *Soon*, the profile is local. Keys and tokens live only in environment variables, never in the
 repository.
 
 ## Modules
