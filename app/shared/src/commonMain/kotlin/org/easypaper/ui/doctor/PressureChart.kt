@@ -105,9 +105,8 @@ fun PressureChart(series: PressureSeries, timeZone: TimeZone, modifier: Modifier
     )
     val pattern = stringResource(Res.string.date_day_month)
     val months = stringArrayResource(Res.array.months_short)
-    fun day(date: LocalDate) = pattern.replace("%1\$d", date.day.toString()).replace("%2\$s", months.getOrElse(date.month.ordinal) { "" })
     val days = remember(series, timeZone) { readingDays(series, timeZone) }
-    val dayLabels = days.map { (date, at) -> at to day(date) }
+    val dayLabels = days.map { (date, at) -> at to dayLabel(pattern, months, date) }
     var showValues by rememberSaveable { mutableStateOf(false) }
 
     GroupedSection(modifier) {
@@ -140,13 +139,17 @@ fun PressureChart(series: PressureSeries, timeZone: TimeZone, modifier: Modifier
                     horizontalArrangement = Arrangement.SpaceBetween,
                     itemVerticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(day(date) + ", " + timeOfDay(at, timeZone), style = type.body, color = colors.secondaryLabel)
+                    Text(dayLabel(pattern, months, date) + ", " + timeOfDay(at, timeZone), style = type.body, color = colors.secondaryLabel)
                     Text(value, style = type.body.tabular(), color = colors.label)
                 }
             }
         }
     }
 }
+
+/** "14 Mar" from the locale's day-month pattern ("%1$d %2$s") and the short month names. */
+private fun dayLabel(pattern: String, months: List<String>, date: LocalDate) =
+    pattern.replace("%1\$d", date.day.toString()).replace("%2\$s", months.getOrElse(date.month.ordinal) { "" })
 
 @Composable
 private fun Legend(label: String, diamond: Boolean, color: Color) {
@@ -209,6 +212,7 @@ private fun DrawScope.drawChart(
     var lastEnd = Float.NEGATIVE_INFINITY
     for ((at, text) in dayLabels) {
         val label = measurer.measure(text, axisStyle)
+        if (label.size.width > right - left) continue // wider than the plot (narrow window, 200 % text): no room
         val lx = (x(at) - label.size.width / 2).coerceIn(left, right - label.size.width)
         if (lx < lastEnd + gap) continue
         drawText(label, topLeft = Offset(lx, bottom + gap))

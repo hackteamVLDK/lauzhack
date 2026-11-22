@@ -1,6 +1,8 @@
 package org.easypaper.ui.doctor
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -10,6 +12,11 @@ import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Modifier
+import kotlinx.datetime.TimeZone
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.runComposeUiTest
@@ -120,5 +127,14 @@ class VisitReviewUiTest {
         assertTrue(onAllNodesWithText("Draft").fetchSemanticsNodes().isNotEmpty())
         onNodeWithText("Show document").performClick()
         waitForText("Discharge letter. Medication: Ramipril 5 mg 1-0-0.")
+    }
+
+    @Test
+    fun theChartSurvivesAPlotNarrowerThanADayLabel() = runComposeUiTest {
+        val series = pressureSeries(demoVisitReport().record.entries)!!
+        // 60 dp minus the y scale leaves less room than one "14 Mar" label: it used to throw in coerceIn.
+        setContent { ShellTheme(ShellSettings(dark = false)) { Box(Modifier.width(60.dp)) { PressureChart(series, TimeZone.UTC) } } }
+        waitForIdle()
+        onRoot().captureToImage() // forces the Canvas to draw
     }
 }
