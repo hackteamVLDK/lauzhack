@@ -77,7 +77,6 @@
     <string name="p2_delete_entry">Supprimer cette entrée et sa photo ?</string>
     <string name="p2_about_records">À propos de ces données</string>
     <string name="p2_records_body">Voici les valeurs et les mots que vous avez notés, avec leurs dates. Les graphiques décrivent les données enregistrées et ne donnent pas de conseils médicaux.</string>
-    <string name="p2_pressure_legend">● Systolique   ◆ Diastolique (mmHg)</string>
     <string name="p2_water_chart">Eau par jour (ml)</string>
     <string name="p2_requests">Demandes des médecins</string>
     <string name="p2_no_requests">Pas encore de demandes. Vous pouvez utiliser votre journal seul.</string>

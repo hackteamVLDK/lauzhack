@@ -77,7 +77,6 @@
     <string name="p2_delete_entry">Diesen Eintrag und sein Foto löschen?</string>
     <string name="p2_about_records">Über diese Aufzeichnungen</string>
     <string name="p2_records_body">Dies sind Ihre erfassten Werte und Texte mit Datum. Diagramme beschreiben Aufzeichnungen und geben keine medizinischen Ratschläge.</string>
-    <string name="p2_pressure_legend">● Systolisch   ◆ Diastolisch (mmHg)</string>
     <string name="p2_water_chart">Wasser pro Tag (ml)</string>
     <string name="p2_requests">Anfragen von Arztpraxen</string>
     <string name="p2_no_requests">Noch keine Anfragen. Sie können Ihr Tagebuch auch ohne Anfrage nutzen.</string>

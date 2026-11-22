@@ -61,6 +61,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isSpecified
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.v2_cancel
 import easypaper.app.shared.generated.resources.v2_clear_search
@@ -327,8 +328,12 @@ fun AvatarButton(initials: String, onClick: () -> Unit, modifier: Modifier = Mod
         Box(Modifier.size(AVATAR_SIZE).background(colors.fill, EasyPaperTheme.shapes.capsule),
             contentAlignment = Alignment.Center) {
             if (initials.isNotBlank()) {
-                Text(initials, style = EasyPaperTheme.typography.caption1.copy(fontWeight = FontWeight.SemiBold),
-                    color = colors.label, modifier = Modifier.clearAndSetSemantics {})
+                // The circle has a fixed size and the button is named for screen readers, so the initials
+                // stop growing where they would leave it (like iOS avatars at accessibility sizes).
+                CappedFontScale(AVATAR_FONT_SCALE) {
+                    Text(initials, style = EasyPaperTheme.typography.caption1.copy(fontWeight = FontWeight.SemiBold),
+                        color = colors.label, maxLines = 1, modifier = Modifier.clearAndSetSemantics {})
+                }
             } else {
                 val spacing = EasyPaperTheme.spacing
                 Canvas(Modifier.size(spacing.rowIcon)) {
@@ -364,7 +369,13 @@ fun FloatingTabBar(items: List<TabItem>, selected: Int, onSelect: (Int) -> Unit,
                     .heightIn(min = spacing.rowMinHeight).padding(horizontal = spacing.xxs, vertical = spacing.xs),
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacing.xxs)) {
                     Icon(painterResource(item.icon), null, Modifier.size(spacing.rowIcon), tint = foreground)
-                    Text(item.label, style = EasyPaperTheme.typography.caption1, color = foreground, textAlign = TextAlign.Center)
+                    // Tab labels grow only so far (as in iOS tab bars): at 200 % a German label would break
+                    // inside the word in a third of a phone width. The tab still says its full name.
+                    CappedFontScale(TAB_LABEL_FONT_SCALE) {
+                        Text(item.label, style = EasyPaperTheme.typography.caption1, color = foreground,
+                            textAlign = TextAlign.Center, maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                    }
                 }
             }
         }
@@ -462,5 +473,46 @@ private val SEGMENT_INSET = 2.dp
 private val SEGMENT_SHADOW = 2.dp
 private val SEARCH_STROKE = 2.dp
 private val AVATAR_SIZE = 36.dp
+internal const val TAB_LABEL_FONT_SCALE = 1.3f
+private const val AVATAR_FONT_SCALE = 1.2f
+
+/** Text inside fixed chrome (tab bar, avatar) grows with the system font only up to [max]. */
+@Composable
+internal fun CappedFontScale(max: Float, content: @Composable () -> Unit) {
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    if (density.fontScale <= max) content()
+    else androidx.compose.runtime.CompositionLocalProvider(
+        androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(density.density, max),
+        content = content,
+    )
+}
 private val ONBOARDING_ICON_SIZE = 88.dp
 private const val RING_STROKE_FRACTION = 0.09f
+
+/**
+ * A big title that never breaks inside a word: when its longest word is wider than the line (a German compound
+ * at 200 % text on a phone), the whole title is set smaller until that word fits, like iOS minimumScaleFactor.
+ */
+@Composable
+fun WordFitText(text: String, style: androidx.compose.ui.text.TextStyle, color: androidx.compose.ui.graphics.Color,
+                modifier: Modifier = Modifier, textAlign: TextAlign? = null) {
+    val measurer = androidx.compose.ui.text.rememberTextMeasurer()
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val available = constraints.maxWidth
+        val longest = remember(text, style, measurer) {
+            text.split(' ', '\n').filter { it.isNotEmpty() }
+                .maxOfOrNull { measurer.measure(it, style, maxLines = 1, softWrap = false).size.width } ?: 0
+        }
+        val fitted = if (constraints.hasBoundedWidth && longest > available) {
+            val factor = available.toFloat() / longest * WORD_FIT_MARGIN
+            style.copy(
+                fontSize = style.fontSize * factor,
+                lineHeight = if (style.lineHeight.isSpecified) style.lineHeight * factor else style.lineHeight,
+                letterSpacing = if (style.letterSpacing.isSpecified) style.letterSpacing * factor else style.letterSpacing,
+            )
+        } else style
+        Text(text, style = fitted, color = color, textAlign = textAlign, modifier = modifier.fillMaxWidth())
+    }
+}
+
+private const val WORD_FIT_MARGIN = 0.97f

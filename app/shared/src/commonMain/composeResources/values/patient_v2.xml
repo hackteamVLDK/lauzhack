@@ -77,7 +77,6 @@
     <string name="p2_delete_entry">Delete this entry and its photo?</string>
     <string name="p2_about_records">About these records</string>
     <string name="p2_records_body">These are the values and words you recorded, with their dates. Charts describe recorded data and do not provide medical advice.</string>
-    <string name="p2_pressure_legend">● Systolic   ◆ Diastolic (mmHg)</string>
     <string name="p2_water_chart">Water per day (ml)</string>
     <string name="p2_requests">Requests from doctors</string>
     <string name="p2_no_requests">No requests yet. You can use your diary on its own.</string>

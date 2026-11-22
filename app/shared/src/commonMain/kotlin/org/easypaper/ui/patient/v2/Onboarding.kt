@@ -40,12 +40,12 @@ fun Onboarding(settings: PatientSettings, saving: Boolean, error: Boolean,
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(spacing.xl)) {
                     if (page == 0) WelcomeCollage()
-                    Text(stringResource(when (page) {
+                    WordFitText(stringResource(when (page) {
                         0 -> Res.string.p2_diary_title
                         1 -> Res.string.p2_sign_in_title
                         else -> Res.string.p2_privacy
                     }), style = EasyPaperTheme.typography.largeTitle, color = colors.label,
-                        textAlign = TextAlign.Center, modifier = Modifier.semantics { heading() })
+                        modifier = Modifier.semantics { heading() }, textAlign = TextAlign.Center)
                     when (page) {
                         0 -> Text(stringResource(Res.string.p2_diary_subtitle), style = EasyPaperTheme.typography.callout,
                             color = colors.secondaryLabel, textAlign = TextAlign.Center)

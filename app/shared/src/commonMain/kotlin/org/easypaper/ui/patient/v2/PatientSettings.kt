@@ -103,10 +103,11 @@ fun CategorySwitches(selected: Set<Category>, onChange: (Set<Category>) -> Unit)
         Category.entries.forEachIndexed { i, category ->
             if (i > 0) RowSeparator()
             val title = categoryTitle(category)
-            CategoryRow(category, title) {
+            // trailing, not the content slot: the switch belongs at the end of the row, not under the title
+            CategoryRow(category, title, trailing = {
                 IosSwitch(category in selected, { checked -> onChange(if (checked) selected + category else selected - category) },
                     Modifier.semantics { contentDescription = title })
-            }
+            })
         }
     }
 }

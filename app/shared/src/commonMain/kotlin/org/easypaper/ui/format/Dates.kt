@@ -66,6 +66,10 @@ fun formatDateRange(from: LocalDate, to: LocalDate, oneMonth: String, twoMonths:
             .replace("%3\$d", to.day.toString()).replace("%4\$s", months.getOrElse(to.month.ordinal) { "" })
     }
 
+/** "14 Mar" (EN), "14. Mär." (DE) from the locale's day-month pattern ("%1$d %2$s") and short month names. */
+fun formatDayMonth(date: LocalDate, pattern: String, months: List<String>): String =
+    pattern.replace("%1\$d", date.day.toString()).replace("%2\$s", months.getOrElse(date.month.ordinal) { "" })
+
 @Composable
 fun longDate(date: LocalDate): String = formatLongDate(
     date,

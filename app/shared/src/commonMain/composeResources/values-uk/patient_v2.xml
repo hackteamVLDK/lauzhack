@@ -77,7 +77,6 @@
     <string name="p2_delete_entry">Видалити цей запис і його фото?</string>
     <string name="p2_about_records">Про ці записи</string>
     <string name="p2_records_body">Це записані вами значення та слова з датами. Графіки описують записи й не надають медичних порад.</string>
-    <string name="p2_pressure_legend">● Систолічний   ◆ Діастолічний (мм рт. ст.)</string>
     <string name="p2_water_chart">Вода за день (мл)</string>
     <string name="p2_requests">Запити від лікарів</string>
     <string name="p2_no_requests">Запитів поки немає. Щоденником можна користуватися самостійно.</string>

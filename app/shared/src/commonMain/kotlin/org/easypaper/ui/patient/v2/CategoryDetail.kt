@@ -7,7 +7,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import easypaper.app.shared.generated.resources.*
@@ -15,12 +14,16 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Instant
 import org.easypaper.model.*
 import org.easypaper.ui.components.*
 import org.easypaper.ui.format.dateRange
 import org.easypaper.ui.format.dayMonth
+import org.easypaper.ui.doctor.PressureChart
+import org.easypaper.ui.doctor.pressureSeries
+import org.easypaper.ui.theme.tabular
+import androidx.compose.material3.Text
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import org.easypaper.ui.patient.entryText
 import org.easypaper.ui.patient.localDate
 import org.easypaper.ui.patient.timeOfDay
@@ -47,18 +50,22 @@ fun CategoryDetail(category: Category, records: List<PatientRecord>, today: Loca
                 descriptions = listOf(stringResource(Res.string.p2_period_day_full), stringResource(Res.string.p2_period_week_full),
                     stringResource(Res.string.p2_period_month_full), stringResource(Res.string.p2_period_six_full)))
             PatientMessage(dateRange(period.from, period.to))
+            // Blood pressure: the same chart the doctor sees (days, mmHg scale, shapes per series); the readings
+            // are listed right under it, so the chart's own values list is off here.
+            val series = remember(entries) { pressureSeries(entries.map { it.entry }) }
+            if (series != null) {
+                pressureRange(entries.map { it.entry })?.let { PatientMessage(pressureText(it)) }
+                PressureChart(series, timeZone, valuesToggle = false)
+                Spacer(Modifier.height(EasyPaperTheme.spacing.s))
+            }
             GroupedSection {
-                val range = pressureRange(entries.map { it.entry })
                 when {
                     entries.isEmpty() -> PatientMessage(stringResource(Res.string.p2_no_data))
-                    range != null -> {
-                        PatientMessage(pressureText(range))
-                        RecordChart(entries, category, period, timeZone)
-                    }
                     category == Category.Water -> {
-                        val daily = entries.groupBy { it.entry.localDate(timeZone) }.values.map { day -> day.sumOf { (it.entry.payload as Water).ml } }
-                        PatientMessage(stringResource(Res.string.p2_ml, daily.min()) + " – " + stringResource(Res.string.p2_ml, daily.max()))
-                        RecordChart(entries, category, period, timeZone)
+                        val daily = waterPerDay(entries, timeZone)
+                        PatientMessage(stringResource(Res.string.p2_ml, daily.values.min()) + " – " +
+                            stringResource(Res.string.p2_ml, daily.values.max()))
+                        WaterChart(daily, period)
                     }
                 }
                 // Text values are also the accessible alternative to charts.
@@ -76,49 +83,50 @@ fun CategoryDetail(category: Category, records: List<PatientRecord>, today: Loca
     }
 }
 
+private fun waterPerDay(entries: List<OwnedEntry>, timeZone: TimeZone): Map<LocalDate, Int> =
+    entries.filter { it.entry.payload is Water }.groupBy { it.entry.localDate(timeZone) }
+        .mapValues { (_, day) -> day.sumOf { (it.entry.payload as Water).ml } }
+
+/** Water per day as bars from 0; the scale shows 0 and the day's maximum in ml, the axis the first and last day. */
 @Composable
-private fun RecordChart(entries: List<OwnedEntry>, category: Category, period: Period, timeZone: TimeZone) {
+private fun WaterChart(daily: Map<LocalDate, Int>, period: Period) {
     val colors = EasyPaperTheme.colors
     val spacing = EasyPaperTheme.spacing
-    val legend = stringResource(if (category == Category.BloodPressure) Res.string.p2_pressure_legend else Res.string.p2_water_chart)
-    PatientMessage(legend)
-    val chronological = entries.sortedBy { it.entry.at }
+    val type = EasyPaperTheme.typography
+    val measurer = rememberTextMeasurer()
+    val axisStyle = type.caption1.tabular().copy(color = colors.secondaryLabel)
+    val legend = stringResource(Res.string.p2_water_chart)
+    val high = (daily.values.maxOrNull() ?: 0).coerceAtLeast(1)
+    val top = stringResource(Res.string.p2_ml, high)
+    val zero = stringResource(Res.string.p2_ml, 0)
     val totalDays = (period.to.toEpochDays() - period.from.toEpochDays()).toFloat() + 1f
-    val daily = entries.groupBy { it.entry.localDate(timeZone) }.mapValues { (_, values) -> values.sumOf { (it.entry.payload as? Water)?.ml ?: 0 } }
-    val pressures = entries.mapNotNull { it.entry.payload as? BloodPressure }
-    val low = if (pressures.isEmpty()) 0f else (pressures.minOf { it.diastolic } - 10).coerceAtLeast(0).toFloat()
-    val high = if (pressures.isEmpty()) (daily.values.maxOrNull() ?: 1).coerceAtLeast(1).toFloat() else (pressures.maxOf { it.systolic } + 10).toFloat()
-    Row(Modifier.fillMaxWidth().padding(horizontal = spacing.m)) {
-        Column { PatientMessage(high.toInt().toString()); Spacer(Modifier.height(spacing.xxl * 2)); PatientMessage(low.toInt().toString()) }
-        Canvas(Modifier.weight(1f).height(spacing.rowMinHeight * 4).padding(spacing.s).semantics { contentDescription = legend }) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = spacing.m, vertical = spacing.xs)) {
+        Text(legend, style = type.footnote, color = colors.secondaryLabel)
+        Canvas(Modifier.fillMaxWidth().height(spacing.rowMinHeight * 4).padding(vertical = spacing.xs)
+            .semantics { contentDescription = legend }) {
+            val topLabel = measurer.measure(top, axisStyle)
+            val zeroLabel = measurer.measure(zero, axisStyle)
+            val left = maxOf(topLabel.size.width, zeroLabel.size.width) + spacing.xs.toPx()
+            val half = topLabel.size.height / 2f
+            val bottom = size.height - half
             val stroke = spacing.xxs.toPx() / 2
-            drawLine(colors.separator, Offset(0f, 0f), Offset(0f, size.height), stroke)
-            drawLine(colors.separator, Offset(0f, size.height), Offset(size.width, size.height), stroke)
-            val x: (LocalDate, Float) -> Float = { date, fraction ->
-                ((date.toEpochDays() - period.from.toEpochDays()).toFloat() + fraction) / totalDays * size.width
+            fun y(ml: Int) = bottom - ml.toFloat() / high * (bottom - half)
+            // Scale lines at 0 and at the maximum, each with its value where the line is.
+            for ((ml, label) in listOf(0 to zeroLabel, high to topLabel)) {
+                drawLine(colors.separator, Offset(left, y(ml)), Offset(size.width, y(ml)), stroke)
+                drawText(label, topLeft = Offset(left - label.size.width - spacing.xxs.toPx(), y(ml) - half))
             }
-            val y: (Float) -> Float = { value -> size.height * (1f - (value - low) / (high - low)) }
-            if (category == Category.Water) daily.forEach { (date, ml) ->
-                val width = (size.width / totalDays * 0.6f).coerceAtLeast(stroke)
-                val top = y(ml.toFloat())
-                drawRect(colors.tint, Offset(x(date, 0.5f) - width / 2, top), Size(width, size.height - top))
-            } else chronological.forEach { owned ->
-                val value = owned.entry.payload as BloodPressure
-                val local = Instant.fromEpochMilliseconds(owned.entry.at).toLocalDateTime(timeZone)
-                val x = x(local.date, (local.hour * 60 + local.minute) / 1440f)
-                val radius = spacing.xxs.toPx()
-                drawCircle(colors.tint, radius, Offset(x, y(value.systolic.toFloat())))
-                val dia = y(value.diastolic.toFloat())
-                val diamond = Path().apply {
-                    moveTo(x, dia - radius); lineTo(x + radius, dia); lineTo(x, dia + radius); lineTo(x - radius, dia); close()
-                }
-                drawPath(diamond, colors.label)
+            val plot = size.width - left
+            val width = (plot / totalDays * 0.6f).coerceAtLeast(stroke)
+            daily.forEach { (date, ml) ->
+                val x = left + ((date.toEpochDays() - period.from.toEpochDays()).toFloat() + 0.5f) / totalDays * plot
+                drawRect(colors.tint, Offset(x - width / 2, y(ml)), Size(width, bottom - y(ml)))
             }
         }
-    }
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Column(Modifier.weight(1f)) { PatientMessage(dayMonth(period.from)) }
-        Column(Modifier.weight(1f)) { PatientMessage(dayMonth(period.to)) }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(dayMonth(period.from), style = type.caption1, color = colors.secondaryLabel)
+            if (period.to != period.from) Text(dayMonth(period.to), style = type.caption1, color = colors.secondaryLabel)
+        }
     }
 }
 

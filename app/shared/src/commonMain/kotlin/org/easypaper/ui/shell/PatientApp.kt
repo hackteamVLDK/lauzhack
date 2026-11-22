@@ -180,11 +180,11 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
                             val historyPattern = stringResource(Res.string.p2_history_line, screen.record.request.doctorName.ifBlank {
                                 stringResource(Res.string.p2_personal_diary)
                             }, "%TIME%", screen.record.entries.size)
+                            val sharedDay = org.easypaper.ui.format.dayMonth(today)
                             ShareScreen(state.repository, relayUrl(settings.serverUrl, defaultServerUrl()), openDeveloper,
                                 selectedRecord = screen.record, back = back, onCreated = {
                                     val at = Clock.System.now().toEpochMilliseconds()
-                                    val date = Entry("", "", at, Water(0)).localDate(timeZone)
-                                    patient.addSharedHistory(historyPattern.replace("%TIME%", "$date ${timeOfDay(at, timeZone)}"))
+                                    patient.addSharedHistory(historyPattern.replace("%TIME%", "$sharedDay, ${timeOfDay(at, timeZone)}"))
                                 })
                         }
                         PatientScreen.DesignCatalog -> CatalogScreen(settings, back)

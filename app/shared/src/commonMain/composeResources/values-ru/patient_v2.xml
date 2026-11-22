@@ -77,7 +77,6 @@
     <string name="p2_delete_entry">Удалить эту запись и её фото?</string>
     <string name="p2_about_records">Об этих записях</string>
     <string name="p2_records_body">Это значения и слова, которые вы записали, с датами. Графики описывают записанные данные и не дают медицинских советов.</string>
-    <string name="p2_pressure_legend">● Систолическое   ◆ Диастолическое (мм рт. ст.)</string>
     <string name="p2_water_chart">Вода в день (мл)</string>
     <string name="p2_requests">Запросы от врачей</string>
     <string name="p2_no_requests">Пока нет запросов. Вы можете вести дневник самостоятельно.</string>

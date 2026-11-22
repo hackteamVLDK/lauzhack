@@ -74,14 +74,17 @@ fun WhatToShareSheet(visible: Boolean, records: List<PatientRecord>, today: Loca
         else recentPeriod(today, when (periodChoice) { 2 -> 14; 3 -> 30; else -> 7 })
     val selection = source?.let { selectToShare(it, selected, period, photos, timeZone) }
     Sheet(visible, stringResource(Res.string.p2_what_share), stringResource(Res.string.p2_cancel), onDismiss) {
-        GroupedSection(header = stringResource(Res.string.p2_source)) {
-            records.forEach { record ->
-                val title = if (record.request.id == PERSONAL_REQUEST_ID) stringResource(Res.string.p2_personal_diary)
-                    else record.request.doctorName + ": " + record.request.complaint
-                ListRow(title, trailing = { IosSwitch(record.request.id == sourceId, { if (it) sourceId = record.request.id },
-                    Modifier.semantics { contentDescription = title }) }, chevron = false)
-            }
+        // One source at a time: a radio list (a switch would suggest several, and switching one off did nothing).
+        PatientMessage(stringResource(Res.string.p2_source))
+        val personal = stringResource(Res.string.p2_personal_diary)
+        val sources = records.map { record ->
+            record.request.id to (if (record.request.id == PERSONAL_REQUEST_ID) personal
+                else record.request.doctorName + ": " + record.request.complaint +
+                    // the period tells two requests of the same doctor apart (the list picks by title)
+                    (record.requestPeriod()?.let { ", " + dateRange(it.from, it.to) } ?: ""))
         }
+        ChoiceList(sources.map { it.second }, sources.firstOrNull { it.first == source?.request?.id }?.second,
+            onSelect = { title -> sources.firstOrNull { it.second == title }?.let { sourceId = it.first } })
         Spacer(Modifier.height(EasyPaperTheme.spacing.sectionGap))
         val labels = listOf(stringResource(Res.string.p2_request_period), stringResource(Res.string.p2_days7),
             stringResource(Res.string.p2_days14), stringResource(Res.string.p2_days30))
@@ -104,9 +107,9 @@ fun HowToShareSheet(selection: ShareSelection?, visible: Boolean, onDismiss: () 
     OptionsSheet(visible, stringResource(Res.string.p2_how_share), listOf(
         SheetOption(stringResource(Res.string.p2_show_qr), stringResource(Res.string.p2_qr_body), Res.drawable.ic_qr_code_2,
             enabled = selection != null && selection.entryCount > 0, onClick = { selection?.let { onQr(it.record) } }),
-        SheetOption(stringResource(Res.string.p2_nearby), stringResource(Res.string.p2_nearby_body), Res.drawable.ic_water_drop,
+        SheetOption(stringResource(Res.string.p2_nearby), stringResource(Res.string.p2_nearby_body), Res.drawable.ic_bluetooth,
             enabled = false, badge = stringResource(Res.string.p2_later), onClick = {}),
-        SheetOption(stringResource(Res.string.p2_save_encrypted), null, Res.drawable.ic_edit_note,
+        SheetOption(stringResource(Res.string.p2_save_encrypted), null, Res.drawable.ic_download,
             enabled = false, badge = stringResource(Res.string.p2_later), onClick = {}),
     ), onDismiss)
 }

@@ -51,6 +51,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.easypaper.model.BloodPressure
 import org.easypaper.model.Entry
 import org.easypaper.ui.components.GroupedSection
+import org.easypaper.ui.format.formatDayMonth
 import org.easypaper.ui.components.PlainButton
 import org.easypaper.ui.components.RowSeparator
 import org.easypaper.ui.patient.timeOfDay
@@ -86,7 +87,13 @@ fun readingDays(series: PressureSeries, timeZone: TimeZone): List<Pair<LocalDate
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PressureChart(series: PressureSeries, timeZone: TimeZone, modifier: Modifier = Modifier) {
+fun PressureChart(
+    series: PressureSeries,
+    timeZone: TimeZone,
+    modifier: Modifier = Modifier,
+    /** false where the same readings are already listed under the chart (the patient's category screen). */
+    valuesToggle: Boolean = true,
+) {
     val colors = EasyPaperTheme.colors
     val spacing = EasyPaperTheme.spacing
     val type = EasyPaperTheme.typography
@@ -106,7 +113,7 @@ fun PressureChart(series: PressureSeries, timeZone: TimeZone, modifier: Modifier
     val pattern = stringResource(Res.string.date_day_month)
     val months = stringArrayResource(Res.array.months_short)
     val days = remember(series, timeZone) { readingDays(series, timeZone) }
-    val dayLabels = days.map { (date, at) -> at to dayLabel(pattern, months, date) }
+    val dayLabels = days.map { (date, at) -> at to formatDayMonth(date, pattern, months) }
     var showValues by rememberSaveable { mutableStateOf(false) }
 
     GroupedSection(modifier) {
@@ -124,11 +131,11 @@ fun PressureChart(series: PressureSeries, timeZone: TimeZone, modifier: Modifier
             ) {
                 Legend(upper, diamond = false, color = colors.label)
                 Legend(lower, diamond = true, color = colors.secondaryLabel)
-                PlainButton(stringResource(if (showValues) Res.string.chart_hide_values else Res.string.chart_show_values),
+                if (valuesToggle) PlainButton(stringResource(if (showValues) Res.string.chart_hide_values else Res.string.chart_show_values),
                     onClick = { showValues = !showValues })
             }
         }
-        if (showValues) {
+        if (valuesToggle && showValues) {
             series.readings.forEach { (at, bp) ->
                 RowSeparator(spacing.m)
                 val date = Instant.fromEpochMilliseconds(at).toLocalDateTime(timeZone).date
@@ -139,17 +146,13 @@ fun PressureChart(series: PressureSeries, timeZone: TimeZone, modifier: Modifier
                     horizontalArrangement = Arrangement.SpaceBetween,
                     itemVerticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(dayLabel(pattern, months, date) + ", " + timeOfDay(at, timeZone), style = type.body, color = colors.secondaryLabel)
+                    Text(formatDayMonth(date, pattern, months) + ", " + timeOfDay(at, timeZone), style = type.body, color = colors.secondaryLabel)
                     Text(value, style = type.body.tabular(), color = colors.label)
                 }
             }
         }
     }
 }
-
-/** "14 Mar" from the locale's day-month pattern ("%1$d %2$s") and the short month names. */
-private fun dayLabel(pattern: String, months: List<String>, date: LocalDate) =
-    pattern.replace("%1\$d", date.day.toString()).replace("%2\$s", months.getOrElse(date.month.ordinal) { "" })
 
 @Composable
 private fun Legend(label: String, diamond: Boolean, color: Color) {
