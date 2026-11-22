@@ -435,4 +435,24 @@
     <string name="m_unit_example">напр., см</string>
     <string name="m_kg">кг</string>
     <string name="m_missing">Введіть число.</string>
+
+    <!-- Doctor: receive a report by clinic code or password-protected file (task 69) -->
+    <string name="doc_receive_scan">Сканувати QR-код</string>
+    <string name="doc_receive_code">Ввести 6-значний код</string>
+    <string name="doc_receive_code_field">6-значний код</string>
+    <string name="doc_receive_receive">Отримати</string>
+    <string name="doc_receive_receiving">Отримання…</string>
+    <string name="doc_receive_waiting">Очікування на телефон пацієнта…</string>
+    <string name="doc_receive_token_required">Додайте токен клініки в налаштуваннях, щоб отримувати звіти за кодом</string>
+    <string name="doc_receive_invalid">Цей код недійсний або термін його дії минув. Попросіть пацієнта надати новий код.</string>
+    <string name="doc_receive_too_many">Забагато спроб. Зачекайте хвилину.</string>
+    <string name="doc_receive_unauthorized">Токен клініки не прийнято.</string>
+    <string name="doc_receive_conflict">Цей код уже використовується. Попросіть пацієнта надати новий код.</string>
+    <string name="doc_file_title">Відкрити файл</string>
+    <string name="doc_file_choose">Вибрати файл</string>
+    <string name="doc_file_hint">Виберіть файл .epr, яким поділився пацієнт, і введіть пароль до нього.</string>
+    <string name="doc_file_selected">Файл вибрано</string>
+    <string name="doc_file_password">Пароль до файлу</string>
+    <string name="doc_file_open">Відкрити</string>
+    <string name="doc_file_wrong_password">Неправильний пароль або пошкоджений файл.</string>
 </resources>

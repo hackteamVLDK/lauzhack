@@ -429,4 +429,24 @@
     <string name="m_unit_example">p. ex. cm</string>
     <string name="m_kg">kg</string>
     <string name="m_missing">Saisissez un nombre.</string>
+
+    <!-- Doctor: receive a report by clinic code or password-protected file (task 69) -->
+    <string name="doc_receive_scan">Scanner le QR code</string>
+    <string name="doc_receive_code">Saisir un code à 6 chiffres</string>
+    <string name="doc_receive_code_field">Code à 6 chiffres</string>
+    <string name="doc_receive_receive">Recevoir</string>
+    <string name="doc_receive_receiving">Réception en cours…</string>
+    <string name="doc_receive_waiting">En attente du téléphone du patient…</string>
+    <string name="doc_receive_token_required">Ajoutez le jeton de la clinique dans les réglages pour recevoir des rapports par code</string>
+    <string name="doc_receive_invalid">Ce code est invalide ou a expiré. Demandez un nouveau code au patient.</string>
+    <string name="doc_receive_too_many">Trop de tentatives. Patientez une minute.</string>
+    <string name="doc_receive_unauthorized">Le jeton de la clinique a été refusé.</string>
+    <string name="doc_receive_conflict">Ce code est déjà utilisé. Demandez un nouveau code au patient.</string>
+    <string name="doc_file_title">Ouvrir un fichier</string>
+    <string name="doc_file_choose">Choisir un fichier</string>
+    <string name="doc_file_hint">Choisissez le fichier .epr partagé par le patient, puis saisissez son mot de passe.</string>
+    <string name="doc_file_selected">Fichier sélectionné</string>
+    <string name="doc_file_password">Mot de passe du fichier</string>
+    <string name="doc_file_open">Ouvrir</string>
+    <string name="doc_file_wrong_password">Mot de passe incorrect ou fichier endommagé.</string>
 </resources>

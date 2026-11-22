@@ -429,4 +429,24 @@
     <string name="m_unit_example">z. B. cm</string>
     <string name="m_kg">kg</string>
     <string name="m_missing">Bitte eine Zahl eingeben.</string>
+
+    <!-- Doctor: receive a report by clinic code or password-protected file (task 69) -->
+    <string name="doc_receive_scan">QR-Code scannen</string>
+    <string name="doc_receive_code">6-stelligen Code eingeben</string>
+    <string name="doc_receive_code_field">6-stelliger Code</string>
+    <string name="doc_receive_receive">Empfangen</string>
+    <string name="doc_receive_receiving">Wird empfangen…</string>
+    <string name="doc_receive_waiting">Warten auf das Smartphone der Patientin oder des Patienten…</string>
+    <string name="doc_receive_token_required">Hinterlegen Sie das Klinik-Token in den Einstellungen, um Berichte per Code zu empfangen</string>
+    <string name="doc_receive_invalid">Dieser Code ist ungültig oder abgelaufen. Bitten Sie die Patientin oder den Patienten um einen neuen Code.</string>
+    <string name="doc_receive_too_many">Zu viele Versuche. Warten Sie eine Minute.</string>
+    <string name="doc_receive_unauthorized">Das Klinik-Token wurde nicht akzeptiert.</string>
+    <string name="doc_receive_conflict">Dieser Code wird bereits verwendet. Bitten Sie die Patientin oder den Patienten um einen neuen Code.</string>
+    <string name="doc_file_title">Datei öffnen</string>
+    <string name="doc_file_choose">Datei auswählen</string>
+    <string name="doc_file_hint">Wählen Sie die von der Patientin oder dem Patienten geteilte .epr-Datei aus und geben Sie das zugehörige Passwort ein.</string>
+    <string name="doc_file_selected">Datei ausgewählt</string>
+    <string name="doc_file_password">Dateipasswort</string>
+    <string name="doc_file_open">Öffnen</string>
+    <string name="doc_file_wrong_password">Falsches Passwort oder beschädigte Datei.</string>
 </resources>

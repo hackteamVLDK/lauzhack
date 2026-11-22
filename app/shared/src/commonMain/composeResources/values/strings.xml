@@ -429,4 +429,24 @@
     <string name="m_unit_example">e.g. cm</string>
     <string name="m_kg">kg</string>
     <string name="m_missing">Enter a number.</string>
+
+    <!-- Doctor: receive a report by clinic code or password-protected file (task 69) -->
+    <string name="doc_receive_scan">Scan QR</string>
+    <string name="doc_receive_code">Enter a 6-digit code</string>
+    <string name="doc_receive_code_field">6-digit code</string>
+    <string name="doc_receive_receive">Receive</string>
+    <string name="doc_receive_receiving">Receiving…</string>
+    <string name="doc_receive_waiting">Waiting for the patient's phone…</string>
+    <string name="doc_receive_token_required">Add the clinic token in settings to receive by code</string>
+    <string name="doc_receive_invalid">This code is not valid or has expired. Ask the patient for a new code.</string>
+    <string name="doc_receive_too_many">Too many tries. Wait a minute.</string>
+    <string name="doc_receive_unauthorized">The clinic token was not accepted.</string>
+    <string name="doc_receive_conflict">This code is already in use. Ask the patient for a new code.</string>
+    <string name="doc_file_title">Open a file</string>
+    <string name="doc_file_choose">Choose a file</string>
+    <string name="doc_file_hint">Choose the .epr file shared by the patient, then enter its password.</string>
+    <string name="doc_file_selected">File selected</string>
+    <string name="doc_file_password">File password</string>
+    <string name="doc_file_open">Open</string>
+    <string name="doc_file_wrong_password">Wrong password or damaged file.</string>
 </resources>

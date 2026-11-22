@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,6 +32,9 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import easypaper.app.shared.generated.resources.Res
+import easypaper.app.shared.generated.resources.doc_receive_scan
+import easypaper.app.shared.generated.resources.doc_receive_code
+import easypaper.app.shared.generated.resources.doc_file_title
 import easypaper.app.shared.generated.resources.ic_qr_code_2
 import easypaper.app.shared.generated.resources.ic_remove
 import easypaper.app.shared.generated.resources.open_scan
@@ -58,6 +62,7 @@ import io.ktor.client.HttpClient
 import org.easypaper.ui.shell.PUBLIC_SERVER
 import kotlinx.io.IOException
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.ensureActive
 import org.easypaper.report.ReceivedReport
 import org.easypaper.report.RelayClient
 import org.easypaper.report.RelayException
@@ -66,6 +71,7 @@ import org.easypaper.report.receive
 import org.easypaper.storage.PatientRepository
 import org.easypaper.model.PatientRecord
 import org.easypaper.ui.components.BackAction
+import org.easypaper.ui.components.ChoiceList
 import org.easypaper.ui.components.EmptyState
 import org.easypaper.ui.components.GroupedSection
 import org.easypaper.ui.components.LargeTitleScaffold
@@ -74,6 +80,8 @@ import org.easypaper.ui.components.ProminentButton
 import org.easypaper.ui.components.TextAreaRow
 import org.easypaper.ui.components.TintedButton
 import org.easypaper.ui.shell.current
+import org.easypaper.ui.doctor.ReceiveCodeForm
+import org.easypaper.ui.doctor.ReceiveFileForm
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
@@ -158,23 +166,56 @@ fun ShareScreen(repository: PatientRepository, relayUrl: String, onDeveloper: ((
     }
 }
 
-/**
- * The doctor's side (task 30): the code from the patient's QR (scanned or pasted) fetches the sealed report once,
- * opens it with the key in the code and hands it over with all its photos.
- */
+private enum class ReceiveMethod { Qr, Code, File }
+
+/** Every method hands the report and its photos to the same visit screen. */
 @Composable
-fun OpenReportScreen(relayUrl: String, onOpened: (ReceivedReport) -> Unit, back: BackAction?) {
+fun OpenReportScreen(
+    relayUrl: String,
+    onOpened: (ReceivedReport) -> Unit,
+    back: BackAction?,
+    clinicToken: String? = null,
+    httpClient: HttpClient? = null,
+) {
+    val http = httpClient ?: rememberHttpClient()
+    var method by remember { mutableStateOf(ReceiveMethod.Qr) }
+    LargeTitleScaffold(title = stringResource(Res.string.open_report), back = back) {
+        item {
+            ChoiceList(ReceiveMethod.entries.toList(), method, label = {
+                stringResource(when (it) {
+                    ReceiveMethod.Qr -> Res.string.doc_receive_scan
+                    ReceiveMethod.Code -> Res.string.doc_receive_code
+                    ReceiveMethod.File -> Res.string.doc_file_title
+                })
+            }, onSelect = { method = it })
+            Spacer(Modifier.height(EasyPaperTheme.spacing.xl))
+            // Each form owns its coroutine scope, scanner/picker and secrets. Leaving it cancels its work.
+            key(method, relayUrl, clinicToken) {
+                when (method) {
+                    ReceiveMethod.Qr -> QrReceiveForm(relayUrl, http, onOpened)
+                    ReceiveMethod.Code -> ReceiveCodeForm(relayUrl, clinicToken, http, onOpened)
+                    ReceiveMethod.File -> ReceiveFileForm(onOpened)
+                }
+            }
+        }
+    }
+}
+
+/** The existing QR flow, including pasted codes and the platform scanner. */
+@Composable
+private fun QrReceiveForm(relayUrl: String, http: HttpClient, onOpened: (ReceivedReport) -> Unit) {
     val scope = rememberCoroutineScope()
-    val http = rememberHttpClient()
     var code by remember { mutableStateOf("") }
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<StringResource?>(null) }
-    fun open(text: String) {
+    val open: (String) -> Unit = { text ->
         busy = true
         error = null
         scope.launch {
             try {
-                onOpened(RelayClient(relayUrl, http).receive(text.trim()))
+                val received = RelayClient(relayUrl, http).receive(text.trim())
+                ensureActive()
+                onOpened(received)
                 code = ""
             } catch (e: CancellationException) {
                 throw e
@@ -192,29 +233,25 @@ fun OpenReportScreen(relayUrl: String, onOpened: (ReceivedReport) -> Unit, back:
         }
     }
     val readQr = rememberQrReader(onCode = { text -> code = text; open(text) }, onFailure = { error = Res.string.open_scan_failed })
-    LargeTitleScaffold(title = stringResource(Res.string.open_report), back = back) {
-        item {
-            val spacing = EasyPaperTheme.spacing
-            Column {
-                if (readQr != null) {
-                    TintedButton(stringResource(Res.string.open_scan), onClick = { error = null; readQr() }, enabled = !busy,
-                        icon = Res.drawable.ic_qr_code_2, modifier = Modifier.padding(start = spacing.m, bottom = spacing.l))
-                }
-                GroupedSection(footer = stringResource(Res.string.open_report_hint)) {
-                    TextAreaRow(code, { code = it; error = null }, placeholder = "ep1:…")
-                }
-                Spacer(Modifier.height(spacing.xl))
-                ProminentButton(stringResource(if (busy) Res.string.open_opening else Res.string.open_report_button), enabled = !busy && code.isNotBlank(),
-                    modifier = Modifier.fillMaxWidth().busy(busy), onClick = { open(code) })
-                Problem(error)
-            }
+    val spacing = EasyPaperTheme.spacing
+    Column {
+        if (readQr != null) {
+            TintedButton(stringResource(Res.string.open_scan), onClick = { error = null; readQr() }, enabled = !busy,
+                icon = Res.drawable.ic_qr_code_2, modifier = Modifier.padding(start = spacing.m, bottom = spacing.l))
         }
+        GroupedSection(footer = stringResource(Res.string.open_report_hint)) {
+            TextAreaRow(code, { code = it; error = null }, placeholder = "ep1:…")
+        }
+        Spacer(Modifier.height(spacing.xl))
+        ProminentButton(stringResource(if (busy) Res.string.open_opening else Res.string.open_report_button), enabled = !busy && code.isNotBlank(),
+            modifier = Modifier.fillMaxWidth().busy(busy), busy = busy, onClick = { open(code) })
+        Problem(error)
     }
 }
 
 /** While a transfer runs: the screen reader hears that the button is busy (its label already says what happens). */
 @Composable
-private fun Modifier.busy(busy: Boolean): Modifier {
+internal fun Modifier.busy(busy: Boolean): Modifier {
     if (!busy) return this
     val label = stringResource(Res.string.busy)
     return semantics { stateDescription = label; liveRegion = LiveRegionMode.Polite }

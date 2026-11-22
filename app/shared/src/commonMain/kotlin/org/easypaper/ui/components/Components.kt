@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -164,14 +165,18 @@ private fun Modifier.pressable(onClick: () -> Unit, enabled: Boolean): Modifier 
 
 /** The one prominent action of a view: filled tint, 50 dp, rounded rectangle (stacked) or full width. */
 @Composable
-fun ProminentButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
+fun ProminentButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, busy: Boolean = false) {
     val colors = EasyPaperTheme.colors
+    val spacing = EasyPaperTheme.spacing
     Box(
         modifier.heightIn(min = EasyPaperTheme.spacing.prominentButtonHeight).clip(EasyPaperTheme.shapes.button)
             .background(colors.tint).pressable(onClick, enabled).padding(horizontal = EasyPaperTheme.spacing.l),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text, style = EasyPaperTheme.typography.headline, color = colors.onTint)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.s)) {
+            if (busy) CircularProgressIndicator(Modifier.size(spacing.rowIcon), color = colors.onTint, strokeWidth = spacing.xxs / 2)
+            Text(text, style = EasyPaperTheme.typography.headline, color = colors.onTint)
+        }
     }
 }
 

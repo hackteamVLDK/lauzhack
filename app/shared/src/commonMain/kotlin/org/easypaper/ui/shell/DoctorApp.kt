@@ -245,8 +245,8 @@ private fun DoctorDetail(state: ShellState, screen: DoctorScreen, settings: Shel
                 }) } }
             ?: NothingOpen(emptyActions)
         DoctorScreen.NewRequest -> RequestBuilderScreen(back)
-        // the patient's QR opens the report once (task 30); it joins the list and opens right away
-        DoctorScreen.OpenReport -> OpenReportScreen(relayUrl(settings.serverUrl, defaultServerUrl()), back = back, onOpened = { received ->
+        // QR, clinic code and report files all join the same list and open the visit right away.
+        DoctorScreen.OpenReport -> OpenReportScreen(relayUrl(settings.serverUrl, defaultServerUrl()), clinicToken = settings.aiToken, back = back, onOpened = { received ->
             state.receive(received)
             select(DoctorScreen.Visit(received.report.id))
         })
