@@ -103,13 +103,14 @@ fun WhatToShareSheet(visible: Boolean, records: List<PatientRecord>, today: Loca
 }
 
 @Composable
-fun HowToShareSheet(selection: ShareSelection?, visible: Boolean, onDismiss: () -> Unit, onQr: (PatientRecord) -> Unit) {
+fun HowToShareSheet(selection: ShareSelection?, visible: Boolean, onDismiss: () -> Unit, onQr: (PatientRecord) -> Unit,
+                    onCode: (PatientRecord) -> Unit, onFile: (PatientRecord) -> Unit) {
     OptionsSheet(visible, stringResource(Res.string.p2_how_share), listOf(
         SheetOption(stringResource(Res.string.p2_show_qr), stringResource(Res.string.p2_qr_body), Res.drawable.ic_qr_code_2,
             enabled = selection != null && selection.entryCount > 0, onClick = { selection?.let { onQr(it.record) } }),
-        SheetOption(stringResource(Res.string.p2_nearby), stringResource(Res.string.p2_nearby_body), Res.drawable.ic_bluetooth,
-            enabled = false, badge = stringResource(Res.string.p2_later), onClick = {}),
-        SheetOption(stringResource(Res.string.p2_save_encrypted), null, Res.drawable.ic_download,
-            enabled = false, badge = stringResource(Res.string.p2_later), onClick = {}),
+        SheetOption(stringResource(Res.string.p2_code_title), stringResource(Res.string.p2_code_body), Res.drawable.ic_chat_bubble,
+            enabled = selection != null && selection.entryCount > 0, onClick = { selection?.let { onCode(it.record) } }),
+        SheetOption(stringResource(Res.string.p2_save_encrypted), stringResource(Res.string.p2_file_body), Res.drawable.ic_download,
+            enabled = selection != null && selection.entryCount > 0, onClick = { selection?.let { onFile(it.record) } }),
     ), onDismiss)
 }

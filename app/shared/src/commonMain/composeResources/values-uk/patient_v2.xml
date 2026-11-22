@@ -102,8 +102,6 @@
     <string name="p2_how_share">Як передати</string>
     <string name="p2_show_qr">Показати QR-код</string>
     <string name="p2_qr_body">Зашифрована одноразова передача. Ключ лише у QR-коді.</string>
-    <string name="p2_nearby">Поруч (Bluetooth)</string>
-    <string name="p2_nearby_body">Телефон показує назву мережі та одноразовий пароль</string>
     <string name="p2_save_encrypted">Зберегти зашифрований файл</string>
     <string name="p2_profile">Профіль</string>
     <string name="p2_health_details">Дані про здоров’я</string>
@@ -187,4 +185,24 @@
     <string name="p2_tour_page">Сторінка %1$d із %2$d</string>
     <string name="p2_tour_next">Далі</string>
     <string name="p2_tour_skip">Пропустити</string>
+    <string name="p2_code_title">Передати за кодом</string>
+    <string name="p2_code_body">6 цифр, код діє 5 хвилин. Лікар вводить його у себе.</string>
+    <string name="p2_code_create">Створити код</string>
+    <string name="p2_code_new">Новий код</string>
+    <string name="p2_code_waiting">Очікуємо, поки лікар введе код…</string>
+    <string name="p2_code_sending">Надсилання…</string>
+    <string name="p2_code_sent">Надіслано лікарю</string>
+    <string name="p2_code_expired">Термін дії коду минув</string>
+    <string name="p2_code_too_many">Забагато кодів. Спробуйте ще раз за хвилину.</string>
+    <string name="p2_file_body">Захищено паролем, який ви оберете.</string>
+    <string name="p2_file_password">Пароль</string>
+    <string name="p2_file_repeat">Повторіть пароль</string>
+    <string name="p2_file_minimum">Використайте щонайменше 8 символів.</string>
+    <string name="p2_file_mismatch">Паролі не збігаються.</string>
+    <string name="p2_file_hint">Повідомте лікарю пароль окремо. Він не зберігається у файлі.</string>
+    <string name="p2_file_save">Зберегти</string>
+    <string name="p2_file_saving">Шифрування…</string>
+    <string name="p2_file_saved">Збережено</string>
+    <string name="p2_file_failed">Не вдалося зберегти файл. Спробуйте ще раз.</string>
+    <string name="p2_file_replace">Замінити наявний файл?</string>
 </resources>

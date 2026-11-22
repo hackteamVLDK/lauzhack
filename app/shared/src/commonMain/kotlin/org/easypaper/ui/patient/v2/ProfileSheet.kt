@@ -21,7 +21,10 @@ import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-expect fun rememberBackupSaver(onResult: (Boolean) -> Unit): (ByteArray) -> Unit
+expect fun rememberFileSaver(fileName: String, onResult: (Boolean) -> Unit): (ByteArray) -> Unit
+
+@Composable
+fun rememberBackupSaver(onResult: (Boolean) -> Unit): (ByteArray) -> Unit = rememberFileSaver("EasyPaper.epb", onResult)
 
 @Composable
 fun ProfileSheet(visible: Boolean, settings: PatientSettings, repository: PatientRepository, today: LocalDate,

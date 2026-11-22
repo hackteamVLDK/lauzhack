@@ -25,12 +25,21 @@ suspend fun DiaryRepository.handover(record: PatientRecord, relay: RelayClient, 
     handover(record, relay, now, summary) { photo(it) }
 
 private suspend fun handover(record: PatientRecord, relay: RelayClient, now: Long, summary: String?, photo: suspend (String) -> ByteArray?): String {
-    val report = Report(id = newReportId(), createdAt = now, record = record, summary = summary)
-    val photos = record.photoRefs.mapNotNull { ref -> photo(ref)?.let { ref to it } }.toMap()
+    val (report, photos) = prepareHandover(record, now, summary, photo)
     val sealed = sealReport(report, photos)
     relay.upload(sealed)
     return sealed.qr
 }
+
+/** Shared snapshot for QR, six-digit handoff and encrypted report files. Missing photos are omitted. */
+suspend fun prepareHandover(
+    record: PatientRecord,
+    now: Long,
+    summary: String? = null,
+    photo: suspend (String) -> ByteArray?,
+): Pair<Report, Map<String, ByteArray>> =
+    Report(id = newReportId(), createdAt = now, record = record, summary = summary) to
+        record.photoRefs.mapNotNull { ref -> photo(ref)?.let { ref to it } }.toMap()
 
 /**
  * The doctor's side: downloads and opens the report, then all its photos at once — the relay hands out every

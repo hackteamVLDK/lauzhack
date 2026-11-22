@@ -102,8 +102,6 @@
     <string name="p2_how_share">Comment partager</string>
     <string name="p2_show_qr">Afficher le QR code</string>
     <string name="p2_qr_body">Transfert chiffré à usage unique. La clé est uniquement dans le QR code.</string>
-    <string name="p2_nearby">À proximité (Bluetooth)</string>
-    <string name="p2_nearby_body">Le téléphone affiche un nom de réseau et un mot de passe à usage unique</string>
     <string name="p2_save_encrypted">Enregistrer un fichier chiffré</string>
     <string name="p2_profile">Profil</string>
     <string name="p2_health_details">Informations de santé</string>
@@ -183,4 +181,24 @@
     <string name="p2_tour_page">Page %1$d sur %2$d</string>
     <string name="p2_tour_next">Suivant</string>
     <string name="p2_tour_skip">Passer</string>
+    <string name="p2_code_title">Envoyer avec un code</string>
+    <string name="p2_code_body">6 chiffres, valables 5 minutes. Votre médecin les saisit.</string>
+    <string name="p2_code_create">Créer un code</string>
+    <string name="p2_code_new">Nouveau code</string>
+    <string name="p2_code_waiting">En attente de la saisie du code par votre médecin…</string>
+    <string name="p2_code_sending">Envoi en cours…</string>
+    <string name="p2_code_sent">Envoyé à votre médecin</string>
+    <string name="p2_code_expired">Le code a expiré</string>
+    <string name="p2_code_too_many">Trop de codes. Réessayez dans une minute.</string>
+    <string name="p2_file_body">Protégé par le mot de passe de votre choix.</string>
+    <string name="p2_file_password">Mot de passe</string>
+    <string name="p2_file_repeat">Confirmer le mot de passe</string>
+    <string name="p2_file_minimum">Utilisez au moins 8 caractères.</string>
+    <string name="p2_file_mismatch">Les mots de passe ne correspondent pas.</string>
+    <string name="p2_file_hint">Communiquez le mot de passe séparément à votre médecin. Il ne figure pas dans le fichier.</string>
+    <string name="p2_file_save">Enregistrer</string>
+    <string name="p2_file_saving">Chiffrement en cours…</string>
+    <string name="p2_file_saved">Enregistré</string>
+    <string name="p2_file_failed">Impossible d’enregistrer le fichier. Veuillez réessayer.</string>
+    <string name="p2_file_replace">Remplacer le fichier existant ?</string>
 </resources>

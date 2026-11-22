@@ -102,8 +102,6 @@
     <string name="p2_how_share">Как поделиться</string>
     <string name="p2_show_qr">Показать QR-код</string>
     <string name="p2_qr_body">Зашифрованная однократная передача. Ключ есть только в QR-коде.</string>
-    <string name="p2_nearby">Рядом (Bluetooth)</string>
-    <string name="p2_nearby_body">Телефон показывает имя сети и одноразовый пароль</string>
     <string name="p2_save_encrypted">Сохранить зашифрованный файл</string>
     <string name="p2_profile">Профиль</string>
     <string name="p2_health_details">Данные о здоровье</string>
@@ -187,4 +185,24 @@
     <string name="p2_tour_page">Страница %1$d из %2$d</string>
     <string name="p2_tour_next">Далее</string>
     <string name="p2_tour_skip">Пропустить</string>
+    <string name="p2_code_title">Передать по коду</string>
+    <string name="p2_code_body">6 цифр, код действует 5 минут. Врач вводит его у себя.</string>
+    <string name="p2_code_create">Создать код</string>
+    <string name="p2_code_new">Новый код</string>
+    <string name="p2_code_waiting">Ожидаем, пока врач введёт код…</string>
+    <string name="p2_code_sending">Отправка…</string>
+    <string name="p2_code_sent">Отправлено врачу</string>
+    <string name="p2_code_expired">Срок действия кода истёк</string>
+    <string name="p2_code_too_many">Слишком много кодов. Попробуйте снова через минуту.</string>
+    <string name="p2_file_body">Защищён паролем, который вы выберете.</string>
+    <string name="p2_file_password">Пароль</string>
+    <string name="p2_file_repeat">Повторите пароль</string>
+    <string name="p2_file_minimum">Используйте не менее 8 символов.</string>
+    <string name="p2_file_mismatch">Пароли не совпадают.</string>
+    <string name="p2_file_hint">Сообщите врачу пароль отдельно. Он не хранится в файле.</string>
+    <string name="p2_file_save">Сохранить</string>
+    <string name="p2_file_saving">Шифрование…</string>
+    <string name="p2_file_saved">Сохранено</string>
+    <string name="p2_file_failed">Не удалось сохранить файл. Попробуйте ещё раз.</string>
+    <string name="p2_file_replace">Заменить существующий файл?</string>
 </resources>

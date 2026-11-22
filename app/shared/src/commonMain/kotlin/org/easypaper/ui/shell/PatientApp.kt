@@ -19,6 +19,8 @@ import org.easypaper.model.*
 import org.easypaper.ui.catalog.DesignCatalog
 import org.easypaper.ui.components.*
 import org.easypaper.ui.handover.ShareScreen
+import org.easypaper.ui.handover.ShareCodeScreen
+import org.easypaper.ui.handover.ShareFileScreen
 import org.easypaper.ui.handover.relayUrl
 import org.easypaper.ui.patient.*
 import org.easypaper.ui.patient.medications.MedicationsScreen
@@ -52,6 +54,8 @@ sealed interface PatientScreen {
     data class EntryView(val requestId: String, val entryId: String) : PatientScreen
     data class DeleteEntry(val requestId: String, val entryId: String) : PatientScreen
     data class ShareReport(val record: PatientRecord) : PatientScreen
+    data class ShareCode(val record: PatientRecord) : PatientScreen
+    data class ShareFile(val record: PatientRecord) : PatientScreen
 }
 
 private val TAB_ROOTS = listOf(PatientScreen.Summary, PatientScreen.Sharing, PatientScreen.Browse)
@@ -181,20 +185,33 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
                             val widget = record?.request?.widgets?.filterIsInstance<MedicationsWidget>()?.firstOrNull { it.id == screen.widgetId }
                             if (record != null && widget != null) MedicationsScreen(state.repository, record, widget, back, language = language)
                         }
-                        is PatientScreen.ShareReport -> {
+                        is PatientScreen.ShareReport, is PatientScreen.ShareCode, is PatientScreen.ShareFile -> {
+                            val sharedRecord = when (screen) {
+                                is PatientScreen.ShareReport -> screen.record
+                                is PatientScreen.ShareCode -> screen.record
+                                is PatientScreen.ShareFile -> screen.record
+                                else -> error("Unknown sharing screen")
+                            }
                             val dayMonthPattern = stringResource(Res.string.date_day_month)
                             val shortMonths = stringArrayResource(Res.array.months_short)
-                            val historyPattern = stringResource(Res.string.p2_history_line, screen.record.request.doctorName.ifBlank {
+                            val historyPattern = stringResource(Res.string.p2_history_line, sharedRecord.request.doctorName.ifBlank {
                                 stringResource(Res.string.p2_personal_diary)
-                            }, "%TIME%", pluralStringResource(Res.plurals.entries, screen.record.entries.size, screen.record.entries.size))
-                            ShareScreen(state.repository, relayUrl(settings.serverUrl, defaultServerUrl()), openDeveloper,
-                                selectedRecord = screen.record, back = back, onCreated = {
-                                    val at = Clock.System.now().toEpochMilliseconds()
-                                    // the day of the moment it was sent (a share after midnight is not dated yesterday)
-                                    val sentDay = Instant.fromEpochMilliseconds(at).toLocalDateTime(timeZone).date
-                                    patient.addSharedHistory(historyPattern.replace("%TIME%",
-                                        formatDayMonth(sentDay, dayMonthPattern, shortMonths) + ", " + timeOfDay(at, timeZone)))
-                                })
+                            }, "%TIME%", pluralStringResource(Res.plurals.entries, sharedRecord.entries.size, sharedRecord.entries.size))
+                            val onShared: () -> Unit = {
+                                val at = Clock.System.now().toEpochMilliseconds()
+                                // the day of the moment it was sent (a share after midnight is not dated yesterday)
+                                val sentDay = Instant.fromEpochMilliseconds(at).toLocalDateTime(timeZone).date
+                                patient.addSharedHistory(historyPattern.replace("%TIME%",
+                                    formatDayMonth(sentDay, dayMonthPattern, shortMonths) + ", " + timeOfDay(at, timeZone)))
+                            }
+                            when (screen) {
+                                is PatientScreen.ShareReport -> ShareScreen(state.repository, relayUrl(settings.serverUrl, defaultServerUrl()), openDeveloper,
+                                    selectedRecord = sharedRecord, back = back, onCreated = { onShared() })
+                                is PatientScreen.ShareCode -> ShareCodeScreen(state.repository, relayUrl(settings.serverUrl, defaultServerUrl()),
+                                    sharedRecord, back, onShared)
+                                is PatientScreen.ShareFile -> ShareFileScreen(state.repository, sharedRecord, back, onShared)
+                                else -> Unit
+                            }
                         }
                         PatientScreen.DesignCatalog -> CatalogScreen(settings, back)
                         else -> Unit
@@ -234,7 +251,9 @@ private fun PatientContent(state: ShellState, settings: ShellSettings, patient: 
         WhatToShareSheet(navigator.sheet == PatientScreen.WhatToShare, records, today, timeZone, navigator::dismissSheet,
             { selection = it; navigator.presentSheet(PatientScreen.HowToShare) })
         HowToShareSheet(selection, navigator.sheet == PatientScreen.HowToShare, navigator::dismissSheet,
-            { navigator.dismissSheet(); navigator.push(PatientScreen.ShareReport(it)) })
+            { navigator.dismissSheet(); navigator.push(PatientScreen.ShareReport(it)) },
+            { navigator.dismissSheet(); navigator.push(PatientScreen.ShareCode(it)) },
+            { navigator.dismissSheet(); navigator.push(PatientScreen.ShareFile(it)) })
         val entryView = navigator.sheet as? PatientScreen.EntryView
         val viewedRecord = records.firstOrNull { it.request.id == entryView?.requestId }
         val viewedEntry = viewedRecord?.entries?.firstOrNull { it.id == entryView?.entryId }

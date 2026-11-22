@@ -102,8 +102,6 @@
     <string name="p2_how_share">How to share</string>
     <string name="p2_show_qr">Show QR code</string>
     <string name="p2_qr_body">Encrypted, one-time transfer. The key is only in the QR code.</string>
-    <string name="p2_nearby">Nearby (Bluetooth)</string>
-    <string name="p2_nearby_body">Phone shows a network name and a one-time password</string>
     <string name="p2_save_encrypted">Save encrypted file</string>
     <string name="p2_profile">Profile</string>
     <string name="p2_health_details">Health details</string>
@@ -183,4 +181,24 @@
     <string name="p2_tour_page">Page %1$d of %2$d</string>
     <string name="p2_tour_next">Next</string>
     <string name="p2_tour_skip">Skip</string>
+    <string name="p2_code_title">Send with a code</string>
+    <string name="p2_code_body">6 digits, open for 5 minutes. Your doctor types them in.</string>
+    <string name="p2_code_create">Create a code</string>
+    <string name="p2_code_new">New code</string>
+    <string name="p2_code_waiting">Waiting for your doctor to enter the code…</string>
+    <string name="p2_code_sending">Sending…</string>
+    <string name="p2_code_sent">Sent to your doctor</string>
+    <string name="p2_code_expired">The code has expired</string>
+    <string name="p2_code_too_many">Too many codes, try again in a minute</string>
+    <string name="p2_file_body">Protected with a password you choose.</string>
+    <string name="p2_file_password">Password</string>
+    <string name="p2_file_repeat">Repeat password</string>
+    <string name="p2_file_minimum">Use at least 8 characters.</string>
+    <string name="p2_file_mismatch">The passwords do not match.</string>
+    <string name="p2_file_hint">Tell your doctor the password separately. It is not stored in the file.</string>
+    <string name="p2_file_save">Save</string>
+    <string name="p2_file_saving">Encrypting…</string>
+    <string name="p2_file_saved">Saved</string>
+    <string name="p2_file_failed">The file could not be saved. Please try again.</string>
+    <string name="p2_file_replace">Replace the existing file?</string>
 </resources>

@@ -86,7 +86,7 @@ fun relayUrl(setting: String?, platformDefault: String?): String = (setting ?: p
 
 /** One HTTP client per screen, closed when the screen goes; the platform's Ktor engine is found on the classpath. */
 @Composable
-private fun rememberHttpClient(): HttpClient {
+internal fun rememberHttpClient(): HttpClient {
     val http = remember { HttpClient() }
     DisposableEffect(http) { onDispose { http.close() } }
     return http
@@ -222,7 +222,7 @@ private fun Modifier.busy(busy: Boolean): Modifier {
 
 /** An error as a sentence with an icon, announced to screen readers. */
 @Composable
-private fun Problem(message: StringResource?, vararg args: Any) {
+internal fun Problem(message: StringResource?, vararg args: Any) {
     if (message == null) return
     val colors = EasyPaperTheme.colors
     val spacing = EasyPaperTheme.spacing

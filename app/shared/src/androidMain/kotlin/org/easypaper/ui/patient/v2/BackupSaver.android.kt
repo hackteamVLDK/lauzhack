@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-actual fun rememberBackupSaver(onResult: (Boolean) -> Unit): (ByteArray) -> Unit {
+actual fun rememberFileSaver(fileName: String, onResult: (Boolean) -> Unit): (ByteArray) -> Unit {
     val context = LocalContext.current
     val result by rememberUpdatedState(onResult)
     val scope = rememberCoroutineScope()
@@ -24,5 +24,5 @@ actual fun rememberBackupSaver(onResult: (Boolean) -> Unit): (ByteArray) -> Unit
             result(success)
         }
     }
-    return { bytes -> pending = bytes; launcher.launch("EasyPaper.epb") }
+    return { bytes -> pending = bytes; launcher.launch(fileName) }
 }

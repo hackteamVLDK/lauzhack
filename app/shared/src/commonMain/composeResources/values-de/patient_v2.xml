@@ -102,8 +102,6 @@
     <string name="p2_how_share">Wie möchten Sie teilen?</string>
     <string name="p2_show_qr">QR-Code anzeigen</string>
     <string name="p2_qr_body">Verschlüsselte, einmalige Übertragung. Der Schlüssel steht nur im QR-Code.</string>
-    <string name="p2_nearby">In der Nähe (Bluetooth)</string>
-    <string name="p2_nearby_body">Das Telefon zeigt einen Netzwerknamen und ein Einmalpasswort</string>
     <string name="p2_save_encrypted">Verschlüsselte Datei speichern</string>
     <string name="p2_profile">Profil</string>
     <string name="p2_health_details">Gesundheitsdaten</string>
@@ -183,4 +181,24 @@
     <string name="p2_tour_page">Seite %1$d von %2$d</string>
     <string name="p2_tour_next">Weiter</string>
     <string name="p2_tour_skip">Überspringen</string>
+    <string name="p2_code_title">Mit einem Code senden</string>
+    <string name="p2_code_body">6 Ziffern, 5 Minuten gültig. Ihre Ärztin oder Ihr Arzt gibt sie ein.</string>
+    <string name="p2_code_create">Code erstellen</string>
+    <string name="p2_code_new">Neuer Code</string>
+    <string name="p2_code_waiting">Warten, bis Ihre Ärztin oder Ihr Arzt den Code eingibt…</string>
+    <string name="p2_code_sending">Wird gesendet…</string>
+    <string name="p2_code_sent">An Ihre Ärztin oder Ihren Arzt gesendet</string>
+    <string name="p2_code_expired">Der Code ist abgelaufen</string>
+    <string name="p2_code_too_many">Zu viele Codes. Versuchen Sie es in einer Minute erneut.</string>
+    <string name="p2_file_body">Mit einem selbst gewählten Passwort geschützt.</string>
+    <string name="p2_file_password">Passwort</string>
+    <string name="p2_file_repeat">Passwort wiederholen</string>
+    <string name="p2_file_minimum">Verwenden Sie mindestens 8 Zeichen.</string>
+    <string name="p2_file_mismatch">Die Passwörter stimmen nicht überein.</string>
+    <string name="p2_file_hint">Teilen Sie Ihrer Ärztin oder Ihrem Arzt das Passwort separat mit. Es wird nicht in der Datei gespeichert.</string>
+    <string name="p2_file_save">Speichern</string>
+    <string name="p2_file_saving">Wird verschlüsselt…</string>
+    <string name="p2_file_saved">Gespeichert</string>
+    <string name="p2_file_failed">Die Datei konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.</string>
+    <string name="p2_file_replace">Die vorhandene Datei ersetzen?</string>
 </resources>

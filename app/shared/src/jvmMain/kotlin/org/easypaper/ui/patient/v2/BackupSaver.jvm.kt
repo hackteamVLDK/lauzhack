@@ -10,14 +10,14 @@ import javax.swing.JFileChooser
 import javax.swing.SwingUtilities
 
 @Composable
-actual fun rememberBackupSaver(onResult: (Boolean) -> Unit): (ByteArray) -> Unit {
+actual fun rememberFileSaver(fileName: String, onResult: (Boolean) -> Unit): (ByteArray) -> Unit {
     val result by rememberUpdatedState(onResult)
     val scope = rememberCoroutineScope()
-    val replace = stringResource(Res.string.p2_replace_backup)
-    return remember(replace) {
+    val replace = stringResource(Res.string.p2_file_replace)
+    return remember(fileName, replace) {
         { bytes ->
             SwingUtilities.invokeLater {
-                val chooser = JFileChooser().apply { selectedFile = File("EasyPaper.epb") }
+                val chooser = JFileChooser().apply { selectedFile = File(fileName) }
                 if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
                     val file = chooser.selectedFile
                     val approved = !file.exists() || javax.swing.JOptionPane.showConfirmDialog(

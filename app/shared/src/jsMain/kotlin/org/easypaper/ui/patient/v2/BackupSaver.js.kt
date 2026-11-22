@@ -6,15 +6,15 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 @OptIn(ExperimentalEncodingApi::class)
 @Composable
-actual fun rememberBackupSaver(onResult: (Boolean) -> Unit): (ByteArray) -> Unit = { bytes ->
+actual fun rememberFileSaver(fileName: String, onResult: (Boolean) -> Unit): (ByteArray) -> Unit = { bytes ->
     val data = Base64.encode(bytes)
-    val success = runCatching { downloadBackup(data) }.isSuccess
+    val success = runCatching { downloadBackup(data, fileName) }.isSuccess
     onResult(success)
 }
 
-private fun downloadBackup(data: String) {
+private fun downloadBackup(data: String, fileName: String) {
     js("""const bytes = Uint8Array.from(atob(data), c => c.charCodeAt(0));
         const url = URL.createObjectURL(new Blob([bytes], {type: 'application/octet-stream'}));
-        const a = document.createElement('a'); a.href = url; a.download = 'EasyPaper.epb';
+        const a = document.createElement('a'); a.href = url; a.download = fileName;
         document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);""")
 }
