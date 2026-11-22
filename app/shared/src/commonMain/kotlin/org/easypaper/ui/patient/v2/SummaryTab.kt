@@ -39,6 +39,7 @@ import org.easypaper.ui.patient.localDate
 import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 
@@ -77,12 +78,13 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
                 SummaryHeader(settings.name.value, greeting, onProfile, onDeveloper, onGallery)
             }
             item(key = "counts") {
+                val entriesToday = records.sumOf { record -> record.entries.count { it.localDate(timeZone) == today } }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacing.xxl)) {
+                    // The label agrees with the number: 1 widget, 2 виджета, 5 виджетов.
                     SummaryCount(stringResource(Res.string.p2_widget_count_value, pinned.size),
-                        stringResource(Res.string.p2_widgets_label), Modifier.weight(1f))
-                    SummaryCount(stringResource(Res.string.p2_widget_count_value,
-                        records.sumOf { record -> record.entries.count { it.localDate(timeZone) == today } }),
-                        stringResource(Res.string.p2_entries_today_label), Modifier.weight(1f))
+                        pluralStringResource(Res.plurals.p2_widgets_label, pinned.size), Modifier.weight(1f))
+                    SummaryCount(stringResource(Res.string.p2_widget_count_value, entriesToday),
+                        pluralStringResource(Res.plurals.p2_entries_today_label, entriesToday), Modifier.weight(1f))
                 }
             }
             if (active != null) item(key = "plan") {

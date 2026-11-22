@@ -124,7 +124,7 @@
     <string name="p2_about">About</string>
     <string name="p2_about_body">Easy Paper is a personal health diary. It records facts and does not diagnose or give medical advice. No registration is needed.</string>
     <string name="p2_show_onboarding">Show onboarding again</string>
-    <string name="p2_history_line">%1$s, %2$s, %3$d entries</string>
+    <string name="p2_history_line">%1$s, %2$s, %3$s</string>
     <string name="p2_replace_backup">Replace the existing backup file?</string>
     <string name="p2_water_amount">Amount of water (ml)</string>
     <string name="p2_measurements">Body measurements</string>
@@ -143,8 +143,14 @@
     <string name="p2_good_afternoon">Good afternoon</string>
     <string name="p2_good_evening">Good evening</string>
     <string name="p2_widget_count_value">%1$d</string>
-    <string name="p2_widgets_label">widgets</string>
-    <string name="p2_entries_today_label">entries today</string>
+    <plurals name="p2_widgets_label">
+        <item quantity="one">widget</item>
+        <item quantity="other">widgets</item>
+    </plurals>
+    <plurals name="p2_entries_today_label">
+        <item quantity="one">entry today</item>
+        <item quantity="other">entries today</item>
+    </plurals>
     <string name="p2_empty_widgets">What do you want to track?</string>
     <string name="p2_add_widgets">Add widgets</string>
     <string name="p2_your_widgets">Your widgets</string>
