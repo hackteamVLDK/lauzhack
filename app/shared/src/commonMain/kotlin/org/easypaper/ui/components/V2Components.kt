@@ -389,12 +389,16 @@ fun CapsuleButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifi
     val colors = EasyPaperTheme.colors
     val spacing = EasyPaperTheme.spacing
     Column(modifier.fillMaxWidth().clip(EasyPaperTheme.shapes.capsule)
-        .background(if (prominent) colors.tint else colors.fill)
+        .background(if (enabled && prominent) colors.tint else colors.fill)
         .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
         .semantics(mergeDescendants = true) { if (!enabled) disabled() }
         .heightIn(min = spacing.prominentButtonHeight).padding(horizontal = spacing.l, vertical = spacing.s),
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacing.xxs)) {
-        val foreground = if (prominent) colors.onTint else colors.label
+        val foreground = when {
+            !enabled -> colors.secondaryLabel
+            prominent -> colors.onTint
+            else -> colors.label
+        }
         Text(text, style = EasyPaperTheme.typography.headline, color = foreground, textAlign = TextAlign.Center)
         if (badge != null) Text(badge, style = EasyPaperTheme.typography.footnote, color = foreground)
     }

@@ -96,6 +96,24 @@ class LocalizationResourcesTest {
     }
 
     @Test
+    fun measurementValuesStayWithTheirUnitsInEveryLocale() {
+        val valueAndUnit = Regex("""(?:%\d+\$[sd]|\d)([\s\u00A0]+)(?:ml|мл|kg|кг|mmHg|мм|l|л)\b""")
+        for (folder in folders) {
+            val resources = read(folder)
+            for ((key, resource) in resources) {
+                for (text in resource.texts) {
+                    for (match in valueAndUnit.findAll(text)) {
+                        assertEquals("\u00A0", match.groupValues[1], "$folder/$key: ${match.value}")
+                    }
+                }
+            }
+            for (key in listOf("p2_water_quick", "p2_ml", "p2_water_today", "p2_water_average", "p2_pressure_range")) {
+                assertTrue('\u00A0' in resources.getValue("string/$key").texts.single(), "$folder/$key")
+            }
+        }
+    }
+
+    @Test
     fun frenchAndRussianDatesAndNumbersUseTheirActualResources() {
         for ((folder, expected) in mapOf(
             "values-fr" to listOf("samedi 21 novembre", "17–21 nov.", "30 nov. – 2 déc."),

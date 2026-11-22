@@ -40,6 +40,7 @@ import org.easypaper.model.Water
 import org.easypaper.ui.components.*
 import org.easypaper.ui.format.currentUtcOffsetMinutes
 import org.easypaper.ui.format.dateRange
+import org.easypaper.ui.format.longDate
 import org.easypaper.ui.patient.localDate
 import org.easypaper.ui.theme.Category
 import org.easypaper.ui.theme.EasyPaperTheme
@@ -80,7 +81,7 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
             contentPadding = PaddingValues(start = spacing.screenMargin, end = spacing.screenMargin,
                 top = spacing.s, bottom = spacing.xxl), verticalArrangement = Arrangement.spacedBy(spacing.l)) {
             item(key = "greeting") {
-                SummaryHeader(settings.name.value, greeting, onProfile, onDeveloper)
+                SummaryHeader(settings.name.value, greeting, today, onProfile, onDeveloper)
             }
             item(key = "counts") {
                 val entriesToday = records.sumOf { record -> record.entries.count { it.localDate(timeZone) == today } }
@@ -140,12 +141,12 @@ fun SummaryTab(records: List<PatientRecord>, settings: PatientSettings, today: L
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun SummaryHeader(name: String?, greeting: String, onProfile: () -> Unit, onDeveloper: () -> Unit) {
+private fun SummaryHeader(name: String?, greeting: String, today: LocalDate, onProfile: () -> Unit, onDeveloper: () -> Unit) {
     val spacing = EasyPaperTheme.spacing
     val colors = EasyPaperTheme.colors
     Column(verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(if (name.isNullOrBlank()) stringResource(Res.string.p2_hi)
+            Text(if (name.isNullOrBlank()) longDate(today)
                 else stringResource(Res.string.p2_hi_name, name.trim()), style = EasyPaperTheme.typography.title3,
                 color = colors.secondaryLabel, modifier = Modifier.weight(1f))
             AvatarButton(initials(name), onProfile)

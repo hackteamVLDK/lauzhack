@@ -102,8 +102,10 @@ class PatientScreensUiTest {
         waitForText("Welcome")
         onNodeWithText("Continue with Google").assertIsNotEnabled()
         onNodeWithText("Continue with email").assertIsNotEnabled()
+        onAllNodesWithText("Soon", useUnmergedTree = true).assertCountEquals(2)
         onNodeWithText("Continue").performClick()
         waitForText("Privacy & data")
+        onNodeWithText("Language").assertExists()
         onNode(hasScrollAction()).performScrollToNode(hasText("Continue"))
         onNodeWithText("Continue").performClick()
         waitForText("What do you want to track?")
@@ -111,7 +113,10 @@ class PatientScreensUiTest {
         assertTrue(patient.pinnedCategories.isEmpty())
         assertEquals(null, patient.pinned.value)
         assertTrue(state.repository.records.value.all { it.entries.isEmpty() })
-        onNodeWithText("Hi").assertExists()
+        onNodeWithText("Hi").assertDoesNotExist()
+        val date = java.time.LocalDate.now().format(
+            java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale.ENGLISH))
+        onNodeWithText(date).assertExists()
     }
 
     @Test

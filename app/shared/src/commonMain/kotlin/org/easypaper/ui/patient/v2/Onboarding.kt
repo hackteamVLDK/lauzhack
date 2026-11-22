@@ -84,7 +84,9 @@ fun Onboarding(settings: PatientSettings, saving: Boolean, error: Boolean,
                                         Modifier.semantics { contentDescription = reminderLabel })
                                 })
                             }
-                            LanguagePicker(settings)
+                            GroupedSection(header = stringResource(Res.string.p2_language)) {
+                                LanguagePicker(settings)
+                            }
                         }
                     }
                     if (error) PatientMessage(stringResource(Res.string.p2_error), error = true)

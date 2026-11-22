@@ -14,7 +14,7 @@
     <string name="evening_reading">Вечернее измерение</string>
     <string name="unit_mmhg">мм рт. ст.</string>
     <string name="pulse">пульс %1$s</string>
-    <string name="water_amount">%1$s из %2$s л</string>
+    <string name="water_amount">%1$s из %2$s&#160;л</string>
     <string name="sample_food">Овсянка с бананом, чай</string>
     <string name="sample_medicine">Рамиприл 5 мг, 1 утром</string>
     <string name="taken_at">Принято в %1$s</string>
@@ -26,7 +26,7 @@
     <string name="summary">Сводка</string>
     <string name="draft">Черновик</string>
     <string name="written_from">Составлено по записям: %1$s</string>
-    <string name="sample_summary">Артериальное давление утром: 128–142/82–90 мм рт. ст.</string>
+    <string name="sample_summary">Артериальное давление утром: 128–142/82–90&#160;мм рт. ст.</string>
     <string name="confirm">Подтвердить</string>
     <string name="confirmed_at">Подтверждено в %1$s</string>
     <string name="edit">Изменить</string>
@@ -120,8 +120,8 @@
     <string name="add_bp">Добавить артериальное давление</string>
     <string name="bp_progress">%1$d из %2$d сегодня</string>
     <string name="unit_per_min">/мин</string>
-    <string name="water_today">%1$s л сегодня</string>
-    <string name="add_water">250 мл</string>
+    <string name="water_today">%1$s&#160;л сегодня</string>
+    <string name="add_water">250&#160;мл</string>
     <string name="undo">Отменить</string>
     <string name="answer_questions">Ответить на вопросы за сегодня</string>
     <string name="answered_at">Ответ записан в %1$s</string>
@@ -145,12 +145,12 @@
     <string name="problem_diastolic">Нижнее значение должно быть от 20 до 200. Проверьте, нет ли опечатки.</string>
     <string name="problem_pulse">Пульс должен быть от 20 до 250. Проверьте, нет ли опечатки.</string>
     <string name="problem_order">Нижнее значение должно быть меньше верхнего.</string>
-    <string name="problem_water">Количество должно быть от 1 мл до 5 л.</string>
+    <string name="problem_water">Количество должно быть от 1&#160;мл до 5&#160;л.</string>
     <string name="problem_empty">Напишите несколько слов перед сохранением.</string>
     <string name="problem_other">Запись не сохранена. Закройте форму и попробуйте ещё раз.</string>
     <string name="delete">Удалить</string>
     <string name="delete_entry_question">Удалить эту запись? Она исчезнет с этого телефона и из отчёта.</string>
-    <string name="unit_ml">%1$d мл</string>
+    <string name="unit_ml">%1$d&#160;мл</string>
     <string name="decimal_separator">,</string>
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">Стоимость ИИ</string>
@@ -207,9 +207,9 @@
     <string name="field_meds">Текущие лекарства</string>
     <string name="field_fluid">Потребление жидкости</string>
     <string name="field_questions">Вопросы пациента</string>
-    <string name="wording_bp">%1$s: %2$s/%3$s мм рт. ст., измерений: %4$d</string>
+    <string name="wording_bp">%1$s: %2$s/%3$s&#160;мм рт. ст., измерений: %4$d</string>
     <string name="wording_pulse">, пульс %1$s/мин</string>
-    <string name="wording_fluid">В среднем %1$d мл в день, дней: %2$d</string>
+    <string name="wording_fluid">В среднем %1$d&#160;мл в день, дней: %2$d</string>
     <string name="med_not_confirmed">не подтверждено пациентом</string>
     <string name="no_entries">Нет записей</string>
     <string-array name="weekdays_short">
@@ -258,7 +258,7 @@
     <string name="chart_title">Артериальное давление</string>
     <string name="chart_upper">верхнее</string>
     <string name="chart_lower">нижнее</string>
-    <string name="chart_description">График артериального давления: верхнее %1$s, нижнее %2$s мм рт. ст., измерений: %3$d.</string>
+    <string name="chart_description">График артериального давления: верхнее %1$s, нижнее %2$s&#160;мм рт. ст., измерений: %3$d.</string>
     <!-- device storage could not be opened (task 27) -->
     <string name="storage_error_title">Не удалось открыть дневник</string>
     <string name="storage_error_message">На этом устройстве ничего не изменено и не удалено. Закройте и снова откройте приложение. Если это повторяется, сообщите в клинику.</string>
@@ -295,7 +295,7 @@
     <string name="rb_widgets">Что записывает пациент</string>
     <string name="rb_widgets_footer">Пациент видит их в этом порядке и с этими названиями.</string>
     <string name="rb_times_per_day">Раз в день: %1$d</string>
-    <string name="rb_water_target">Цель на день: %1$s л</string>
+    <string name="rb_water_target">Цель на день: %1$s&#160;л</string>
     <string name="rb_water_no_target">Без цели на день</string>
     <string name="rb_questions">Вопросы</string>
     <string name="rb_question_placeholder">Напишите вопрос</string>

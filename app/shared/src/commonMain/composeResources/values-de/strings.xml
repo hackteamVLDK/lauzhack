@@ -14,7 +14,7 @@
     <string name="evening_reading">Abendmessung</string>
     <string name="unit_mmhg">mmHg</string>
     <string name="pulse">Puls %1$s</string>
-    <string name="water_amount">%1$s von %2$s l</string>
+    <string name="water_amount">%1$s von %2$s&#160;l</string>
     <string name="sample_food">Haferbrei mit Banane, Tee</string>
     <string name="sample_medicine">Ramipril 5 mg, 1 am Morgen</string>
     <string name="taken_at">Eingenommen %1$s</string>
@@ -26,7 +26,7 @@
     <string name="summary">Zusammenfassung</string>
     <string name="draft">Entwurf</string>
     <string name="written_from">Aus %1$s Einträgen erstellt</string>
-    <string name="sample_summary">Blutdruck morgens 128–142/82–90 mmHg.</string>
+    <string name="sample_summary">Blutdruck morgens 128–142/82–90&#160;mmHg.</string>
     <string name="confirm">Bestätigen</string>
     <string name="confirmed_at">Bestätigt %1$s</string>
     <string name="edit">Bearbeiten</string>
@@ -118,8 +118,8 @@
     <string name="add_bp">Blutdruck eintragen</string>
     <string name="bp_progress">%1$d von %2$d heute</string>
     <string name="unit_per_min">/min</string>
-    <string name="water_today">%1$s l heute</string>
-    <string name="add_water">250 ml</string>
+    <string name="water_today">%1$s&#160;l heute</string>
+    <string name="add_water">250&#160;ml</string>
     <string name="undo">Rückgängig</string>
     <string name="answer_questions">Heutige Fragen beantworten</string>
     <string name="answered_at">Beantwortet %1$s</string>
@@ -143,12 +143,12 @@
     <string name="problem_diastolic">Der untere Wert muss zwischen 20 und 200 liegen. Prüfen Sie auf Tippfehler.</string>
     <string name="problem_pulse">Der Puls muss zwischen 20 und 250 liegen. Prüfen Sie auf Tippfehler.</string>
     <string name="problem_order">Der untere Wert muss kleiner sein als der obere.</string>
-    <string name="problem_water">Die Menge muss zwischen 1 ml und 5 l liegen.</string>
+    <string name="problem_water">Die Menge muss zwischen 1&#160;ml und 5&#160;l liegen.</string>
     <string name="problem_empty">Schreiben Sie vor dem Speichern ein paar Worte.</string>
     <string name="problem_other">Dieser Eintrag wurde nicht gespeichert. Schließen Sie das Formular und versuchen Sie es erneut.</string>
     <string name="delete">Löschen</string>
     <string name="delete_entry_question">Diesen Eintrag löschen? Er wird von diesem Telefon und aus dem Bericht entfernt.</string>
-    <string name="unit_ml">%1$d ml</string>
+    <string name="unit_ml">%1$d&#160;ml</string>
     <string name="decimal_separator">,</string>
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">KI-Kosten</string>
@@ -205,9 +205,9 @@
     <string name="field_meds">Aktuelle Medikation</string>
     <string name="field_fluid">Trinkmenge</string>
     <string name="field_questions">Fragen an die Praxis</string>
-    <string name="wording_bp">%1$s: %2$s/%3$s mmHg, Messungen: %4$d</string>
+    <string name="wording_bp">%1$s: %2$s/%3$s&#160;mmHg, Messungen: %4$d</string>
     <string name="wording_pulse">, Puls %1$s/min</string>
-    <string name="wording_fluid">Durchschnittlich %1$d ml pro Tag, Tage: %2$d</string>
+    <string name="wording_fluid">Durchschnittlich %1$d&#160;ml pro Tag, Tage: %2$d</string>
     <string name="med_not_confirmed">von der Person nicht bestätigt</string>
     <string name="no_entries">Keine Einträge</string>
     <string-array name="weekdays_short">
@@ -254,7 +254,7 @@
     <string name="chart_title">Blutdruck</string>
     <string name="chart_upper">oberer Wert</string>
     <string name="chart_lower">unterer Wert</string>
-    <string name="chart_description">Blutdruck-Diagramm: oberer Wert %1$s, unterer Wert %2$s mmHg, %3$d Messungen.</string>
+    <string name="chart_description">Blutdruck-Diagramm: oberer Wert %1$s, unterer Wert %2$s&#160;mmHg, %3$d Messungen.</string>
     <!-- device storage could not be opened (task 27) -->
     <string name="storage_error_title">Ihr Tagebuch konnte nicht geöffnet werden</string>
     <string name="storage_error_message">Auf diesem Gerät wurde nichts geändert oder gelöscht. Schließen Sie die App und öffnen Sie sie erneut; wenn das wieder passiert, sagen Sie es Ihrer Praxis.</string>
@@ -291,7 +291,7 @@
     <string name="rb_widgets">Was die Person erfasst</string>
     <string name="rb_widgets_footer">Die Person sieht sie in dieser Reihenfolge, mit diesen Namen.</string>
     <string name="rb_times_per_day">Mal pro Tag: %1$d</string>
-    <string name="rb_water_target">Tagesziel: %1$s l</string>
+    <string name="rb_water_target">Tagesziel: %1$s&#160;l</string>
     <string name="rb_water_no_target">Kein Tagesziel</string>
     <string name="rb_questions">Fragen</string>
     <string name="rb_question_placeholder">Frage eingeben</string>

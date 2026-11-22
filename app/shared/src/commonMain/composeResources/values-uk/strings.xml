@@ -14,7 +14,7 @@
     <string name="evening_reading">Вечірнє вимірювання</string>
     <string name="unit_mmhg">мм рт. ст.</string>
     <string name="pulse">пульс %1$s</string>
-    <string name="water_amount">%1$s з %2$s л</string>
+    <string name="water_amount">%1$s з %2$s&#160;л</string>
     <string name="sample_food">Вівсянка з бананом, чай</string>
     <string name="sample_medicine">Раміприл 5 мг, 1 вранці</string>
     <string name="taken_at">Прийнято %1$s</string>
@@ -26,7 +26,7 @@
     <string name="summary">Підсумок</string>
     <string name="draft">Чернетка</string>
     <string name="written_from">Складено з %1$s записів</string>
-    <string name="sample_summary">Ранковий тиск 128–142/82–90 мм рт. ст.</string>
+    <string name="sample_summary">Ранковий тиск 128–142/82–90&#160;мм рт. ст.</string>
     <string name="confirm">Підтвердити</string>
     <string name="confirmed_at">Підтверджено %1$s</string>
     <string name="edit">Редагувати</string>
@@ -120,8 +120,8 @@
     <string name="add_bp">Додати тиск</string>
     <string name="bp_progress">%1$d з %2$d сьогодні</string>
     <string name="unit_per_min">/хв</string>
-    <string name="water_today">%1$s л сьогодні</string>
-    <string name="add_water">250 мл</string>
+    <string name="water_today">%1$s&#160;л сьогодні</string>
+    <string name="add_water">250&#160;мл</string>
     <string name="undo">Скасувати</string>
     <string name="answer_questions">Відповісти на сьогоднішні запитання</string>
     <string name="answered_at">Відповідь о %1$s</string>
@@ -145,12 +145,12 @@
     <string name="problem_diastolic">Нижній тиск має бути від 20 до 200. Перевірте, чи немає помилки.</string>
     <string name="problem_pulse">Пульс має бути від 20 до 250. Перевірте, чи немає помилки.</string>
     <string name="problem_order">Нижній тиск має бути меншим за верхній.</string>
-    <string name="problem_water">Кількість має бути від 1 мл до 5 л.</string>
+    <string name="problem_water">Кількість має бути від 1&#160;мл до 5&#160;л.</string>
     <string name="problem_empty">Напишіть кілька слів перед збереженням.</string>
     <string name="problem_other">Запис не збережено. Закрийте форму й спробуйте ще раз.</string>
     <string name="delete">Видалити</string>
     <string name="delete_entry_question">Видалити цей запис? Його буде видалено з телефона і зі звіту.</string>
-    <string name="unit_ml">%1$d мл</string>
+    <string name="unit_ml">%1$d&#160;мл</string>
     <string name="decimal_separator">,</string>
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">Вартість ШІ</string>
@@ -207,9 +207,9 @@
     <string name="field_meds">Поточні ліки</string>
     <string name="field_fluid">Вживання рідини</string>
     <string name="field_questions">Запитання пацієнта</string>
-    <string name="wording_bp">%1$s: %2$s/%3$s мм рт. ст., вимірювань: %4$d</string>
+    <string name="wording_bp">%1$s: %2$s/%3$s&#160;мм рт. ст., вимірювань: %4$d</string>
     <string name="wording_pulse">, пульс %1$s/хв</string>
-    <string name="wording_fluid">У середньому %1$d мл на день, днів: %2$d</string>
+    <string name="wording_fluid">У середньому %1$d&#160;мл на день, днів: %2$d</string>
     <string name="med_not_confirmed">пацієнт не підтвердив</string>
     <string name="no_entries">Записів немає</string>
     <string-array name="weekdays_short">
@@ -258,7 +258,7 @@
     <string name="chart_title">Тиск</string>
     <string name="chart_upper">верхній</string>
     <string name="chart_lower">нижній</string>
-    <string name="chart_description">Графік тиску: верхній %1$s, нижній %2$s мм рт. ст., вимірювань: %3$d.</string>
+    <string name="chart_description">Графік тиску: верхній %1$s, нижній %2$s&#160;мм рт. ст., вимірювань: %3$d.</string>
     <!-- device storage could not be opened (task 27) -->
     <string name="storage_error_title">Не вдалося відкрити щоденник</string>
     <string name="storage_error_message">На цьому пристрої нічого не змінено й не видалено. Закрийте застосунок і відкрийте знову; якщо це повторюється, повідомте вашу клініку.</string>
@@ -295,7 +295,7 @@
     <string name="rb_widgets">Що записує пацієнт</string>
     <string name="rb_widgets_footer">Пацієнт бачить їх у такому порядку й з такими назвами.</string>
     <string name="rb_times_per_day">Разів на день: %1$d</string>
-    <string name="rb_water_target">Мета на день: %1$s л</string>
+    <string name="rb_water_target">Мета на день: %1$s&#160;л</string>
     <string name="rb_water_no_target">Без мети на день</string>
     <string name="rb_questions">Запитання</string>
     <string name="rb_question_placeholder">Напишіть запитання</string>

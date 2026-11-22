@@ -14,7 +14,7 @@
     <string name="evening_reading">Evening reading</string>
     <string name="unit_mmhg">mmHg</string>
     <string name="pulse">pulse %1$s</string>
-    <string name="water_amount">%1$s of %2$s l</string>
+    <string name="water_amount">%1$s of %2$s&#160;l</string>
     <string name="sample_food">Oatmeal with banana, tea</string>
     <string name="sample_medicine">Ramipril 5 mg, 1 in the morning</string>
     <string name="taken_at">Taken %1$s</string>
@@ -26,7 +26,7 @@
     <string name="summary">Summary</string>
     <string name="draft">Draft</string>
     <string name="written_from">Written from %1$s entries</string>
-    <string name="sample_summary">Morning blood pressure 128–142/82–90 mmHg.</string>
+    <string name="sample_summary">Morning blood pressure 128–142/82–90&#160;mmHg.</string>
     <string name="confirm">Confirm</string>
     <string name="confirmed_at">Confirmed %1$s</string>
     <string name="edit">Edit</string>
@@ -118,8 +118,8 @@
     <string name="add_bp">Add blood pressure</string>
     <string name="bp_progress">%1$d of %2$d today</string>
     <string name="unit_per_min">/min</string>
-    <string name="water_today">%1$s l today</string>
-    <string name="add_water">250 ml</string>
+    <string name="water_today">%1$s&#160;l today</string>
+    <string name="add_water">250&#160;ml</string>
     <string name="undo">Undo</string>
     <string name="answer_questions">Answer today’s questions</string>
     <string name="answered_at">Answered %1$s</string>
@@ -143,12 +143,12 @@
     <string name="problem_diastolic">The lower value must be between 20 and 200. Check for a typo.</string>
     <string name="problem_pulse">The pulse must be between 20 and 250. Check for a typo.</string>
     <string name="problem_order">The lower value must be smaller than the upper one.</string>
-    <string name="problem_water">The amount must be between 1 ml and 5 l.</string>
+    <string name="problem_water">The amount must be between 1&#160;ml and 5&#160;l.</string>
     <string name="problem_empty">Write a few words before saving.</string>
     <string name="problem_other">This entry was not saved. Close the form and try again.</string>
     <string name="delete">Delete</string>
     <string name="delete_entry_question">Delete this entry? It is removed from this phone and from the report.</string>
-    <string name="unit_ml">%1$d ml</string>
+    <string name="unit_ml">%1$d&#160;ml</string>
     <string name="decimal_separator">.</string>
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">AI cost</string>
@@ -205,9 +205,9 @@
     <string name="field_meds">Current medication</string>
     <string name="field_fluid">Fluid intake</string>
     <string name="field_questions">Patient’s questions</string>
-    <string name="wording_bp">%1$s: %2$s/%3$s mmHg, readings: %4$d</string>
+    <string name="wording_bp">%1$s: %2$s/%3$s&#160;mmHg, readings: %4$d</string>
     <string name="wording_pulse">, pulse %1$s/min</string>
-    <string name="wording_fluid">%1$d ml per day on average, days: %2$d</string>
+    <string name="wording_fluid">%1$d&#160;ml per day on average, days: %2$d</string>
     <string name="med_not_confirmed">not confirmed by the patient</string>
     <string name="no_entries">No entries</string>
     <string-array name="weekdays_short">
@@ -254,7 +254,7 @@
     <string name="chart_title">Blood pressure</string>
     <string name="chart_upper">upper</string>
     <string name="chart_lower">lower</string>
-    <string name="chart_description">Blood pressure chart: upper %1$s, lower %2$s mmHg, %3$d readings.</string>
+    <string name="chart_description">Blood pressure chart: upper %1$s, lower %2$s&#160;mmHg, %3$d readings.</string>
     <!-- device storage could not be opened (task 27) -->
     <string name="storage_error_title">Your diary could not be opened</string>
     <string name="storage_error_message">Nothing on this device was changed or deleted. Close the app and open it again; if this keeps happening, tell your clinic.</string>
@@ -291,7 +291,7 @@
     <string name="rb_widgets">What the patient records</string>
     <string name="rb_widgets_footer">The patient sees these in this order, with these names.</string>
     <string name="rb_times_per_day">Times a day: %1$d</string>
-    <string name="rb_water_target">Daily target: %1$s l</string>
+    <string name="rb_water_target">Daily target: %1$s&#160;l</string>
     <string name="rb_water_no_target">No daily target</string>
     <string name="rb_questions">Questions</string>
     <string name="rb_question_placeholder">Write a question</string>

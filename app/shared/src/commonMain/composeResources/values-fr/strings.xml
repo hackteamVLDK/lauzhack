@@ -14,7 +14,7 @@
     <string name="evening_reading">Mesure du soir</string>
     <string name="unit_mmhg">mmHg</string>
     <string name="pulse">pouls %1$s</string>
-    <string name="water_amount">%1$s sur %2$s l</string>
+    <string name="water_amount">%1$s sur %2$s&#160;l</string>
     <string name="sample_food">Porridge à la banane, thé</string>
     <string name="sample_medicine">Ramipril 5 mg, 1 le matin</string>
     <string name="taken_at">Pris à %1$s</string>
@@ -26,7 +26,7 @@
     <string name="summary">Résumé</string>
     <string name="draft">Brouillon</string>
     <string name="written_from">Rédigé à partir de %1$s entrées</string>
-    <string name="sample_summary">Tension artérielle le matin : 128–142/82–90 mmHg.</string>
+    <string name="sample_summary">Tension artérielle le matin : 128–142/82–90&#160;mmHg.</string>
     <string name="confirm">Confirmer</string>
     <string name="confirmed_at">Confirmé à %1$s</string>
     <string name="edit">Modifier</string>
@@ -118,8 +118,8 @@
     <string name="add_bp">Ajouter la tension artérielle</string>
     <string name="bp_progress">%1$d sur %2$d aujourd'hui</string>
     <string name="unit_per_min">/min</string>
-    <string name="water_today">%1$s l aujourd'hui</string>
-    <string name="add_water">250 ml</string>
+    <string name="water_today">%1$s&#160;l aujourd'hui</string>
+    <string name="add_water">250&#160;ml</string>
     <string name="undo">Annuler</string>
     <string name="answer_questions">Répondre aux questions du jour</string>
     <string name="answered_at">Répondu à %1$s</string>
@@ -143,12 +143,12 @@
     <string name="problem_diastolic">La valeur du bas doit être entre 20 et 200. Vérifiez la saisie.</string>
     <string name="problem_pulse">Le pouls doit être entre 20 et 250. Vérifiez la saisie.</string>
     <string name="problem_order">La valeur du bas doit être inférieure à celle du haut.</string>
-    <string name="problem_water">La quantité doit être entre 1 ml et 5 l.</string>
+    <string name="problem_water">La quantité doit être entre 1&#160;ml et 5&#160;l.</string>
     <string name="problem_empty">Écrivez quelques mots avant d'enregistrer.</string>
     <string name="problem_other">Cette entrée n'a pas été enregistrée. Fermez le formulaire et réessayez.</string>
     <string name="delete">Supprimer</string>
     <string name="delete_entry_question">Supprimer cette entrée ? Elle sera retirée de ce téléphone et du rapport.</string>
-    <string name="unit_ml">%1$d ml</string>
+    <string name="unit_ml">%1$d&#160;ml</string>
     <string name="decimal_separator">,</string>
     <!-- AI cost screen (task 32) -->
     <string name="cost_title">Coût de l'IA</string>
@@ -205,9 +205,9 @@
     <string name="field_meds">Médicaments actuels</string>
     <string name="field_fluid">Apport hydrique</string>
     <string name="field_questions">Questions du patient</string>
-    <string name="wording_bp">%1$s : %2$s/%3$s mmHg, mesures : %4$d</string>
+    <string name="wording_bp">%1$s : %2$s/%3$s&#160;mmHg, mesures : %4$d</string>
     <string name="wording_pulse">, pouls %1$s/min</string>
-    <string name="wording_fluid">%1$d ml par jour en moyenne, jours : %2$d</string>
+    <string name="wording_fluid">%1$d&#160;ml par jour en moyenne, jours : %2$d</string>
     <string name="med_not_confirmed">non confirmé par le patient</string>
     <string name="no_entries">Aucune entrée</string>
     <string-array name="weekdays_short">
@@ -254,7 +254,7 @@
     <string name="chart_title">Tension artérielle</string>
     <string name="chart_upper">valeur du haut</string>
     <string name="chart_lower">valeur du bas</string>
-    <string name="chart_description">Graphique de tension artérielle : haut %1$s, bas %2$s mmHg, %3$d mesures.</string>
+    <string name="chart_description">Graphique de tension artérielle : haut %1$s, bas %2$s&#160;mmHg, %3$d mesures.</string>
     <!-- device storage could not be opened (task 27) -->
     <string name="storage_error_title">Votre journal n'a pas pu être ouvert</string>
     <string name="storage_error_message">Rien n'a été modifié ni supprimé sur cet appareil. Fermez puis rouvrez l'application. Si le problème persiste, informez votre cabinet.</string>
@@ -291,7 +291,7 @@
     <string name="rb_widgets">Ce que le patient doit noter</string>
     <string name="rb_widgets_footer">Le patient les voit dans cet ordre, avec ces noms.</string>
     <string name="rb_times_per_day">Fois par jour : %1$d</string>
-    <string name="rb_water_target">Objectif quotidien : %1$s l</string>
+    <string name="rb_water_target">Objectif quotidien : %1$s&#160;l</string>
     <string name="rb_water_no_target">Aucun objectif quotidien</string>
     <string name="rb_questions">Questions</string>
     <string name="rb_question_placeholder">Écrivez une question</string>
