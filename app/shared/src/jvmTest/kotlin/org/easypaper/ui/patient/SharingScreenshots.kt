@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import easypaper.app.shared.generated.resources.Res
 import easypaper.app.shared.generated.resources.p2_how_share
 import easypaper.app.shared.generated.resources.p2_next
-import easypaper.app.shared.generated.resources.p2_share
+import easypaper.app.shared.generated.resources.p2_sharing_doctor_title
 import easypaper.app.shared.generated.resources.p2_sharing
 import kotlinx.coroutines.runBlocking
 import org.easypaper.ui.patient.v2.PatientSettings
@@ -62,7 +62,7 @@ class SharingScreenshots {
             ImageIO.write(onRoot().captureToImage().toAwtImage(), "png", File(out, "$name-$lang-${if (dark) "dark" else "light"}.png"))
         }
         val (sharing, share, next, how) = runBlocking {
-            listOf(getString(Res.string.p2_sharing), getString(Res.string.p2_share), getString(Res.string.p2_next), getString(Res.string.p2_how_share))
+            listOf(getString(Res.string.p2_sharing), getString(Res.string.p2_sharing_doctor_title), getString(Res.string.p2_next), getString(Res.string.p2_how_share))
         }
         text(sharing)
         onAllNodesWithText(sharing).onFirst().performClick()
