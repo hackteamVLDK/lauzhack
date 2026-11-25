@@ -88,7 +88,7 @@ internal class AccountFlow(private val client: AccountClient, private val settin
         if (code.length == 6 && !mustResend) perform { accept(client.verifyEmail(current.challengeId, code)) }
     }
 
-    suspend fun google(idToken: String) = perform { accept(client.google(idToken)) }
+    suspend fun google(credential: GoogleSignInCredential) = perform { accept(credential.signIn(client)) }
 
     private fun accept(session: AccountSession) {
         settings.saveSession(session)

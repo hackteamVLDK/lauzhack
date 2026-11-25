@@ -191,6 +191,7 @@
     <string name="p2_account_not_found">This invitation is no longer available. Ask your doctor for a new one.</string>
     <string name="p2_account_network">Could not reach the server. Check your connection and try again.</string>
     <string name="p2_account_google_unconfigured">Google sign-in is not configured yet</string>
+    <string name="p2_account_google_unavailable">Google sign-in is temporarily unavailable. Try again later or use email.</string>
     <string name="p2_account_google_platform">Google sign-in is available on Android and the web</string>
     <string name="p2_account_google_cancelled">Google sign-in did not finish. You can try again or use email.</string>
     <string name="p2_account_sign_in">Sign in</string>

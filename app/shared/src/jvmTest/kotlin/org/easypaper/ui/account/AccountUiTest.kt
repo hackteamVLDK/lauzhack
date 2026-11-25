@@ -124,6 +124,8 @@ class AccountUiTest {
     @Test
     fun appleShowsSoonAndGooglePlaceholderExplainsConfiguration() = runComposeUiTest {
         val http = HttpClient(Engine { error("No network request is expected") })
+        val previousClientId = System.getProperty("easypaper.googleDesktopClientId")
+        System.setProperty("easypaper.googleDesktopClientId", "REPLACE_WITH_TEST")
         try {
             val patient = settings()
             val signedIn = AtomicInteger()
@@ -137,12 +139,14 @@ class AccountUiTest {
             onNodeWithText("OK").performClick()
             onNodeWithText("Sign in with Apple is coming soon.").assertDoesNotExist()
             click("Continue with Google")
-            // the real web client ID is configured; on Desktop (JVM) Google sign-in is not offered
-            waitForText(if (org.easypaper.ui.account.googleSignInConfigured) "Google sign-in is available on Android and the web"
-                else "Google sign-in is not configured yet")
+            waitForText("Google sign-in is not configured yet")
             assertEquals(0, signedIn.get())
             assertNull(patient.accountToken.value)
-        } finally { http.close() }
+        } finally {
+            if (previousClientId == null) System.clearProperty("easypaper.googleDesktopClientId")
+            else System.setProperty("easypaper.googleDesktopClientId", previousClientId)
+            http.close()
+        }
     }
 
     @Test

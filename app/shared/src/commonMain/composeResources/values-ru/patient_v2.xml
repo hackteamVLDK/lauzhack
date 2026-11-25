@@ -197,6 +197,7 @@
     <string name="p2_account_not_found">Это приглашение больше недоступно. Попросите врача отправить новое.</string>
     <string name="p2_account_network">Не удалось связаться с сервером. Проверьте соединение и попробуйте снова.</string>
     <string name="p2_account_google_unconfigured">Вход с Google ещё не настроен</string>
+    <string name="p2_account_google_unavailable">Вход с Google временно недоступен. Попробуйте позже или используйте почту.</string>
     <string name="p2_account_google_platform">Вход с Google доступен на Android и в веб-версии</string>
     <string name="p2_account_google_cancelled">Вход с Google не завершён. Попробуйте снова или используйте почту.</string>
     <string name="p2_account_sign_in">Войти</string>

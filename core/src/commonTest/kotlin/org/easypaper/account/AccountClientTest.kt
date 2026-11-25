@@ -48,6 +48,24 @@ class AccountClientTest {
     private val challengeJson = """{"challengeId":"challenge","expiresAt":600000}"""
 
     @Test
+    fun googleCodeSendsOnlyCodeVerifierAndRedirectUri() = runTest {
+        val http = HttpClient(Engine(StandardTestDispatcher(testScheduler)) { request ->
+            assertEquals(HttpMethod.Post, request.method)
+            assertEquals("/api/account/google/code", request.url.encodedPath)
+            val body = EasyPaperJson.parseToJsonElement((request.body as TextContent).text).jsonObject
+            assertEquals(setOf("code", "codeVerifier", "redirectUri"), body.keys)
+            assertEquals(JsonPrimitive("authorization-code"), body["code"])
+            assertEquals(JsonPrimitive("v".repeat(43)), body["codeVerifier"])
+            assertEquals(JsonPrimitive("http://127.0.0.1:54321"), body["redirectUri"])
+            HttpStatusCode.OK to sessionJson
+        })
+        try {
+            val session = AccountClient("https://example.test/api", http).googleCode("authorization-code", "v".repeat(43), "http://127.0.0.1:54321")
+            assertEquals("session-token", session.token)
+        } finally { http.close() }
+    }
+
+    @Test
     fun allRoutesUseContractBodiesHeadersAndResponsesWithoutPlugins() = runTest {
         val requests = mutableListOf<HttpRequestData>()
         val http = HttpClient(Engine(StandardTestDispatcher(testScheduler)) { data ->

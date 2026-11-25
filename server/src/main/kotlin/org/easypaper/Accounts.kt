@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.expectSuccess
+import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -12,6 +13,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.parameters
 import io.ktor.http.contentType
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationStopped
@@ -160,6 +162,41 @@ class GoogleTokenInfo(private val http: HttpClient) : GoogleVerifier {
     }
 }
 
+fun interface GoogleCodeExchange {
+    suspend fun exchange(code: String, codeVerifier: String, redirectUri: String): String
+}
+
+/** Credentials stay on the server. Upstream bodies and exceptions are never exposed to callers. */
+class GoogleTokenExchange(
+    private val http: HttpClient,
+    private val clientId: String,
+    private val clientSecret: String,
+) : GoogleCodeExchange {
+    override suspend fun exchange(code: String, codeVerifier: String, redirectUri: String): String {
+        try {
+            val response = http.submitForm("https://oauth2.googleapis.com/token", parameters {
+                append("grant_type", "authorization_code")
+                append("client_id", clientId)
+                append("client_secret", clientSecret)
+                append("code", code)
+                append("code_verifier", codeVerifier)
+                append("redirect_uri", redirectUri)
+            }) { expectSuccess = false }
+            if (response.status.value in 400..499) fail(Kind.Unauthorized)
+            if (response.status != HttpStatusCode.OK) fail(Kind.Network)
+            return EasyPaperJson.parseToJsonElement(response.bodyAsText()).jsonObject["id_token"]
+                ?.jsonPrimitive?.contentOrNull?.takeIf { it.isNotBlank() && it.length <= 12_000 }
+                ?: fail(Kind.Network)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: AccountException) {
+            fail(e.kind)
+        } catch (_: Exception) {
+            fail(Kind.Network)
+        }
+    }
+}
+
 @Serializable
 private data class StoredInvite(val name: String, val phone: String?, val email: String, val expiresAt: Long)
 
@@ -179,7 +216,10 @@ class Accounts(
     private val googleClientIds: Set<String> = emptySet(),
     private val clinicToken: String? = null,
     private val now: () -> Long = System::currentTimeMillis,
+    private val googleDesktopClientId: String? = null,
+    private val googleCodeExchange: GoogleCodeExchange? = null,
 ) {
+    private val allowedGoogleClientIds = googleClientIds + listOfNotNull(googleDesktopClientId?.takeIf { it.isNotBlank() })
     private data class Challenge(
         val email: String, val digest: String, val expiresAt: Long, val inviteHash: String?, var attempts: Int = 0,
     )
@@ -252,8 +292,28 @@ class Accounts(
         AccountSession(token, account)
     }
 
-    suspend fun google(idToken: String): AccountSession {
-        if (idToken.isBlank() || idToken.length > 12_000 || googleClientIds.isEmpty()) fail(Kind.Unauthorized)
+    suspend fun google(idToken: String): AccountSession = googleSession(idToken)
+
+    suspend fun googleCode(code: String, codeVerifier: String, redirectUri: String): AccountSession {
+        val redirect = Regex("http://(?:127\\.0\\.0\\.1|localhost):([0-9]{1,5})").matchEntire(redirectUri)
+        require(redirect != null && redirect.groupValues[1].toInt() in 1..65535)
+        require(code.isNotBlank() && code.length <= 8_192 && Regex("[A-Za-z0-9._~-]{43,128}").matches(codeVerifier))
+        val clientId = googleDesktopClientId?.takeIf { it.isNotBlank() } ?: fail(Kind.MailUnavailable)
+        val exchange = googleCodeExchange ?: fail(Kind.MailUnavailable)
+        val idToken = try {
+            exchange.exchange(code, codeVerifier, redirectUri)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: AccountException) {
+            fail(e.kind)
+        } catch (_: Exception) {
+            fail(Kind.Network)
+        }
+        return googleSession(idToken, requiredAudience = clientId)
+    }
+
+    private suspend fun googleSession(idToken: String, requiredAudience: String? = null): AccountSession {
+        if (idToken.isBlank() || idToken.length > 12_000 || allowedGoogleClientIds.isEmpty()) fail(Kind.Unauthorized)
         val verifier = googleVerifier ?: fail(Kind.Unauthorized)
         val identity = try {
             verifier.verify(idToken)
@@ -264,7 +324,8 @@ class Accounts(
         } catch (_: Exception) {
             fail(Kind.Network)
         }
-        if (identity.audience !in googleClientIds || identity.issuer !in setOf("accounts.google.com", "https://accounts.google.com") ||
+        if (identity.audience !in allowedGoogleClientIds || (requiredAudience != null && identity.audience != requiredAudience) ||
+            identity.issuer !in setOf("accounts.google.com", "https://accounts.google.com") ||
             !identity.emailVerified || identity.expiresAtSeconds <= now() / 1000) fail(Kind.Unauthorized)
         val email = try { normalizeEmail(identity.email) } catch (_: IllegalArgumentException) { fail(Kind.Unauthorized) }
         return mutex.withLock {
@@ -365,6 +426,8 @@ class Accounts(
             application.monitor.subscribe(ApplicationStopped) { http.close() }
             fun env(name: String) = System.getenv(name)?.trim()?.takeIf { it.isNotEmpty() }
             val from = env("EASYPAPER_MAIL_FROM")
+            val desktopClientId = env("EASYPAPER_GOOGLE_DESKTOP_CLIENT_ID")
+            val desktopClientSecret = env("EASYPAPER_GOOGLE_DESKTOP_CLIENT_SECRET")
             val mail = when (env("EASYPAPER_MAIL")?.lowercase(Locale.ROOT)) {
                 "resend" -> env("RESEND_API_KEY")?.let { key -> from?.let { ResendMail(http, key, it) } }
                 "smtp" -> {
@@ -381,6 +444,9 @@ class Accounts(
                 googleVerifier = GoogleTokenInfo(http),
                 googleClientIds = env("EASYPAPER_GOOGLE_CLIENT_IDS")?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }?.toSet().orEmpty(),
                 clinicToken = env("EASYPAPER_CLINIC_TOKEN"),
+                googleDesktopClientId = desktopClientId,
+                googleCodeExchange = if (desktopClientId != null && desktopClientSecret != null)
+                    GoogleTokenExchange(http, desktopClientId, desktopClientSecret) else null,
             )
         }
     }
@@ -412,6 +478,12 @@ fun Route.accountRoutes(accounts: Accounts) {
         }
     }
     post("/account/google") { call.accountResponse(accounts) { accounts.google(bodyField("idToken")) } }
+    post("/account/google/code") {
+        call.accountResponse(accounts) {
+            val body = accountBody()
+            accounts.googleCode(body.string("code"), body.string("codeVerifier"), body.string("redirectUri"))
+        }
+    }
     get("/account/me") { call.accountResponse(accounts) { accounts.me(bearer()) } }
     post("/account/signout") { call.accountResponse<Unit>(accounts) { accounts.signOut(bearer()) } }
     post("/invites") {

@@ -60,10 +60,10 @@ fun AccountSignIn(settings: PatientSettings, onSignedIn: () -> Unit,
                     !googleSignInSupported -> googleMessage = Res.string.p2_account_google_platform
                     else -> {
                         googlePending = true
-                        google { token ->
+                        google { credential ->
                             googlePending = false
-                            if (token.isNullOrBlank()) googleMessage = Res.string.p2_account_google_cancelled
-                            else scope.launch { flow.google(token) }
+                            if (credential == null) googleMessage = Res.string.p2_account_google_cancelled
+                            else scope.launch { flow.google(credential) }
                         }
                     }
                 }
@@ -74,7 +74,11 @@ fun AccountSignIn(settings: PatientSettings, onSignedIn: () -> Unit,
             if (googlePending || flow.busy) PatientMessage(stringResource(Res.string.p2_working))
             googleMessage?.let { AccountNotice(stringResource(it)) }
         }
-        flow.problem?.let { AccountNotice(stringResource(accountProblem(it)), error = true) }
+        flow.problem?.let {
+            val message = if (!emailPage && flow.challenge == null && it == AccountException.Kind.MailUnavailable)
+                Res.string.p2_account_google_unavailable else accountProblem(it)
+            AccountNotice(stringResource(message), error = true)
+        }
         if (onContinueWithoutAccount != null) PlainButton(stringResource(Res.string.p2_continue_without_account),
             onContinueWithoutAccount, enabled = !flow.busy && !googlePending)
     }

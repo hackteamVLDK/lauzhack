@@ -191,6 +191,7 @@
     <string name="p2_account_not_found">Diese Einladung ist nicht mehr verfügbar. Bitten Sie Ihre Arztpraxis um eine neue.</string>
     <string name="p2_account_network">Der Server ist nicht erreichbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.</string>
     <string name="p2_account_google_unconfigured">Die Google-Anmeldung ist noch nicht eingerichtet</string>
+    <string name="p2_account_google_unavailable">Die Google-Anmeldung ist vorübergehend nicht verfügbar. Versuchen Sie es später oder nutzen Sie E-Mail.</string>
     <string name="p2_account_google_platform">Die Google-Anmeldung ist auf Android und im Web verfügbar</string>
     <string name="p2_account_google_cancelled">Die Google-Anmeldung wurde nicht abgeschlossen. Versuchen Sie es erneut oder nutzen Sie E-Mail.</string>
     <string name="p2_account_sign_in">Anmelden</string>

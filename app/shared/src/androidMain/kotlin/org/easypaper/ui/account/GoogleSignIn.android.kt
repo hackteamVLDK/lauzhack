@@ -13,9 +13,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 internal actual val googleSignInSupported: Boolean = true
+internal actual val googleSignInClientId: String get() = GOOGLE_WEB_CLIENT_ID
 
 @Composable
-actual fun rememberGoogleSignIn(): (onResult: (idToken: String?) -> Unit) -> Unit {
+actual fun rememberGoogleSignIn(): (onResult: (GoogleSignInCredential?) -> Unit) -> Unit {
     val context = LocalContext.current
     val manager = remember(context) { CredentialManager.create(context) }
     val scope = rememberCoroutineScope()
@@ -31,7 +32,7 @@ actual fun rememberGoogleSignIn(): (onResult: (idToken: String?) -> Unit) -> Uni
                         GoogleIdTokenCredential.createFrom(credential.data).idToken else null
                 } catch (e: CancellationException) { throw e
                 } catch (_: Exception) { null }
-                onResult(token)
+                onResult(googleIdTokenCredential(token))
             }
             Unit
         }

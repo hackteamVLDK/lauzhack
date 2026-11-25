@@ -191,6 +191,7 @@
     <string name="p2_account_not_found">Cette invitation n’est plus disponible. Demandez-en une nouvelle à votre médecin.</string>
     <string name="p2_account_network">Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.</string>
     <string name="p2_account_google_unconfigured">La connexion Google n’est pas encore configurée</string>
+    <string name="p2_account_google_unavailable">La connexion Google est temporairement indisponible. Réessayez plus tard ou utilisez un e-mail.</string>
     <string name="p2_account_google_platform">La connexion Google est disponible sur Android et sur le Web</string>
     <string name="p2_account_google_cancelled">La connexion Google n’a pas abouti. Réessayez ou utilisez un e-mail.</string>
     <string name="p2_account_sign_in">Se connecter</string>

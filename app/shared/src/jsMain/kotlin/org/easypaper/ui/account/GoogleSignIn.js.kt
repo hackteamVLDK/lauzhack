@@ -5,18 +5,19 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 
 internal actual val googleSignInSupported: Boolean = true
+internal actual val googleSignInClientId: String get() = GOOGLE_WEB_CLIENT_ID
 
 private class GoogleResult {
-    var callback: ((String?) -> Unit)? = null
+    var callback: ((GoogleSignInCredential?) -> Unit)? = null
     fun deliver(token: String?) {
         val current = callback
         callback = null
-        current?.invoke(token)
+        current?.invoke(googleIdTokenCredential(token))
     }
 }
 
 @Composable
-actual fun rememberGoogleSignIn(): (onResult: (idToken: String?) -> Unit) -> Unit {
+actual fun rememberGoogleSignIn(): (onResult: (GoogleSignInCredential?) -> Unit) -> Unit {
     val result = remember { GoogleResult() }
     val bridge = remember { createGoogleSignIn(GOOGLE_WEB_CLIENT_ID, result::deliver) }
     DisposableEffect(bridge) {

@@ -24,6 +24,7 @@ compose.desktop {
         mainClass = "org.easypaper.MainKt"
 
         nativeDistributions {
+            modules("jdk.httpserver") // Desktop Google OAuth loopback listener in packaged runtimes
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "org.easypaper"
             packageVersion = "1.0.0"

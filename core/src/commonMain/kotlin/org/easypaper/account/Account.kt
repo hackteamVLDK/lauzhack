@@ -44,6 +44,10 @@ class AccountClient(private val baseUrl: String, private val http: HttpClient) {
 
     suspend fun google(idToken: String): AccountSession = call(HttpMethod.Post, listOf("account", "google"), fields("idToken" to idToken))
 
+    suspend fun googleCode(code: String, verifier: String, redirectUri: String): AccountSession =
+        call(HttpMethod.Post, listOf("account", "google", "code"),
+            fields("code" to code, "codeVerifier" to verifier, "redirectUri" to redirectUri))
+
     suspend fun invitedPerson(inviteToken: String): InvitedPerson = call(HttpMethod.Get, listOf("invites", inviteToken))
 
     suspend fun confirmInvite(inviteToken: String): EmailChallenge = call(HttpMethod.Post, listOf("invites", inviteToken, "confirm"))
